@@ -4,31 +4,68 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import {
-  Menu,
-  Building2,
-  Map,
-  MapPin,
-  UserCheck,
-  Package,
-  Shield,
-  ChartBar as BarChart3,
-  Settings,
-  House,
-} from "lucide-react";
+import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import {
+  DashboardIcon,
+  OrganizationIcon,
+  MapManagerIcon,
+  PointsOfInterestIcon,
+  UserAndRolesIcon,
+  AssetTrackingIcon,
+  AlertsAndGeofencingIcon,
+  AnalyticsIcon,
+  SettingsIcon,
+  LogoIcon,
+} from "@/icons/dashboard";
 
 const navigationItems = [
-  { name: "Dashboard", icon: House, path: "/" },
-  { name: "Organizations", icon: Building2, path: "/organizations" },
-  { name: "Map Manager", icon: Map, path: "/map-manager" },
-  { name: "Points of Interest", icon: MapPin, path: "/points-of-interest" },
-  { name: "User & Roles", icon: UserCheck, path: "/users-and-roles" },
-  { name: "Asset Tracking", icon: Package, path: "/asset-tracking" },
-  { name: "Alerts & Geofencing", icon: Shield, path: "/alerts-and-geofencing" },
-  { name: "Analytics", icon: BarChart3, path: "/analytics" },
-  { name: "Settings", icon: Settings, path: "/settings" },
+  {
+    name: "Dashboard",
+    icon: DashboardIcon,
+    path: "/",
+  },
+  {
+    name: "Organizations",
+    icon: OrganizationIcon,
+    path: "/organizations",
+  },
+  {
+    name: "Map Manager",
+    icon: MapManagerIcon,
+    path: "/map-manager",
+  },
+  {
+    name: "Points of Interest",
+    icon: PointsOfInterestIcon,
+    path: "/points-of-interest",
+  },
+  {
+    name: "User & Roles",
+    icon: UserAndRolesIcon,
+    path: "/users-and-roles",
+  },
+  {
+    name: "Asset Tracking",
+    icon: AssetTrackingIcon,
+    path: "/asset-tracking",
+  },
+  {
+    name: "Alerts & Geofencing",
+    icon: AlertsAndGeofencingIcon,
+    path: "/alerts-and-geofencing",
+  },
+  {
+    name: "Analytics",
+    icon: AnalyticsIcon,
+    path: "/analytics",
+  },
+  {
+    name: "Settings",
+    icon: SettingsIcon,
+    path: "/settings",
+  },
 ];
 
 interface SidebarProps {
@@ -41,19 +78,17 @@ function SidebarContent() {
   return (
     <div className="flex flex-col h-full bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
       <div className="px-4 py-5">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">K</span>
-          </div>
-          <span className="text-xl font-bold text-gray-800">Karepilot</span>
+        <div className="flex items-center">
+          <LogoIcon />
         </div>
       </div>
 
       <nav className="flex-1 px-3 py-4">
         <ul className="space-y-1">
           {navigationItems.map((item, index) => {
-            const Icon = item.icon;
             const isActive = pathname === item.path;
+            const IconComponent = item.icon;
+            
             return (
               <li key={index}>
                 <Link
@@ -61,14 +96,14 @@ function SidebarContent() {
                   className={cn(
                     "w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer",
                     isActive
-                      ? "bg-green-700 text-white"
+                      ? "bg-[#3D8C6C] text-white"
                       : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                   )}
                 >
-                  <Icon
+                  <IconComponent
                     className={cn(
-                      "w-5 h-5",
-                      isActive ? "text-white" : "text-gray-400"
+                      "shrink-0 w-5 h-5",
+                      isActive ? "text-white" : "text-gray-600"
                     )}
                   />
                   <span>{item.name}</span>
