@@ -38,7 +38,7 @@ export default function KarepilotLogin({ onLogin }: { onLogin: () => void }) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400"
+              className="w-full px-3 py-3 border-b border-b-gray-300 focus:outline-none focus:border-b-black placeholder-gray-400"
             />
           </div>
 
@@ -52,7 +52,7 @@ export default function KarepilotLogin({ onLogin }: { onLogin: () => void }) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                className="w-full px-3 py-3 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400"
+                className="w-full px-3 py-3 pr-10 border-b border-b-gray-300 focus:outline-none focus:border-b-black placeholder-gray-400"
               />
               <button
                 type="button"
@@ -60,9 +60,9 @@ export default function KarepilotLogin({ onLogin }: { onLogin: () => void }) {
                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
               >
                 {showPassword ? (
-                  <EyeOff className="h-5 w-5" />
+                  <EyeOff className="h-5 w-5 cursor-pointer" />
                 ) : (
-                  <Eye className="h-5 w-5" />
+                  <Eye className="h-5 w-5 cursor-pointer" />
                 )}
               </button>
             </div>
@@ -74,18 +74,18 @@ export default function KarepilotLogin({ onLogin }: { onLogin: () => void }) {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                className="h-4 w-4 text-[#3D8C6C] focus:ring-green-500 border-gray-300 cursor-pointer rounded"
               />
-              <span className="ml-2 text-sm text-gray-600">Remember me</span>
+              <span className="ml-2 text-sm text-[#3D8C6C]">Remember me</span>
             </label>
-            <button className="text-sm text-green-600 hover:text-green-700 font-medium">
+            <button className="text-sm text-[#3D8C6C] hover:text-green-700 font-medium cursor-pointer">
               Forget Password?
             </button>
           </div>
 
           <button
             onClick={handleLogin}
-            className="w-full bg-green-600 cursor-pointer text-white py-3 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 font-medium transition duration-200"
+            className="w-full bg-[#3D8C6C] cursor-pointer text-white py-3 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 font-medium transition duration-200"
           >
             Login
           </button>
