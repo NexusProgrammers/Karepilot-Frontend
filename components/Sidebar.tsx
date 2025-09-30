@@ -19,7 +19,7 @@ import {
   SettingsIcon,
   LogoIcon,
 } from "@/icons/dashboard";
-import logoImg from "@/assets/common/logo.svg"
+import logoImg from "@/assets/common/logo.svg";
 import Image from "next/image";
 
 const navigationItems = [
@@ -88,9 +88,14 @@ function SidebarContent() {
       <nav className="flex-1 px-3 py-4">
         <ul className="space-y-1">
           {navigationItems.map((item, index) => {
-            const isActive = pathname === item.path;
+            const isActive =
+              item.path === "/"
+                ? pathname === "/" || pathname.startsWith("/dashboard")
+                : pathname === item.path ||
+                  pathname.startsWith(item.path + "/");
+
             const IconComponent = item.icon;
-            
+
             return (
               <li key={index}>
                 <Link
@@ -135,17 +140,26 @@ export function Sidebar({ className }: SidebarProps) {
             <Menu className="h-4 w-4" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="p-0 w-64 [&>button]:cursor-pointer [&>button]:top-5 [&>button]:right-4">
+        <SheetContent
+          side="left"
+          className="p-0 w-64 [&>button]:cursor-pointer [&>button]:top-5 [&>button]:right-4"
+        >
           <div className="flex flex-col h-full">
             <div className="px-4 py-3 border-b border-gray-100 shrink-0">
-              <Image src={logoImg} alt="logo" width={160} height={200} />
+              <Image
+                src={logoImg}
+                alt="logo"
+                width={160}
+                height={200}
+                className="w-auto h-auto"
+              />
             </div>
             <nav className="flex-1 px-3 py-2 overflow-y-auto">
               <ul className="space-y-1">
                 {navigationItems.map((item, index) => {
                   const isActive = pathname === item.path;
                   const IconComponent = item.icon;
-                  
+
                   return (
                     <li key={index}>
                       <Link
