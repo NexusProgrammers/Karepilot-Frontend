@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 import Image from "next/image";
 import uploadFloorPlanIcon from "@/assets/dashboard/quick-actions/upload-floor-plan.svg";
 import trackEquipmentIcon from "@/assets/dashboard/quick-actions/track-equipment.svg";
@@ -23,44 +23,44 @@ const quickActions = [
   },
   {
     id: 2,
+    title: "Add Medical POI",
+    description: "Edit key reports, Crisis, ERs, Pharmacists, Waiting Areas",
+    icon: addMedicalPoiIcon,
+    action: "add-medical-poi"
+  },
+  {
+    id: 3,
     title: "Track Equipment",
     description:
       "Track live location of staff, visitors, or equipment on floors",
     icon: trackEquipmentIcon,
-    action: "add-medical-poi",
   },
   {
-    id: 3,
+    id: 4,
+    title: "Emergency Alerts",
+    description: "Set alerts for unauthorized access to critical areas",
+    icon: emergencyAlertsIcon,
+  },
+  {
+    id: 5,
     title: "Assign a Nurse or Staff to a Zone",
     description:
       "Allocate medical or support staff to specific layer or geofenced zones",
     icon: assignNurseStaffZoneIcon,
   },
   {
-    id: 4,
-    title: "Download Daily Report",
-    description:
-      "View and export live reports showing hospital events and departments",
-    icon: downloadDailyReportIcon,
-  },
-  {
-    id: 5,
-    title: "Add Medical POI",
-    description: "Edit key reports, Crisis, ERs, Pharmacists, Waiting Areas",
-    icon: addMedicalPoiIcon,
-  },
-  {
     id: 6,
-    title: "Emergency Alerts",
-    description: "Set alerts for unauthorized access to critical areas",
-    icon: emergencyAlertsIcon,
-  },
-  {
-    id: 7,
     title: "Add Ward Locations",
     description:
       "Create markers for patient wards and assign floor/ward numbers",
     icon: addWardLocationIcon,
+  },
+  {
+    id: 7,
+    title: "Download Daily Report",
+    description:
+      "View and export live reports showing hospital events and departments",
+    icon: downloadDailyReportIcon,
   },
   {
     id: 8,
@@ -126,7 +126,7 @@ export default function QuickActions() {
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
       />
-      
+
       <CreatePOIModal
         isOpen={isPOIModalOpen}
         onClose={() => setIsPOIModalOpen(false)}

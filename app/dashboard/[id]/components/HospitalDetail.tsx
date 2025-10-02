@@ -1,10 +1,49 @@
 "use client";
 
 import { DashboardLayout } from "@/components/DashboardLayout";
-import HospitalStats from "./HospitalStats";
 import QuickActions from "./QuickActions";
 import RecentActivity from "./RecentActivity";
 import SystemHealth from "./SystemHealth";
+import activePatientsIcon from "@/assets/dashboard/central-medical-hospital/active-patients.svg";
+import emergencyAlertsIcon from "@/assets/dashboard/central-medical-hospital/emergency-alerts.svg";
+import equipmentTrackedIcon from "@/assets/dashboard/central-medical-hospital/equipment-tracked.svg";
+import navigationRequestsIcon from "@/assets/dashboard/central-medical-hospital/navigation-requests.svg";
+import StatsGrid, { StatItem } from "@/components/common/StatsGrid";
+
+const hospitalStats: StatItem[] = [
+  {
+    id: 1,
+    title: "Active Patients",
+    value: "432",
+    change: "+12%",
+    note: "from last week",
+    icon: activePatientsIcon,
+  },
+  {
+    id: 2,
+    title: "Emergency Alerts",
+    value: "450",
+    change: "+3%",
+    note: "from last week",
+    icon: emergencyAlertsIcon,
+  },
+  {
+    id: 3,
+    title: "Equipment Tracked",
+    value: "512",
+    change: "+7%",
+    note: "from last week",
+    icon: equipmentTrackedIcon,
+  },
+  {
+    id: 4,
+    title: "Navigation Requests",
+    value: "370",
+    change: "+14%",
+    note: "from last week",
+    icon: navigationRequestsIcon,
+  },
+];
 
 export default function HospitalDetail() {
   return (
@@ -33,7 +72,7 @@ export default function HospitalDetail() {
               </p>
             </div>
           </div>
-          <HospitalStats />
+          <StatsGrid stats={hospitalStats} />
         </div>
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
