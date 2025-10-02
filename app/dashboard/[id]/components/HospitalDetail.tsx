@@ -62,7 +62,7 @@ export default function HospitalDetail() {
                 Central Medical Hospital
               </h1>
               <p className="text-sm text-gray-500 mb-2">
-                Terminal 4, Queens, NY{" "}
+                Terminal 4, Queens, NY
                 <span className="p-2 bg-gray-200 rounded-xl text-black">
                   Hospital
                 </span>

@@ -2,6 +2,7 @@ import { CustomInput } from "@/components/common/CustomInput";
 import { CustomSelect } from "@/components/common/CustomSelect";
 import { CustomTextarea } from "@/components/common/CustomTextarea";
 import { ToggleSwitch } from "@/components/common/ToggleSwitch";
+import { CreatePIOIcon } from "@/icons/dashboard";
 import { MapPin, X } from "lucide-react";
 import { useState } from "react";
 
@@ -277,8 +278,9 @@ export function CreatePOIModal({ isOpen, onClose }: CreatePOIModalProps) {
           </button>
           <button
             onClick={handleSubmit}
-            className="px-5 py-2.5 text-sm cursor-pointer font-medium text-white bg-[#3D8C6C] rounded-lg transition-colors"
+            className="px-5 flex gap-2 py-2.5 text-sm cursor-pointer font-medium text-white bg-[#3D8C6C] rounded-lg transition-colors"
           >
+            <CreatePIOIcon />
             Create POI
           </button>
         </div>
