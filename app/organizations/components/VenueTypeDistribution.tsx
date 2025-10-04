@@ -8,12 +8,12 @@ type VenueTypeDistributionProps = {
 
 export default function VenueTypeDistribution({ venues }: VenueTypeDistributionProps) {
   return (
-    <div className="mb-6 border border-gray-200 rounded-4xl mt-6 p-6">
+    <div className="mb-6 border border-border rounded-4xl mt-6 p-6 bg-card">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        <h2 className="text-xl font-semibold text-card-foreground mb-2">
           Venue Type Distribution
         </h2>
-        <p className="text-gray-600">
+        <p className="text-muted-foreground">
           Overview of different venue types in your system
         </p>
       </div>

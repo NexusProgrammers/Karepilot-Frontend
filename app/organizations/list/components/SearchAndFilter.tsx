@@ -38,15 +38,15 @@ export default function SearchAndFilter({
   }, [isFilterOpen]);
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4 mb-6 border border-gray-300 rounded-3xl p-4">
-      <div className="flex-1 relative bg-gray-100 rounded-2xl">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+    <div className="flex flex-col sm:flex-row gap-4 mb-6 border border-border rounded-3xl p-4 bg-card">
+      <div className="flex-1 relative bg-muted rounded-2xl">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground">
           {searchIcon({}) as React.ReactNode}
         </div>
         <input
           type="text"
           placeholder="Search organizations"
-          className="block w-full pl-10 pr-3 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3D8C6C] focus:border-transparent"
+          className="block w-full pl-10 pr-3 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3D8C6C] focus:border-transparent bg-transparent text-foreground placeholder:text-muted-foreground"
           onChange={(e) => onSearchChange(e.target.value)}
         />
       </div>
@@ -54,14 +54,14 @@ export default function SearchAndFilter({
       <div className="relative" ref={filterRef}>
         <button
           onClick={() => setIsFilterOpen(!isFilterOpen)}
-          className="flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-100 transition-colors min-w-[180px] cursor-pointer"
+          className="flex items-center gap-2 px-4 py-3 rounded-lg bg-muted transition-colors min-w-[180px] cursor-pointer"
         >
-          <span className="text-sm font-medium text-gray-700">
+          <span className="text-sm font-medium text-muted-foreground">
             {venueTypeFilters.find((f) => f.value === selectedFilter)?.name ||
               "All Venue Types"}
           </span>
           <svg
-            className={`w-4 h-4 text-gray-400 transition-transform ${
+            className={`w-4 h-4 text-muted-foreground transition-transform ${
               isFilterOpen ? "rotate-180" : ""
             }`}
             fill="none"
@@ -78,9 +78,9 @@ export default function SearchAndFilter({
         </button>
 
         {isFilterOpen && (
-          <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+          <div className="absolute right-0 mt-2 w-64 bg-popover rounded-lg shadow-lg border border-border z-10">
             <div className="p-3">
-              <h3 className="text-sm font-medium text-gray-500 mb-3">
+              <h3 className="text-sm font-medium text-muted-foreground mb-3">
                 Filter: Venue Types
               </h3>
               <div className="space-y-1">
@@ -93,15 +93,15 @@ export default function SearchAndFilter({
                     }}
                     className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
                       selectedFilter === filter.value
-                        ? "bg-gray-100 text-gray-900"
-                        : "text-gray-700 hover:bg-gray-50"
+                        ? "bg-accent text-accent-foreground"
+                        : "text-popover-foreground hover:bg-accent hover:text-accent-foreground"
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <span>{filter.name}</span>
                       {selectedFilter === filter.value && (
                         <svg
-                          className="w-4 h-4 text-gray-600"
+                          className="w-4 h-4 text-muted-foreground"
                           fill="currentColor"
                           viewBox="0 0 20 20"
                         >

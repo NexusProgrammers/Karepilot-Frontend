@@ -54,30 +54,30 @@ export function UploadFloorPlanModal({
       className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
     >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-[700px] relative">
+      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-[700px] relative">
         <div className="px-6 pt-6 pb-4">
           <div className="flex items-start justify-between mb-2">
-            <h2 className="text-xl font-semibold text-gray-900">
+            <h2 className="text-xl font-semibold text-card-foreground">
               Upload Floor Plan
             </h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors -mt-1 cursor-pointer"
+              className="text-muted-foreground hover:text-foreground transition-colors -mt-1 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             Add new maps to your Digital Map Navigation
           </p>
         </div>
 
         <div className="px-6 pb-6">
           <div className="mb-4">
-            <h3 className="text-sm font-semibold text-gray-900 mb-1">
+            <h3 className="text-sm font-semibold text-card-foreground mb-1">
               Upload New Floor Plan
             </h3>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               Upload PNG, PDF, or SVG floor plans to add to your building maps
             </p>
           </div>
@@ -104,7 +104,7 @@ export function UploadFloorPlanModal({
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1.5">
+              <label className="block text-xs font-medium text-muted-foreground mb-1.5">
                 Map Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -112,12 +112,12 @@ export function UploadFloorPlanModal({
                 value={mapName}
                 onChange={(e) => setMapName(e.target.value)}
                 placeholder="e.g. Main Building Floor 1"
-                className="w-full px-0 py-2.5 bg-transparent border-0 border-b border-gray-300 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-black"
+                className="w-full px-0 py-2.5 bg-transparent border-0 border-b border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1.5">
+              <label className="block text-xs font-medium text-muted-foreground mb-1.5">
                 Map Scale <span className="text-red-500">*</span>
               </label>
               <input
@@ -125,7 +125,7 @@ export function UploadFloorPlanModal({
                 value={mapScale}
                 onChange={(e) => setMapScale(e.target.value)}
                 placeholder="1:100"
-                className="w-full px-0 py-2.5 bg-transparent border-0 border-b border-gray-300 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-black"
+                className="w-full px-0 py-2.5 bg-transparent border-0 border-b border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground"
               />
             </div>
 
@@ -137,10 +137,10 @@ export function UploadFloorPlanModal({
             />
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-muted-foreground mb-2">
                 Floor Plan File <span className="text-red-500">*</span>
               </label>
-              <div className="border-b border-gray-300 pb-3">
+              <div className="border-b border-border pb-3">
                 <input
                   type="file"
                   id="floor-plan-upload"
@@ -152,13 +152,13 @@ export function UploadFloorPlanModal({
                   htmlFor="floor-plan-upload"
                   className="cursor-pointer flex items-center gap-3"
                 >
-                  <div className="flex items-center justify-center w-10 h-10 bg-white rounded">
-                    <CloudUpload className="w-5 h-5 text-gray-400" />
+                  <div className="flex items-center justify-center w-10 h-10 bg-background rounded">
+                    <CloudUpload className="w-5 h-5 text-muted-foreground" />
                   </div>
                   <div className="flex-1 text-left">
-                    <p className="text-sm text-gray-900">
+                    <p className="text-sm text-foreground">
                       <span className="font-medium">Choose File:</span>{" "}
-                      <span className="text-gray-500">
+                      <span className="text-muted-foreground">
                         {selectedFile
                           ? selectedFile.name
                           : "Chosen file name display here.png"}
@@ -167,17 +167,17 @@ export function UploadFloorPlanModal({
                   </div>
                 </label>
               </div>
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-muted-foreground mt-2">
                 Supported formats: PDF, Vector, CAD
               </p>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50/50 rounded-b-2xl">
+        <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-border bg-muted/50 rounded-b-2xl">
           <button
             onClick={onClose}
-            className="px-5 py-2.5 text-sm cursor-pointer font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
+            className="px-5 py-2.5 text-sm cursor-pointer font-medium text-muted-foreground bg-background border border-border rounded-lg hover:bg-accent transition-colors flex items-center gap-2"
           >
             <X className="w-4 h-4" />
             Cancel
@@ -199,7 +199,7 @@ export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(true);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="min-h-screen bg-background p-8">
       <button
         onClick={() => setIsModalOpen(true)}
         className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600"

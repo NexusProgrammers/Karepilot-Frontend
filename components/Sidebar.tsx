@@ -78,7 +78,7 @@ function SidebarContent() {
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-col h-full bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+    <div className="flex flex-col h-full bg-card shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] dark:shadow-[2px_0_5px_-2px_rgba(255,255,255,0.1)]">
       <div className="px-4 py-5">
         <div className="flex items-center">
           <LogoIcon />
@@ -104,13 +104,13 @@ function SidebarContent() {
                     "w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer",
                     isActive
                       ? "bg-[#3D8C6C] text-white"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                   )}
                 >
                   <IconComponent
                     className={cn(
                       "shrink-0 w-5 h-5",
-                      isActive ? "text-white" : "text-gray-600"
+                      isActive ? "text-white" : "text-muted-foreground"
                     )}
                   />
                   <span>{item.name}</span>
@@ -135,17 +135,17 @@ export function Sidebar({ className }: SidebarProps) {
           <Button
             variant="outline"
             size="icon"
-            className="lg:hidden fixed top-4 left-4 z-50 bg-white cursor-pointer"
+            className="lg:hidden fixed top-4 left-4 z-50 bg-background border-border cursor-pointer"
           >
             <Menu className="h-4 w-4" />
           </Button>
         </SheetTrigger>
         <SheetContent
           side="left"
-          className="p-0 w-64 [&>button]:cursor-pointer [&>button]:top-5 [&>button]:right-4"
+          className="p-0 w-64 [&>button]:cursor-pointer [&>button]:top-5 [&>button]:right-4 bg-background border-border"
         >
           <div className="flex flex-col h-full">
-            <div className="px-4 py-3 border-b border-gray-100 shrink-0">
+            <div className="px-4 py-3 border-b border-border shrink-0">
               <Image
                 src={logoImg}
                 alt="logo"
@@ -169,13 +169,13 @@ export function Sidebar({ className }: SidebarProps) {
                           "w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer",
                           isActive
                             ? "bg-[#3D8C6C] text-white"
-                            : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                         )}
                       >
                         <IconComponent
                           className={cn(
                             "shrink-0 w-5 h-5",
-                            isActive ? "text-white" : "text-gray-600"
+                            isActive ? "text-white" : "text-muted-foreground"
                           )}
                         />
                         <span>{item.name}</span>
@@ -191,7 +191,7 @@ export function Sidebar({ className }: SidebarProps) {
 
       <aside
         className={cn(
-          "hidden lg:flex lg:flex-col lg:fixed lg:left-0 lg:top-0 lg:h-full lg:w-64 bg-white border-r border-gray-100",
+          "hidden lg:flex lg:flex-col lg:fixed lg:left-0 lg:top-0 lg:h-full lg:w-64 bg-card border-r border-border",
           className
         )}
       >

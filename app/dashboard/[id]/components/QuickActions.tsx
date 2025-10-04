@@ -20,12 +20,12 @@ export default function QuickActions() {
 
   return (
     <>
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
+      <div className="bg-card rounded-xl border border-border p-6">
         <div className="mb-5">
-          <h2 className="text-lg font-semibold text-gray-900 mb-1">
+          <h2 className="text-lg font-semibold text-card-foreground mb-1">
             Quick Actions
           </h2>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             Common hospital management tasks
           </p>
         </div>
@@ -34,9 +34,9 @@ export default function QuickActions() {
             <div
               key={action.id}
               onClick={() => handleActionClick(action.action)}
-              className="flex items-start gap-4 p-4 rounded-lg border border-gray-100 hover:border-gray-200 hover:bg-gray-50 cursor-pointer transition-all"
+              className="flex items-start gap-4 p-4 rounded-lg border border-border hover:border-border/50 hover:bg-accent cursor-pointer transition-all"
             >
-              <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
                 <Image
                   src={action.icon}
                   alt={action.title}
@@ -46,10 +46,10 @@ export default function QuickActions() {
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-gray-900 mb-0.5">
+                <h3 className="font-medium text-card-foreground mb-0.5">
                   {action.title}
                 </h3>
-                <p className="text-sm text-gray-600 leading-relaxed">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   {action.description}
                 </p>
               </div>

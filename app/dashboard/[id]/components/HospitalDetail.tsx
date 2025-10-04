@@ -20,16 +20,16 @@ export default function HospitalDetail() {
         <div className="mb-6">
           <div className="flex items-start gap-4 mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              <h1 className="text-2xl font-bold text-foreground mb-2">
                 Central Medical Hospital
               </h1>
-              <p className="text-sm text-gray-500 mb-2">
+              <p className="text-sm text-muted-foreground mb-2">
                 Terminal 4, Queens, NY
-                <span className="p-2 bg-gray-200 rounded-xl text-black">
+                <span className="p-2 bg-muted rounded-xl text-foreground">
                   Hospital
                 </span>
               </p>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Manage patient flow, equipment, and medical facility navigation
               </p>
             </div>

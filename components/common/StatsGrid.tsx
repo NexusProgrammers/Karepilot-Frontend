@@ -21,17 +21,17 @@ export default function StatsGrid({ stats }: StatsGridProps) {
       {stats.map((stat) => (
         <div
           key={stat.id}
-          className="bg-white rounded-4xl border border-gray-200 p-5"
+          className="bg-card rounded-4xl border border-border p-5"
         >
           <div className="flex items-start justify-between">
-            <span className="text-lg font-medium text-gray-500">
+            <span className="text-lg font-medium text-muted-foreground">
               {stat.title}
             </span>
             <Image src={stat.icon} alt={stat.title} width={40} height={40} />
           </div>
-          <p className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</p>
+          <p className="text-3xl font-bold text-card-foreground mb-1">{stat.value}</p>
           {stat.change && stat.note && (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               <span className="text-green-600">{stat.change}</span> {stat.note}
             </p>
           )}

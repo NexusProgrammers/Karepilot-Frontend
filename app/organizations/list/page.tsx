@@ -9,8 +9,8 @@ export default function OrganizationsListPage() {
     <DashboardLayout>
       <div className="flex flex-col md:flex-row justify-between items-start mb-6 md:mb-0">
         <div>
-          <h1 className="text-2xl font-bold mb-1">Organization Management</h1>
-          <p className="text-gray-500 mb-6">
+          <h1 className="text-2xl font-bold mb-1 text-foreground">Organization Management</h1>
+          <p className="text-muted-foreground mb-6">
             Manage multiple venues across different organization types
           </p>
         </div>

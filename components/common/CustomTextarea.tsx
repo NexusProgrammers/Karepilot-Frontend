@@ -17,7 +17,7 @@ export function CustomTextarea({
 }: CustomTextareaProps) {
   return (
     <div>
-      <label className="block text-xs font-medium text-gray-700 mb-2.5">
+      <label className="block text-xs font-medium text-muted-foreground mb-2.5">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <textarea
@@ -25,7 +25,7 @@ export function CustomTextarea({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         rows={rows}
-        className="w-full px-0 py-2.5 bg-transparent border-0 border-b border-gray-300 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-black resize-none"
+        className="w-full px-0 py-2.5 bg-transparent border-0 border-b border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground resize-none"
       />
     </div>
   );

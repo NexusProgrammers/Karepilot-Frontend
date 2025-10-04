@@ -64,30 +64,30 @@ export function CreatePOIModal({ isOpen, onClose }: CreatePOIModalProps) {
       className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
     >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-[700px] relative max-h-[90vh] overflow-hidden flex flex-col">
-        <div className="px-6 pt-6 pb-4 border-b border-gray-200">
+      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-[700px] relative max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="px-6 pt-6 pb-4 border-b border-border">
           <div className="flex items-start justify-between mb-2">
-            <h2 className="text-xl font-semibold text-gray-900">
+            <h2 className="text-xl font-semibold text-card-foreground">
               Create Point of Interest
             </h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors -mt-1 cursor-pointer"
+              className="text-muted-foreground hover:text-foreground transition-colors -mt-1 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             Add a new location or service to help visitors navigate
           </p>
         </div>
 
         <div className="px-6 py-6 overflow-y-auto flex-1">
           <div className="mb-6">
-            <h3 className="text-sm font-semibold text-gray-900 mb-1">
+            <h3 className="text-sm font-semibold text-card-foreground mb-1">
               POI Details
             </h3>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               Provide information about this point of interest
             </p>
           </div>
@@ -153,8 +153,8 @@ export function CreatePOIModal({ isOpen, onClose }: CreatePOIModalProps) {
               label="Tags"
             />
 
-            <div className="pt-4 border-t border-gray-200">
-              <h3 className="text-sm font-semibold text-gray-900 mb-4">
+            <div className="pt-4 border-t border-border">
+              <h3 className="text-sm font-semibold text-card-foreground mb-4">
                 Contact Information
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -182,8 +182,8 @@ export function CreatePOIModal({ isOpen, onClose }: CreatePOIModalProps) {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-gray-200">
-              <h3 className="text-sm font-semibold text-gray-900 mb-4">
+            <div className="pt-4 border-t border-border">
+              <h3 className="text-sm font-semibold text-card-foreground mb-4">
                 Accessibility Features
               </h3>
               <div className="space-y-3">
@@ -208,7 +208,7 @@ export function CreatePOIModal({ isOpen, onClose }: CreatePOIModalProps) {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-gray-200">
+            <div className="pt-4 border-t border-border">
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 <CustomInput
                   value={roomNumberAlt}
@@ -235,12 +235,12 @@ export function CreatePOIModal({ isOpen, onClose }: CreatePOIModalProps) {
             </div>
 
             <div className="pt-2">
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                <MapPin className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm font-medium text-gray-600 mb-1">
+              <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+                <MapPin className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                <p className="text-sm font-medium text-muted-foreground mb-1">
                   Click on the map to set POI location
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Coordinates will be set automatically by tapping a spot
                 </p>
               </div>
@@ -248,10 +248,10 @@ export function CreatePOIModal({ isOpen, onClose }: CreatePOIModalProps) {
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50/50">
+        <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-border bg-muted/50">
           <button
             onClick={onClose}
-            className="px-5 py-2.5 cursor-pointer text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
+            className="px-5 py-2.5 cursor-pointer text-sm font-medium text-muted-foreground bg-background border border-border rounded-lg hover:bg-accent transition-colors flex items-center gap-2"
           >
             <X className="w-4 h-4" />
             Cancel
@@ -273,7 +273,7 @@ export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(true);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="min-h-screen bg-background p-8">
       <button
         onClick={() => setIsModalOpen(true)}
         className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600"

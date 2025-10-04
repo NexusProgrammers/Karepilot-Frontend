@@ -38,10 +38,10 @@ export function OrganizationSelection() {
           <div className="flex w-full items-center justify-center">
             <Image width={60} height={60} src={dashboardIcon} alt="img" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
             Select an Organization
           </h1>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             Choose an organization to access the admin dashboard
           </p>
         </div>
@@ -61,14 +61,15 @@ export function OrganizationSelection() {
                     fillRule="evenodd"
                     clipRule="evenodd"
                     d="M8.58464 1.29175C4.55756 1.29175 1.29297 4.55634 1.29297 8.58342C1.29297 12.6105 4.55756 15.8751 8.58464 15.8751C12.6117 15.8751 15.8763 12.6105 15.8763 8.58342C15.8763 4.55634 12.6117 1.29175 8.58464 1.29175ZM0.0429688 8.58342C0.0429688 3.86598 3.8672 0.041748 8.58464 0.041748C13.3021 0.041748 17.1263 3.86598 17.1263 8.58342C17.1263 10.7172 16.3439 12.6682 15.0504 14.1653L17.7766 16.8915C18.0207 17.1356 18.0207 17.5313 17.7766 17.7754C17.5325 18.0194 17.1368 18.0194 16.8927 17.7754L14.1665 15.0491C12.6694 16.3427 10.7184 17.1251 8.58464 17.1251C3.8672 17.1251 0.0429688 13.3008 0.0429688 8.58342Z"
-                    fill="#A1A1AA"
+                    fill="currentColor"
+                    className="text-muted-foreground"
                   />
                 </svg>
               </div>
               <input
                 type="text"
                 placeholder="Search organizations"
-                className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3D8C6C] placeholder:text-gray-900 border-0"
+                className="w-full pl-10 pr-4 py-2 bg-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3D8C6C] placeholder:text-foreground border-0"
               />
             </div>
           </div>
@@ -78,15 +79,15 @@ export function OrganizationSelection() {
           {organizations.map((org, index) => (
             <div
               key={index}
-              className="bg-white rounded-3xl border border-gray-200 p-10 hover:border-[#3D8C6C] transition-shadow relative"
+              className="bg-card rounded-3xl border border-border p-10 hover:border-[#3D8C6C] transition-shadow relative"
             >
               <div className="text-center mb-4">
                 <div className="flex w-full items-center justify-center">
                   <Image width={60} height={60} src={dashboardIcon} alt="img" />
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-1">{org.name}</h3>
-                <p className="text-sm text-gray-500 mb-1">{org.location}</p>
-                <span className="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                <h3 className="font-semibold text-card-foreground mb-1">{org.name}</h3>
+                <p className="text-sm text-muted-foreground mb-1">{org.location}</p>
+                <span className="inline-block px-2 py-1 bg-muted text-muted-foreground text-xs rounded-full">
                   {org.type}
                 </span>
               </div>
@@ -103,14 +104,14 @@ export function OrganizationSelection() {
 
                 {showMenu && selectedOrg?.name === org.name && (
                   <div
-                    className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 p-2 z-50"
+                    className="absolute top-full left-0 right-0 mt-2 bg-popover rounded-lg shadow-lg border border-border p-2 z-50"
                     onClick={(e) => e.stopPropagation()}
                   >
                     {menuOptions.map((option, idx) => (
                       <Link
                         key={idx}
                         href="/dashboard/1"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer"
+                        className="block px-4 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground rounded cursor-pointer"
                         onClick={() => setShowMenu(false)}
                       >
                         {option}

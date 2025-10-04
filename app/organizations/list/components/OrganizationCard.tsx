@@ -39,7 +39,7 @@ export default function OrganizationCard({
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div className="bg-card rounded-xl border border-border p-6 hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-start gap-3">
           <Image
@@ -49,10 +49,10 @@ export default function OrganizationCard({
             height={40}
           />
           <div>
-            <h3 className="font-bold text-gray-900 text-lg mb-1">
+            <h3 className="font-bold text-card-foreground text-lg mb-1">
               {organization.name}
             </h3>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-muted-foreground">
               {organization.primaryAddress}
             </p>
           </div>
@@ -69,14 +69,14 @@ export default function OrganizationCard({
           <button
             onClick={handleToggleStatus}
             className={`w-12 h-6 rounded-full relative transition-colors cursor-pointer ${
-              isActive ? "bg-green-500" : "bg-gray-300"
+              isActive ? "bg-green-500" : "bg-muted"
             }`}
             aria-label={`Toggle organization status to ${
               isActive ? "inactive" : "active"
             }`}
           >
             <div
-              className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+              className={`absolute top-0.5 w-5 h-5 bg-background rounded-full transition-transform ${
                 isActive ? "translate-x-6" : "translate-x-0.5"
               }`}
             />
@@ -85,29 +85,29 @@ export default function OrganizationCard({
       </div>
 
       <div className="mb-3">
-        <span className="inline-block px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
+        <span className="inline-block px-3 py-1 bg-muted text-muted-foreground text-sm rounded-full">
           {organization.type}
         </span>
       </div>
 
       <div className="mb-4">
-        <p className="text-sm text-gray-700">{organization.detailedAddress}</p>
+        <p className="text-sm text-muted-foreground">{organization.detailedAddress}</p>
       </div>
 
       <div className="mb-4 flex gap-2 items-center">
         <div className="flex items-center gap-2 text-sm">
           {mailIcon({}) as React.ReactNode}
-          <span className="font-semibold text-gray-500">
+          <span className="font-semibold text-muted-foreground">
             {organization.email}
           </span>
         </div>
         <div className="flex items-center gap-2 text-sm">
           {phoneIcon({}) as React.ReactNode}
-          <span className="">{organization.phone}</span>
+          <span className="text-muted-foreground">{organization.phone}</span>
         </div>
       </div>
 
-      <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+      <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
         <span>Created {organization.createdAt}</span>
         <div className="flex items-center gap-1">
           {clockIcon({}) as React.ReactNode}
@@ -115,25 +115,25 @@ export default function OrganizationCard({
         </div>
       </div>
 
-      <div className="border-t border-gray-200 mb-4 w-full"></div>
+      <div className="border-t border-border mb-4 w-full"></div>
 
       <div className="flex gap-2 justify-end">
         <button
-          className={`py-2 px-[186px] text-sm font-medium rounded-lg border transition-colors ${
+          className={`py-2 px-[186px] text-sm font-medium rounded-lg border transition-colors cursor-pointer ${
             organization.hasNotification
-              ? "bg-white border-gray-200 text-gray-700 hover:bg-gray-50 relative"
-              : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
+              ? "bg-background border-border text-muted-foreground hover:bg-accent relative"
+              : "bg-background border-border text-muted-foreground hover:bg-accent"
           }`}
         >
           Select
         </button>
-        <button className="py-2 px-12 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+        <button className="py-2 px-12 text-sm font-medium text-muted-foreground bg-background border cursor-pointer border-border rounded-lg hover:bg-accent transition-colors">
           Edit
         </button>
-        <button className="py-2 px-12 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+        <button className="py-2 px-12 text-sm font-medium text-muted-foreground bg-background border cursor-pointer border-border rounded-lg hover:bg-accent transition-colors">
           View
         </button>
-        <button className="py-2 px-3 text-red-500 bg-white border border-gray-200 rounded-lg hover:bg-red-50 transition-colors cursor-pointer">
+        <button className="py-2 px-3 text-red-500 bg-background border border-border rounded-lg hover:bg-red-50 transition-colors cursor-pointer">
           {deleteIcon({}) as React.ReactNode}
         </button>
       </div>

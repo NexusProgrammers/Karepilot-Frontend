@@ -41,32 +41,32 @@ export function CustomSelect({
 
   return (
     <div>
-      <label className="block text-xs font-medium text-gray-700 mb-1.5">
+      <label className="block text-xs font-medium text-muted-foreground mb-1.5">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <div className="relative" ref={dropdownRef}>
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="w-full px-0 py-2.5 bg-transparent border-0 border-b border-gray-300 text-sm text-left 
-          focus:outline-none focus:border-black transition-colors flex items-center justify-between gap-2 cursor-pointer"
+          className="w-full px-0 py-2.5 bg-transparent border-0 border-b border-border text-sm text-left 
+          focus:outline-none focus:border-foreground transition-colors flex items-center justify-between gap-2 cursor-pointer"
         >
           <div className="flex items-center gap-2 flex-1 min-w-0">
-            {icon && <span className="text-gray-400 shrink-0">{icon}</span>}
-            <span className={value ? "text-gray-900" : "text-gray-400"}>
+            {icon && <span className="text-muted-foreground shrink-0">{icon}</span>}
+            <span className={value ? "text-foreground" : "text-muted-foreground"}>
               {value || placeholder}
             </span>
           </div>
           <ChevronDown
-            className={`w-4 h-4 text-gray-400 transition-transform shrink-0 ${
+            className={`w-4 h-4 text-muted-foreground transition-transform shrink-0 ${
               isOpen ? "rotate-180" : ""
             }`}
           />
         </button>
 
         {isOpen && (
-          <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50 max-h-60 overflow-auto">
-            <div className="px-4 py-2 text-xs font-medium text-gray-500">
+          <div className="absolute top-full left-0 right-0 mt-1 bg-popover rounded-xl shadow-lg border border-border py-2 z-50 max-h-60 overflow-auto">
+            <div className="px-4 py-2 text-xs font-medium text-muted-foreground">
               {placeholder}
             </div>
             {options.map((option) => (
@@ -77,7 +77,7 @@ export function CustomSelect({
                   onChange(option);
                   setIsOpen(false);
                 }}
-                className="w-full px-4 py-2.5 text-left text-sm text-gray-900 hover:bg-gray-50 transition-colors cursor-pointer"
+                className="w-full px-4 py-2.5 text-left text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
               >
                 {option}
               </button>

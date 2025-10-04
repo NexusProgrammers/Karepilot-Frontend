@@ -64,13 +64,13 @@ export default function OrganizationsList({ organizations }: OrganizationsListPr
 
       {filteredOrganizations.length === 0 && (
         <div className="text-center py-12">
-          <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className="text-gray-400">
+          <div className="w-16 h-16 mx-auto mb-4 bg-muted rounded-full flex items-center justify-center">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" className="text-muted-foreground">
               <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No organizations found</h3>
-          <p className="text-gray-500 mb-4">Try adjusting your search or filter criteria</p>
+          <h3 className="text-lg font-medium text-foreground mb-2">No organizations found</h3>
+          <p className="text-muted-foreground mb-4">Try adjusting your search or filter criteria</p>
         </div>
       )}
     </>
