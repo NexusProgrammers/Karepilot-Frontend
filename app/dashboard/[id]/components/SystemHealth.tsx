@@ -1,24 +1,8 @@
 "use client";
 
-export default function SystemHealth() {
-  const systemHealth = [
-    { name: "Database", health: 99, status: "Healthy", time: "Update" },
-    {
-      name: "Location Services",
-      health: 90,
-      status: "Healthy",
-      time: "Uptime",
-    },
-    { name: "Map Rendering", health: 70, status: "Warning", time: "Uptime" },
-    { name: "Tracking", health: 91, status: "Healthy", time: "Uptime" },
-    {
-      name: "Notification System",
-      health: 99,
-      status: "Healthy",
-      time: "Uptime",
-    },
-  ];
+import { systemHealth } from "@/lib/dashboard/data";
 
+export default function SystemHealth() {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6">
       <div className="mb-5">
@@ -51,9 +35,7 @@ export default function SystemHealth() {
                 >
                   {system.status}
                 </span>
-                <span className="text-sm text-gray-600">
-                  {system.health}%
-                </span>
+                <span className="text-sm text-gray-600">{system.health}%</span>
               </div>
             </div>
             <div className="w-full bg-gray-100 rounded-full h-2.5">

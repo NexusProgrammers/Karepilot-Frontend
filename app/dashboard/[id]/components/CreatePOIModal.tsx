@@ -3,6 +3,7 @@ import { CustomSelect } from "@/components/common/CustomSelect";
 import { CustomTextarea } from "@/components/common/CustomTextarea";
 import { ToggleSwitch } from "@/components/common/ToggleSwitch";
 import { CreatePIOIcon } from "@/icons/dashboard";
+import { buildings, categories, floors } from "@/lib/dashboard/data";
 import { MapPin, X } from "lucide-react";
 import { useState } from "react";
 
@@ -10,27 +11,6 @@ interface CreatePOIModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-const categories = [
-  "Navigation",
-  "Facility",
-  "Service",
-  "Emergency",
-  "Amenity",
-  "Medical Department",
-  "Pharmacy",
-  "Laboratory",
-  "Medical Imaging",
-];
-
-const buildings = [
-  "Main Hospital",
-  "Emergency Wing",
-  "Diagnostic Wing",
-  "Pediatric Wing",
-];
-
-const floors = ["Ground Floor", "1st Floor", "2nd Floor", "3rd Floor"];
 
 export function CreatePOIModal({ isOpen, onClose }: CreatePOIModalProps) {
   const [poiName, setPoiName] = useState("");

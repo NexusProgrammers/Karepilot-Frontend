@@ -2,48 +2,10 @@
 
 import { DashboardLayout } from "@/components/DashboardLayout";
 import QuickActions from "./QuickActions";
-import RecentActivity from "./RecentActivity";
+import RecentActivity from "../../../../components/common/RecentActivity";
 import SystemHealth from "./SystemHealth";
-import activePatientsIcon from "@/assets/dashboard/central-medical-hospital/active-patients.svg";
-import emergencyAlertsIcon from "@/assets/dashboard/central-medical-hospital/emergency-alerts.svg";
-import equipmentTrackedIcon from "@/assets/dashboard/central-medical-hospital/equipment-tracked.svg";
-import navigationRequestsIcon from "@/assets/dashboard/central-medical-hospital/navigation-requests.svg";
-import StatsGrid, { StatItem } from "@/components/common/StatsGrid";
-
-const hospitalStats: StatItem[] = [
-  {
-    id: 1,
-    title: "Active Patients",
-    value: "432",
-    change: "+12%",
-    note: "from last week",
-    icon: activePatientsIcon,
-  },
-  {
-    id: 2,
-    title: "Emergency Alerts",
-    value: "450",
-    change: "+3%",
-    note: "from last week",
-    icon: emergencyAlertsIcon,
-  },
-  {
-    id: 3,
-    title: "Equipment Tracked",
-    value: "512",
-    change: "+7%",
-    note: "from last week",
-    icon: equipmentTrackedIcon,
-  },
-  {
-    id: 4,
-    title: "Navigation Requests",
-    value: "370",
-    change: "+14%",
-    note: "from last week",
-    icon: navigationRequestsIcon,
-  },
-];
+import { dashboardActivities, hospitalStats } from "@/lib/dashboard/data";
+import StatsGrid from "@/components/common/StatsGrid";
 
 export default function HospitalDetail() {
   return (
@@ -79,7 +41,13 @@ export default function HospitalDetail() {
             <QuickActions />
             <SystemHealth />
           </div>
-          <RecentActivity />
+          <RecentActivity
+            title="Recent Activity"
+            subtitle="Latest updates for Central Medical Hospital"
+            buttonText="View All"
+            activities={dashboardActivities}
+            maxItems={6}
+          />
         </div>
       </div>
     </DashboardLayout>

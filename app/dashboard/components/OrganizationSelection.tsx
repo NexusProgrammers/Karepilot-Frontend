@@ -7,49 +7,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import KarepilotLogin from "@/components/Login";
-
-const organizations = [
-  {
-    name: "Central Medical Hospital",
-    location: "Terminal 4, Queens, NY",
-    type: "Hospital",
-  },
-  {
-    name: "JFK International Airport",
-    location: "087 Maple Dr, Houston, TX",
-    type: "Airport",
-  },
-  {
-    name: "Manhattan Shopping Center",
-    location: "Unit 202, Chicago, IL",
-    type: "Mall",
-  },
-  {
-    name: "Velvet Lane Luxury Plaza",
-    location: "789 Oak St, San Diego, CA",
-    type: "Mall",
-  },
-  {
-    name: "Northgate Plaza",
-    location: "456 Pine Ave, Los Angeles, CA",
-    type: "Open Plaza",
-  },
-  {
-    name: "Crescent Pavilion",
-    location: "123 Main St, New York, NY",
-    type: "Shopping Mall",
-  },
-];
-
-const menuOptions = [
-  "Local Mall",
-  "Shopping Center",
-  "Community Hospital",
-  "Fashion Outlet",
-  "Grocery Store",
-  "Urgent Care Facility",
-  "Electronics Retailer",
-];
+import { menuOptions, organizations } from "@/lib/dashboard/data";
 
 export function OrganizationSelection() {
   const [loggedIn, setLoggedIn] = useState(false);
