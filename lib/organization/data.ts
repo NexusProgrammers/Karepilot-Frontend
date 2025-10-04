@@ -224,3 +224,4 @@ export const organizationActivities: ActivityItem[] = [
     color: "bg-orange-500",
   },
 ];
+

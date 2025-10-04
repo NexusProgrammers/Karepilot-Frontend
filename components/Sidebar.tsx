@@ -7,68 +7,10 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import {
-  DashboardIcon,
-  OrganizationIcon,
-  MapManagerIcon,
-  PointsOfInterestIcon,
-  UserAndRolesIcon,
-  AssetTrackingIcon,
-  AlertsAndGeofencingIcon,
-  AnalyticsIcon,
-  SettingsIcon,
-  LogoIcon,
-} from "@/icons/dashboard";
+import { LogoIcon } from "@/icons/dashboard";
 import logoImg from "@/assets/common/logo.svg";
 import Image from "next/image";
-
-const navigationItems = [
-  {
-    name: "Dashboard",
-    icon: DashboardIcon,
-    path: "/",
-  },
-  {
-    name: "Organizations",
-    icon: OrganizationIcon,
-    path: "/organizations",
-  },
-  {
-    name: "Map Manager",
-    icon: MapManagerIcon,
-    path: "/map-manager",
-  },
-  {
-    name: "Points of Interest",
-    icon: PointsOfInterestIcon,
-    path: "/points-of-interest",
-  },
-  {
-    name: "User & Roles",
-    icon: UserAndRolesIcon,
-    path: "/users-and-roles",
-  },
-  {
-    name: "Asset Tracking",
-    icon: AssetTrackingIcon,
-    path: "/asset-tracking",
-  },
-  {
-    name: "Alerts & Geofencing",
-    icon: AlertsAndGeofencingIcon,
-    path: "/alerts-and-geofencing",
-  },
-  {
-    name: "Analytics",
-    icon: AnalyticsIcon,
-    path: "/analytics",
-  },
-  {
-    name: "Settings",
-    icon: SettingsIcon,
-    path: "/settings",
-  },
-];
+import { navigationItems } from "@/lib/sidebar/data";
 
 interface SidebarProps {
   className?: string;

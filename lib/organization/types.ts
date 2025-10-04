@@ -39,3 +39,11 @@ export type VenueTypeFilter = {
   name: string;
   value: string;
 };
+
+export interface VenueTemplateCardProps {
+  title: string;
+  description: string;
+  features: string[];
+  poiCategories: string[];
+  icon: React.ReactNode;
+}
