@@ -55,13 +55,13 @@ const floorPlans = [
 
 export default function FloorPlanGrid() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {floorPlans.map((plan) => (
         <div
           key={plan.id}
           className="bg-card rounded-xl shadow-sm border border-border overflow-hidden hover:shadow-md transition-shadow"
         >
-          <div className="relative h-48 bg-muted flex items-center justify-center">
+          <div className="relative h-48 md:h-80 bg-muted flex items-center justify-center">
             {plan.hasPreview ? (
               <div className="w-full h-full bg-gradient-to-br from-muted/50 to-muted/30 flex items-center justify-center">
                 <div className="text-center text-muted-foreground">
@@ -120,15 +120,13 @@ export default function FloorPlanGrid() {
             </div>
 
             <div className="flex gap-2">
-              <button className="flex items-center justify-center gap-2 flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground hover:bg-accent transition-colors">
-                <Eye className="w-4 h-4 text-muted-foreground" />
+              <button className="flex cursor-pointer items-center justify-center gap-2 flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground hover:bg-accent transition-colors">
                 Preview
               </button>
-              <button className="flex items-center justify-center gap-2 flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground hover:bg-accent transition-colors">
-                <Edit className="w-4 h-4 text-muted-foreground" />
+              <button className="flex cursor-pointer items-center justify-center gap-2 flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground hover:bg-accent transition-colors">
                 Edit
               </button>
-              <button className="flex items-center justify-center w-10 h-10 bg-background border border-border rounded-lg text-foreground hover:bg-accent transition-colors">
+              <button className="flex cursor-pointer items-center justify-center w-10 h-10 bg-background border border-border rounded-lg text-foreground hover:bg-accent transition-colors">
                 <Settings className="w-4 h-4 text-muted-foreground" />
               </button>
             </div>
