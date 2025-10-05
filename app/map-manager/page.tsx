@@ -1,11 +1,11 @@
-import { DashboardLayout } from '@/components/DashboardLayout'
-import MapManagerHeader from './components/MapManagerHeader'
-import MapManagerStats from './components/MapManagerStats'
-import MapManagerTabs from './components/MapManagerTabs'
-import SearchAndFilters from './components/SearchAndFilters'
-import FloorPlanGrid from './components/FloorPlanGrid'
+import { DashboardLayout } from "@/components/DashboardLayout";
+import MapManagerHeader from "./components/MapManagerHeader";
+import MapManagerStats from "./components/MapManagerStats";
+import MapManagerTabs from "./components/MapManagerTabs";
+import SearchAndFilters from "./components/SearchAndFilters";
+import FloorPlanGrid from "./components/FloorPlanGrid";
 
-export default function MapManagerPage() {
+export default function page() {
   return (
     <DashboardLayout
       showBackButton={true}
@@ -22,5 +22,5 @@ export default function MapManagerPage() {
         <FloorPlanGrid />
       </div>
     </DashboardLayout>
-  )
+  );
 }

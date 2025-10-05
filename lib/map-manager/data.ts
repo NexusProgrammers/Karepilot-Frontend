@@ -130,3 +130,45 @@ export const buildingOptions = [
   "Emergency Wing",
   "Diagnostic Center",
 ];
+
+export const tabs = [
+  { id: "floor-plans", label: "Floor Plans", href: "/map-manager" },
+  { id: "buildings", label: "Buildings", href: "/map-manager/buildings" },
+  { id: "settings", label: "Settings", href: "/map-manager/settings" },
+];
+
+
+export const buildings = [
+  {
+    id: 1,
+    name: "Main Building",
+    totalMaps: 4,
+    publishedMaps: 3,
+    floors: ["Ground", "1st", "2nd", "3rd", "Surgery"],
+    activeFloor: "Ground",
+  },
+  {
+    id: 2,
+    name: "Emergency Wing",
+    totalMaps: 3,
+    publishedMaps: 2,
+    floors: ["Ground", "1st", "2nd"],
+    activeFloor: "Ground",
+  },
+  {
+    id: 3,
+    name: "Diagnostic Center",
+    totalMaps: 3,
+    publishedMaps: 3,
+    floors: ["Ground", "1st", "2nd"],
+    activeFloor: "Ground",
+  },
+  {
+    id: 4,
+    name: "Main Building",
+    totalMaps: 4,
+    publishedMaps: 3,
+    floors: ["Ground", "1st", "2nd", "3rd"],
+    activeFloor: "Ground",
+  },
+];

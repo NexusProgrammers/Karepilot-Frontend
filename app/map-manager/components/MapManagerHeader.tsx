@@ -14,7 +14,7 @@ export default function MapManagerHeader() {
           Upload, edit, and manage floor plans for Central Medical Hospital
         </p>
       </div>
-      <Button className="bg-[#3D8C6C] hover:bg-[#2D6B4F] text-white">
+      <Button className="bg-[#3D8C6C] hover:bg-[#2D6B4F] text-white rounded-xl">
         <Upload className="w-4 h-4" />
         Upload Floor Plan
       </Button>

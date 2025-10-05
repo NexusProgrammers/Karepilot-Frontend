@@ -1,57 +1,7 @@
 "use client";
 
-import { MapPin, Eye, Edit, Settings } from "lucide-react";
-
-const floorPlans = [
-  {
-    id: 1,
-    title: "Main Building Floor 1",
-    subtitle: "Main Building • Ground Floor",
-    status: "Published",
-    fileType: "PNG",
-    fileSize: "3.4 MB",
-    modifiedDate: "2025-07-30 14:30",
-    scale: "1:100",
-    version: "V2",
-    hasPreview: false,
-  },
-  {
-    id: 2,
-    title: "Emergency Wing Floor 2",
-    subtitle: "Emergency Wing • 2nd Floor",
-    status: "Published",
-    fileType: "PDF",
-    fileSize: "1.8 MB",
-    modifiedDate: "2025-07-16 09:15",
-    scale: "1:150",
-    version: "V2",
-    hasPreview: true,
-  },
-  {
-    id: 3,
-    title: "Diagnostic Center Ground",
-    subtitle: "Diagnostic Center • Ground Floor",
-    status: "Building",
-    fileType: "SVG",
-    fileSize: "3.1 MB",
-    modifiedDate: "2025-07-12 10:45",
-    scale: "1:75",
-    version: "V2",
-    hasPreview: false,
-  },
-  {
-    id: 4,
-    title: "Main Building Floor 1",
-    subtitle: "Main Building • Ground Floor",
-    status: "New",
-    fileType: "PNG",
-    fileSize: "2.4 MB",
-    modifiedDate: "2025-07-30 14:30",
-    scale: "1:100",
-    version: "V2",
-    hasPreview: false,
-  },
-];
+import { floorPlans } from "@/lib/map-manager/data";
+import { MapPin, Settings } from "lucide-react";
 
 export default function FloorPlanGrid() {
   return (
@@ -59,9 +9,9 @@ export default function FloorPlanGrid() {
       {floorPlans.map((plan) => (
         <div
           key={plan.id}
-          className="bg-card rounded-xl shadow-sm border border-border overflow-hidden hover:shadow-md transition-shadow"
+          className="bg-card rounded-4xl shadow-sm border border-gray-300 overflow-hidden hover:shadow-md transition-shadow p-6"
         >
-          <div className="relative h-48 md:h-80 bg-muted flex items-center justify-center">
+          <div className="relative h-48 md:h-80 bg-muted flex items-center justify-center rounded-3xl border border-dashed border-gray-200">
             {plan.hasPreview ? (
               <div className="w-full h-full bg-gradient-to-br from-muted/50 to-muted/30 flex items-center justify-center">
                 <div className="text-center text-muted-foreground">
@@ -118,7 +68,7 @@ export default function FloorPlanGrid() {
                 Scale: {plan.scale}
               </p>
             </div>
-
+              <hr className="mb-6" />
             <div className="flex gap-2">
               <button className="flex cursor-pointer items-center justify-center gap-2 flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground hover:bg-accent transition-colors">
                 Preview

@@ -1,11 +1,10 @@
-"use client";
+import { DashboardLayout } from "@/components/DashboardLayout";
+import MapManagerHeader from "../components/MapManagerHeader";
+import MapManagerStats from "../components/MapManagerStats";
+import MapManagerTabs from "../components/MapManagerTabs";
+import BuildingGrid from "../components/BuildingGrid";
 
-import { DashboardLayout } from '@/components/DashboardLayout'
-import MapManagerHeader from '../components/MapManagerHeader'
-import MapManagerStats from '../components/MapManagerStats'
-import MapManagerTabs from '../components/MapManagerTabs'
-
-export default function BuildingsPage() {
+export default function page() {
   return (
     <DashboardLayout
       showBackButton={true}
@@ -18,17 +17,8 @@ export default function BuildingsPage() {
         <MapManagerHeader />
         <MapManagerStats />
         <MapManagerTabs />
-        <div className="bg-card rounded-xl border border-border p-8">
-          <div className="text-center">
-            <h2 className="text-2xl font-semibold text-card-foreground mb-2">
-              Buildings Management
-            </h2>
-            <p className="text-muted-foreground">
-              Manage building configurations and settings
-            </p>
-          </div>
-        </div>
+        <BuildingGrid />
       </div>
     </DashboardLayout>
-  )
+  );
 }
