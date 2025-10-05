@@ -68,7 +68,7 @@ export function DashboardLayout({
             </div>
           </div>
         </header>
-        <main className="p-4 sm:p-6 bg-background">{children}</main>
+        <main className="p-2 sm:p-6 bg-background">{children}</main>
       </div>
     </div>
   );

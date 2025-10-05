@@ -1,0 +1,23 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { Upload } from "lucide-react";
+
+export default function MapManagerHeader() {
+  return (
+    <div className="flex items-start justify-between">
+      <div>
+        <h1 className="text-3xl font-bold text-foreground mb-2">
+          Map Management
+        </h1>
+        <p className="text-muted-foreground">
+          Upload, edit, and manage floor plans for Central Medical Hospital
+        </p>
+      </div>
+      <Button className="bg-[#3D8C6C] hover:bg-[#2D6B4F] text-white">
+        <Upload className="w-4 h-4" />
+        Upload Floor Plan
+      </Button>
+    </div>
+  );
+}
