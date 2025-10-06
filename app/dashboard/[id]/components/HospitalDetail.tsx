@@ -25,7 +25,7 @@ export default function HospitalDetail() {
               </h1>
               <p className="text-sm text-muted-foreground mb-2">
                 Terminal 4, Queens, NY
-                <span className="p-2 bg-muted rounded-xl text-foreground">
+                <span className="p-2 bg-muted rounded-2xl text-foreground ml-1">
                   Hospital
                 </span>
               </p>

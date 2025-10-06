@@ -1,4 +1,6 @@
+import { TabItem } from "@/components/common/NavigationTabs";
 import { MapPin, CheckCircle, Edit3, Building2 } from "lucide-react";
+import { StatItem } from "@/components/common/StatsGrid";
 
 export interface FloorPlan {
   id: number;
@@ -16,11 +18,7 @@ export interface FloorPlan {
   floor: string;
 }
 
-export interface MapStats {
-  id: number;
-  title: string;
-  value: string;
-  icon: React.ElementType;
+export interface MapStats extends StatItem {
   iconBg: string;
   iconColor: string;
 }
@@ -137,7 +135,6 @@ export const tabs = [
   { id: "settings", label: "Settings", href: "/map-manager/settings" },
 ];
 
-
 export const buildings = [
   {
     id: 1,
@@ -171,4 +168,10 @@ export const buildings = [
     floors: ["Ground", "1st", "2nd", "3rd"],
     activeFloor: "Ground",
   },
+];
+
+export const mapManagerTabs: TabItem[] = [
+  { id: "floor-plans", label: "Floor Plans", href: "/map-manager" },
+  { id: "buildings", label: "Buildings", href: "/map-manager/buildings" },
+  { id: "settings", label: "Settings", href: "/map-manager/settings" },
 ];

@@ -1,4 +1,9 @@
-import { StatItem, VenueTypeItem, OrganizationItem, VenueTypeFilter } from "./types";
+import {
+  StatItem,
+  VenueTypeItem,
+  OrganizationItem,
+  VenueTypeFilter,
+} from "./types";
 import DashboardIcon from "@/assets/dashboard/dashboard.svg";
 import activeIcon from "@/assets/organization/active-organizations.svg";
 import hospitalsIcon from "@/assets/organization/hospitals.svg";
@@ -7,6 +12,7 @@ import airPortIcon from "@/assets/organization/airport.svg";
 import shoppingMallIcon from "@/assets/organization/shopping-mall.svg";
 import onePlaceIcon from "@/assets/organization/one-place.svg";
 import { ActivityItem } from "../dashboard/types";
+import { TabItem } from "@/components/common/NavigationTabs";
 
 export const overviewStats: StatItem[] = [
   {
@@ -225,3 +231,12 @@ export const organizationActivities: ActivityItem[] = [
   },
 ];
 
+export const organizationTabs: TabItem[] = [
+  { id: "overview", label: "Overview", href: "/organizations" },
+  { id: "list", label: "Organizations", href: "/organizations/list" },
+  {
+    id: "venue-templates",
+    label: "Venue Templates",
+    href: "/organizations/venue-templates",
+  },
+];
