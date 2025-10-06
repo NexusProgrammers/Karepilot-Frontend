@@ -174,7 +174,7 @@ export function UploadFloorPlanModal({
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-border bg-muted/50 rounded-b-2xl">
+        <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-border rounded-b-2xl">
           <button
             onClick={onClose}
             className="px-5 py-2.5 text-sm cursor-pointer font-medium text-muted-foreground bg-background border border-border rounded-lg hover:bg-accent transition-colors flex items-center gap-2"
