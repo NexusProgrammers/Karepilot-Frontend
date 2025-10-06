@@ -1,6 +1,6 @@
 import { TabItem } from "@/components/common/NavigationTabs";
 import { MapPin, CheckCircle, Edit3, Building2 } from "lucide-react";
-import { StatItem } from "@/components/common/StatsGrid";
+import { StatItemWithIcon } from "@/components/common/StatsGridWithIcons";
 
 export interface FloorPlan {
   id: number;
@@ -18,10 +18,7 @@ export interface FloorPlan {
   floor: string;
 }
 
-export interface MapStats extends StatItem {
-  iconBg: string;
-  iconColor: string;
-}
+export type MapStats = StatItemWithIcon;
 
 export const mapStats: MapStats[] = [
   {
