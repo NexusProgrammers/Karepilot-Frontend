@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface CustomSelectProps {
   value: string;
@@ -45,9 +46,10 @@ export function CustomSelect({
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <div className="relative" ref={dropdownRef}>
-        <button
+        <Button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
+          variant="ghost"
           className="w-full px-0 py-2.5 bg-transparent border-0 border-b border-border text-sm text-left 
           focus:outline-none focus:border-foreground transition-colors flex items-center justify-between gap-2 cursor-pointer"
         >
@@ -62,7 +64,7 @@ export function CustomSelect({
               isOpen ? "rotate-180" : ""
             }`}
           />
-        </button>
+        </Button>
 
         {isOpen && (
           <div className="absolute top-full left-0 right-0 mt-1 bg-popover rounded-xl shadow-lg border border-border py-2 z-50 max-h-60 overflow-auto">
@@ -70,17 +72,18 @@ export function CustomSelect({
               {placeholder}
             </div>
             {options.map((option) => (
-              <button
+              <Button
                 key={option}
                 type="button"
                 onClick={() => {
                   onChange(option);
                   setIsOpen(false);
                 }}
-                className="w-full px-4 py-2.5 text-left text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
+                variant="ghost"
+                className="w-full px-4 py-2.5 text-left text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer justify-start"
               >
                 {option}
-              </button>
+              </Button>
             ))}
           </div>
         )}

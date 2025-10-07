@@ -2,6 +2,7 @@
 
 import { RecentActivityProps } from "@/lib/dashboard/types";
 import { MoveRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function RecentActivity({
   title = "Recent Activity",
@@ -22,12 +23,13 @@ export default function RecentActivity({
           <h2 className="text-lg font-semibold text-card-foreground mb-1">{title}</h2>
           <p className="text-sm text-muted-foreground">{subtitle}</p>
         </div>
-        <button
+        <Button
           onClick={buttonAction}
-          className="whitespace-nowrap px-4 py-2 text-sm text-muted-foreground hover:text-foreground font-medium border border-border rounded-lg hover:bg-accent transition-colors"
+          variant="outline"
+          className="whitespace-nowrap px-4 py-2 text-sm text-muted-foreground hover:text-foreground font-medium border border-border rounded-lg hover:bg-accent transition-colors cursor-pointer"
         >
           {buttonText}
-        </button>
+        </Button>
       </div>
       <div className="space-y-0">
         {displayActivities.map((activity, index) => (

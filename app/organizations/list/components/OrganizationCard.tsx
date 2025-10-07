@@ -67,7 +67,7 @@ export default function OrganizationCard({
           >
             {isActive ? "Active" : "Inactive"}
           </span>
-          <button
+          <Button
             onClick={handleToggleStatus}
             className={`w-12 h-6 rounded-full relative transition-colors cursor-pointer ${
               isActive ? "bg-green-500" : "bg-muted"
@@ -81,7 +81,7 @@ export default function OrganizationCard({
                 isActive ? "translate-x-6" : "translate-x-0.5"
               }`}
             />
-          </button>
+          </Button>
         </div>
       </div>
 

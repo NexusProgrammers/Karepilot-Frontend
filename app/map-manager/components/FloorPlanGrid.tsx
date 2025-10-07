@@ -2,6 +2,7 @@
 
 import { floorPlans } from "@/lib/map-manager/data";
 import { MapPin, Settings } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function FloorPlanGrid() {
   return (
@@ -70,15 +71,25 @@ export default function FloorPlanGrid() {
             </div>
               <hr className="mb-6" />
             <div className="flex gap-2">
-              <button className="flex cursor-pointer items-center justify-center gap-2 flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground hover:bg-accent transition-colors">
+              <Button
+                variant="outline"
+                className="flex cursor-pointer items-center justify-center gap-2 flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground hover:bg-accent transition-colors"
+              >
                 Preview
-              </button>
-              <button className="flex cursor-pointer items-center justify-center gap-2 flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground hover:bg-accent transition-colors">
+              </Button>
+              <Button
+                variant="outline"
+                className="flex cursor-pointer items-center justify-center gap-2 flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground hover:bg-accent transition-colors"
+              >
                 Edit
-              </button>
-              <button className="flex cursor-pointer items-center justify-center w-10 h-10 bg-background border border-border rounded-lg text-foreground hover:bg-accent transition-colors">
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex cursor-pointer items-center justify-center w-10 h-10 bg-background border border-border rounded-lg text-foreground hover:bg-accent transition-colors"
+              >
                 <Settings className="w-4 h-4 text-muted-foreground" />
-              </button>
+              </Button>
             </div>
           </div>
         </div>

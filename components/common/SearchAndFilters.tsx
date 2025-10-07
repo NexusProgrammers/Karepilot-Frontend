@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Search, ChevronDown, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export type FilterOption = {
   label: string;
@@ -94,8 +95,9 @@ export default function SearchAndFilters({
                 dropdownRefs.current[filter.label] = el;
               }}
             >
-              <button
+              <Button
                 onClick={() => toggleDropdown(filter.label)}
+                variant="ghost"
                 className="flex items-center justify-between gap-2 px-6 py-2.5 bg-muted border-0 rounded-lg text-foreground hover:bg-muted/80 transition-colors min-w-[140px] md:min-w-[200px] cursor-pointer"
               >
                 <span className="text-sm">
@@ -108,18 +110,19 @@ export default function SearchAndFilters({
                     openDropdown === filter.label ? "rotate-180" : ""
                   }`}
                 />
-              </button>
+              </Button>
 
               {openDropdown === filter.label && (
                 <div className="absolute top-full left-0 mt-1 w-full bg-popover border border-border rounded-lg shadow-lg z-50">
                   <div className="p-2">
                     {filter.options.map((option) => (
-                      <button
+                      <Button
                         key={option.value}
                         onClick={() =>
                           handleFilterSelect(filter.label, option.value)
                         }
-                        className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md hover:bg-accent ${
+                        variant="ghost"
+                        className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-md hover:bg-accent cursor-pointer ${
                           selectedFilters[filter.label] === option.value
                             ? "bg-accent"
                             : ""
@@ -131,7 +134,7 @@ export default function SearchAndFilters({
                         {selectedFilters[filter.label] === option.value && (
                           <Check className="w-4 h-4 text-green-600 dark:text-green-400" />
                         )}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 </div>

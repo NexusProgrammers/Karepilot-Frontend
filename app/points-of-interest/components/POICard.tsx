@@ -2,6 +2,7 @@
 
 import { POI } from "@/lib/points-of-interest/types";
 import { MapPin, Settings } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface POICardProps {
   poi: POI;
@@ -48,15 +49,25 @@ export default function POICard({ poi }: POICardProps) {
       </div>
 
       <div className="px-6 py-4 flex items-center gap-3 border-t border-border">
-        <button className="flex-1 cursor-pointer px-4 py-3 text-sm font-medium text-card-foreground bg-card border border-border rounded-lg hover:bg-muted transition-colors">
+        <Button
+          variant="outline"
+          className="flex-1 cursor-pointer px-4 py-3 text-sm font-medium text-card-foreground bg-card border border-border rounded-lg hover:bg-muted transition-colors"
+        >
           View
-        </button>
-        <button className="flex-1 cursor-pointer px-4 py-3 text-sm font-medium text-card-foreground bg-card border border-border rounded-lg hover:bg-muted transition-colors">
+        </Button>
+        <Button
+          variant="outline"
+          className="flex-1 cursor-pointer px-4 py-3 text-sm font-medium text-card-foreground bg-card border border-border rounded-lg hover:bg-muted transition-colors"
+        >
           Edit
-        </button>
-        <button className="w-10 h-10 cursor-pointer flex items-center justify-center text-card-foreground bg-card border border-border rounded-2xl hover:bg-muted transition-colors">
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-10 h-10 cursor-pointer flex items-center justify-center text-card-foreground bg-card border border-border rounded-2xl hover:bg-muted transition-colors"
+        >
           <Settings className="w-4 h-4" />
-        </button>
+        </Button>
       </div>
     </div>
   );

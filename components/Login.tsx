@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { LogoIcon } from "@/icons/dashboard";
+import { Button } from "@/components/ui/button";
 
 export default function KarepilotLogin({ onLogin }: { onLogin: () => void }) {
   const [email, setEmail] = useState("");
@@ -54,17 +55,19 @@ export default function KarepilotLogin({ onLogin }: { onLogin: () => void }) {
                 placeholder="Enter your password"
                 className="w-full px-3 py-3 pr-10 border-b border-b-gray-300 focus:outline-none focus:border-b-black placeholder-gray-400"
               />
-              <button
+              <Button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                variant="ghost"
+                size="sm"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer p-1 h-auto"
               >
                 {showPassword ? (
                   <EyeOff className="h-5 w-5 cursor-pointer" />
                 ) : (
                   <Eye className="h-5 w-5 cursor-pointer" />
                 )}
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -78,17 +81,20 @@ export default function KarepilotLogin({ onLogin }: { onLogin: () => void }) {
               />
               <span className="ml-2 text-sm text-[#3D8C6C]">Remember me</span>
             </label>
-            <button className="text-sm text-[#3D8C6C] hover:text-green-700 font-medium cursor-pointer">
+            <Button
+              variant="ghost"
+              className="text-sm text-[#3D8C6C] hover:text-green-700 font-medium cursor-pointer p-0 h-auto"
+            >
               Forget Password?
-            </button>
+            </Button>
           </div>
 
-          <button
+          <Button
             onClick={handleLogin}
             className="w-full bg-[#3D8C6C] cursor-pointer text-white py-3 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 font-medium transition duration-200"
           >
             Login
-          </button>
+          </Button>
         </div>
       </div>
     </div>

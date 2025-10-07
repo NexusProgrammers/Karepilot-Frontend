@@ -9,16 +9,16 @@ export default function MapSettings() {
   const [versionControl, setVersionControl] = useState(true);
 
   return (
-    <div className="bg-white rounded-3xl border border-gray-200 p-6">
+    <div className="bg-card rounded-3xl border border-border p-6">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">Map Settings</h2>
-        <p className="text-sm text-gray-500">
+        <h2 className="text-xl font-semibold text-card-foreground mb-2">Map Settings</h2>
+        <p className="text-sm text-muted-foreground">
           Configure map display and processing options
         </p>
       </div>
 
       <div className="space-y-6">
-        <div className="border-b border-gray-100 pb-6">
+        <div className="border-b border-border pb-6">
           <ToggleSwitch
             checked={autoPublish}
             onChange={setAutoPublish}
@@ -27,7 +27,7 @@ export default function MapSettings() {
           />
         </div>
 
-        <div className="border-b border-gray-100 pb-6">
+        <div className="border-b border-border pb-6">
           <ToggleSwitch
             checked={highResThumbnails}
             onChange={setHighResThumbnails}

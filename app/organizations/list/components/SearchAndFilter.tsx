@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { venueTypeFilters } from "@/lib/organization/data";
 import { searchIcon } from "@/icons/dashboard";
+import { Button } from "@/components/ui/button";
 
 type SearchAndFilterProps = {
   onSearchChange: (searchTerm: string) => void;
@@ -52,8 +53,9 @@ export default function SearchAndFilter({
       </div>
 
       <div className="relative" ref={filterRef}>
-        <button
+        <Button
           onClick={() => setIsFilterOpen(!isFilterOpen)}
+          variant="ghost"
           className="flex items-center gap-2 px-4 py-3 rounded-lg bg-muted transition-colors min-w-[180px] cursor-pointer"
         >
           <span className="text-sm font-medium text-muted-foreground">
@@ -75,7 +77,7 @@ export default function SearchAndFilter({
               d="M19 9l-7 7-7-7"
             />
           </svg>
-        </button>
+        </Button>
 
         {isFilterOpen && (
           <div className="absolute right-0 mt-2 w-64 bg-popover rounded-lg shadow-lg border border-border z-10">
@@ -85,13 +87,14 @@ export default function SearchAndFilter({
               </h3>
               <div className="space-y-1">
                 {venueTypeFilters.map((filter) => (
-                  <button
+                  <Button
                     key={filter.id}
                     onClick={() => {
                       onFilterChange(filter.value);
                       setIsFilterOpen(false);
                     }}
-                    className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
+                    variant="ghost"
+                    className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors cursor-pointer ${
                       selectedFilter === filter.value
                         ? "bg-accent text-accent-foreground"
                         : "text-popover-foreground hover:bg-accent hover:text-accent-foreground"
@@ -113,7 +116,7 @@ export default function SearchAndFilter({
                         </svg>
                       )}
                     </div>
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>

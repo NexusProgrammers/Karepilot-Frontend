@@ -6,6 +6,7 @@ import {
   ShoppingBagIcon, 
   MapPinIcon 
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface VenueTemplateSelectorProps {
   selectedTemplate: string;
@@ -112,9 +113,12 @@ export function VenueTemplateSelector({
             </div>
             
             <hr className="border-border mb-3" />
-            <button className="w-full py-1.5 px-3 text-xs font-medium text-card-foreground bg-transparent border border-border rounded-lg transition-colors cursor-pointer">
+            <Button
+              variant="outline"
+              className="w-full py-1.5 px-3 text-xs font-medium text-card-foreground bg-transparent border border-border rounded-lg transition-colors cursor-pointer"
+            >
               Use this template
-            </button>
+            </Button>
           </div>
         ))}
       </div>

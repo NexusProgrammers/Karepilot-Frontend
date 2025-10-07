@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { VenueTemplateCardProps } from "@/lib/organization/types";
 
 export function VenueTemplateCard({
@@ -56,9 +57,9 @@ export function VenueTemplateCard({
         </div>
       </div>
       <hr className="border-border mb-4" />
-      <button className="w-full py-2 px-4 text-sm font-medium text-card-foreground bg-transparent border border-border hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors cursor-pointer">
+      <Button className="w-full py-2 px-4 text-sm font-medium text-card-foreground bg-transparent border border-border hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors cursor-pointer">
         Use This Template
-      </button>
+      </Button>
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { buildings } from "@/lib/map-manager/data";
 import { ShoppingCart } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function BuildingGrid() {
   return (
@@ -41,23 +42,31 @@ export default function BuildingGrid() {
             </h4>
             <div className="flex flex-wrap gap-2">
               {building.floors.map((floor) => (
-                <button
+                <Button
                   key={floor}
-                  className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors bg-muted text-muted-foreground hover:bg-muted/80"
+                  variant="ghost"
+                  size="sm"
+                  className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors bg-muted text-muted-foreground hover:bg-muted/80 cursor-pointer"
                 >
                   {floor}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
           <hr className="mb-6" />
           <div className="flex gap-3">
-            <button className="flex-1 cursor-pointer px-4 py-2 border border-border rounded-lg text-sm font-medium text-foreground hover:bg-accent transition-colors">
+            <Button
+              variant="outline"
+              className="flex-1 cursor-pointer px-4 py-2 border border-border rounded-lg text-sm font-medium text-foreground hover:bg-accent transition-colors"
+            >
               Use This Template
-            </button>
-            <button className="flex-1 cursor-pointer px-4 py-2 border border-border rounded-lg text-sm font-medium text-foreground hover:bg-accent transition-colors">
+            </Button>
+            <Button
+              variant="outline"
+              className="flex-1 cursor-pointer px-4 py-2 border border-border rounded-lg text-sm font-medium text-foreground hover:bg-accent transition-colors"
+            >
               Add Floor
-            </button>
+            </Button>
           </div>
         </div>
       ))}

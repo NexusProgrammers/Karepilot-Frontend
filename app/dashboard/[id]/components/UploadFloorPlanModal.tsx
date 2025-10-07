@@ -4,6 +4,7 @@ import { useState } from "react";
 import { X, CloudUpload } from "lucide-react";
 import { CustomSelect } from "@/components/common/CustomSelect";
 import { CustomTextarea } from "@/components/common/CustomTextarea";
+import { Button } from "@/components/ui/button";
 
 interface UploadFloorPlanModalProps {
   isOpen: boolean;
@@ -60,12 +61,14 @@ export function UploadFloorPlanModal({
             <h2 className="text-xl font-semibold text-card-foreground">
               Upload Floor Plan
             </h2>
-            <button
+            <Button
               onClick={onClose}
-              className="text-muted-foreground hover:text-foreground transition-colors -mt-1 cursor-pointer"
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-foreground transition-colors -mt-1 cursor-pointer p-1 h-auto"
             >
               <X className="w-5 h-5" />
-            </button>
+            </Button>
           </div>
           <p className="text-sm text-muted-foreground">
             Add new maps to your Digital Map Navigation
@@ -175,20 +178,21 @@ export function UploadFloorPlanModal({
         </div>
 
         <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-border rounded-b-2xl">
-          <button
+          <Button
             onClick={onClose}
+            variant="outline"
             className="px-5 py-2.5 text-sm cursor-pointer font-medium text-muted-foreground bg-background border border-border rounded-lg hover:bg-accent transition-colors flex items-center gap-2"
           >
             <X className="w-4 h-4" />
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleSubmit}
-            className="px-5 py-2.5 text-sm font-medium cursor-pointer text-white bg-[#3D8C6C] rounded-lg transition-colors flex items-center gap-2"
+            className="px-5 py-2.5 text-sm font-medium cursor-pointer text-white bg-[#3D8C6C] rounded-lg transition-colors flex items-center gap-2 hover:bg-[#3D8C6C]/90"
           >
             <CloudUpload className="w-4 h-4" />
             Upload Floor Map
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -200,12 +204,12 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-background p-8">
-      <button
+      <Button
         onClick={() => setIsModalOpen(true)}
-        className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600"
+        className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 cursor-pointer"
       >
         Open Modal
-      </button>
+      </Button>
       <UploadFloorPlanModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
