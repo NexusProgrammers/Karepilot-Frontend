@@ -3,7 +3,11 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function POIHeader() {
+interface POIHeaderProps {
+  onCreatePOI?: () => void;
+}
+
+export default function POIHeader({ onCreatePOI }: POIHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div className="flex-1">
@@ -14,7 +18,10 @@ export default function POIHeader() {
           Manage locations and services for your organization
         </p>
       </div>
-      <Button className="flex items-center cursor-pointer max-w-[200px] justify-center gap-2 px-3 sm:px-4 py-3 sm:py-2.5 bg-[#3D8C6C] hover:bg-[#3D8C6C]/90 text-sm sm:text-base w-full sm:w-auto">
+      <Button 
+        onClick={onCreatePOI}
+        className="flex items-center dark:text-white cursor-pointer max-w-[200px] justify-center gap-2 px-3 sm:px-4 py-3 sm:py-2.5 bg-[#3D8C6C] hover:bg-[#3D8C6C]/90 text-sm sm:text-base w-full sm:w-auto"
+      >
         <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
         <span className="inline">Add New POI</span>
       </Button>

@@ -38,6 +38,12 @@ export default function SearchAndFilter({
     };
   }, [isFilterOpen]);
 
+  // Get the display name for the selected filter
+  const getSelectedFilterName = () => {
+    const filter = venueTypeFilters.find((f) => f.value === selectedFilter);
+    return filter ? filter.name : venueTypeFilters[0].name; // Default to first filter if not found
+  };
+
   return (
     <div className="flex flex-col sm:flex-row gap-4 mb-6 border border-border rounded-3xl p-4 bg-card">
       <div className="flex-1 relative bg-muted rounded-2xl">
@@ -59,8 +65,7 @@ export default function SearchAndFilter({
           className="flex items-center gap-2 px-4 py-3 rounded-lg bg-muted transition-colors min-w-[180px] cursor-pointer"
         >
           <span className="text-sm font-medium text-muted-foreground">
-            {venueTypeFilters.find((f) => f.value === selectedFilter)?.name ||
-              "All Venue Types"}
+            {getSelectedFilterName()}
           </span>
           <svg
             className={`w-4 h-4 text-muted-foreground transition-transform ${
@@ -94,7 +99,7 @@ export default function SearchAndFilter({
                       setIsFilterOpen(false);
                     }}
                     variant="ghost"
-                    className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors cursor-pointer ${
+                    className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors cursor-pointer justify-start ${
                       selectedFilter === filter.value
                         ? "bg-accent text-accent-foreground"
                         : "text-popover-foreground hover:bg-accent hover:text-accent-foreground"

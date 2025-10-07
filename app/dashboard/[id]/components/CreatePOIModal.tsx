@@ -272,22 +272,3 @@ export function CreatePOIModal({ isOpen, onClose }: CreatePOIModalProps) {
     </div>
   );
 }
-
-export default function App() {
-  const [isModalOpen, setIsModalOpen] = useState(true);
-
-  return (
-    <div className="min-h-screen bg-background p-8">
-      <Button
-        onClick={() => setIsModalOpen(true)}
-        className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 cursor-pointer"
-      >
-        Create Point of Interest
-      </Button>
-      <CreatePOIModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
-    </div>
-  );
-}

@@ -62,15 +62,15 @@ export default function OrganizationCard({
         <div className="flex items-center gap-2">
           <span
             className={`text-sm font-medium ${
-              isActive ? "text-green-600" : "text-red-500"
+              isActive ? "text-green-700" : "text-red-500"
             }`}
           >
             {isActive ? "Active" : "Inactive"}
           </span>
-          <Button
+          <button
             onClick={handleToggleStatus}
             className={`w-12 h-6 rounded-full relative transition-colors cursor-pointer ${
-              isActive ? "bg-green-500" : "bg-muted"
+              isActive ? "bg-green-700" : "bg-muted"
             }`}
             aria-label={`Toggle organization status to ${
               isActive ? "inactive" : "active"
@@ -81,7 +81,7 @@ export default function OrganizationCard({
                 isActive ? "translate-x-6" : "translate-x-0.5"
               }`}
             />
-          </Button>
+          </button>
         </div>
       </div>
 
@@ -95,7 +95,7 @@ export default function OrganizationCard({
         <p className="text-sm text-muted-foreground">{organization.detailedAddress}</p>
       </div>
 
-      <div className="mb-4 flex gap-2 items-center">
+      <div className="mb-4 flex flex-wrap gap-2 items-center">
         <div className="flex items-center gap-2 text-sm">
           {mailIcon({}) as React.ReactNode}
           <span className="font-semibold text-muted-foreground">
@@ -118,10 +118,10 @@ export default function OrganizationCard({
 
       <div className="border-t border-border mb-4 w-full"></div>
 
-      <div className="flex gap-2 justify-end">
+      <div className="flex flex-col sm:flex-row gap-2 justify-end">
         <Button
           variant="outline"
-          className={`py-2 px-[186px] text-sm font-medium rounded-lg border transition-colors cursor-pointer ${
+          className={`py-2 px-3 sm:px-4 md:px-6 lg:px-[186px] text-sm font-medium rounded-lg border transition-colors cursor-pointer w-full sm:w-auto ${
             organization.hasNotification
               ? "bg-background border-border text-muted-foreground hover:bg-accent relative"
               : "bg-background border-border text-muted-foreground hover:bg-accent"
@@ -131,19 +131,19 @@ export default function OrganizationCard({
         </Button>
         <Button
           variant="outline"
-          className="py-2 px-12 text-sm font-medium text-muted-foreground bg-background border cursor-pointer border-border rounded-lg hover:bg-accent transition-colors"
+          className="py-2 px-3 sm:px-4 md:px-6 lg:px-12 text-sm font-medium text-muted-foreground bg-background border cursor-pointer border-border rounded-lg hover:bg-accent transition-colors w-full sm:w-auto"
         >
           Edit
         </Button>
         <Button
           variant="outline"
-          className="py-2 px-12 text-sm font-medium text-muted-foreground bg-background border cursor-pointer border-border rounded-lg hover:bg-accent transition-colors"
+          className="py-2 px-3 sm:px-4 md:px-6 lg:px-12 text-sm font-medium text-muted-foreground bg-background border cursor-pointer border-border rounded-lg hover:bg-accent transition-colors w-full sm:w-auto"
         >
           View
         </Button>
         <Button
           variant="outline"
-          className="py-2 px-3 text-red-500 bg-background border border-border rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
+          className="py-2 px-3 text-red-500 bg-background border border-border rounded-lg hover:bg-red-50 transition-colors cursor-pointer w-full sm:w-auto sm:max-w-[60px]"
         >
           {deleteIcon({}) as React.ReactNode}
         </Button>
