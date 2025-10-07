@@ -6,6 +6,7 @@ import { CreatePIOIcon } from "@/icons/dashboard";
 import { buildings, categories, floors } from "@/lib/dashboard/data";
 import { MapPin, X } from "lucide-react";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 interface CreatePOIModalProps {
   isOpen: boolean;
@@ -70,12 +71,14 @@ export function CreatePOIModal({ isOpen, onClose }: CreatePOIModalProps) {
             <h2 className="text-xl font-semibold text-card-foreground">
               Create Point of Interest
             </h2>
-            <button
+            <Button
               onClick={onClose}
-              className="text-muted-foreground hover:text-foreground transition-colors -mt-1 cursor-pointer"
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-foreground transition-colors -mt-1 cursor-pointer p-1 h-auto"
             >
               <X className="w-5 h-5" />
-            </button>
+            </Button>
           </div>
           <p className="text-sm text-muted-foreground">
             Add a new location or service to help visitors navigate
@@ -249,20 +252,21 @@ export function CreatePOIModal({ isOpen, onClose }: CreatePOIModalProps) {
         </div>
 
         <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-border bg-muted/50">
-          <button
+          <Button
             onClick={onClose}
+            variant="outline"
             className="px-5 py-2.5 cursor-pointer text-sm font-medium text-muted-foreground bg-background border border-border rounded-lg hover:bg-accent transition-colors flex items-center gap-2"
           >
             <X className="w-4 h-4" />
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleSubmit}
-            className="px-5 flex gap-2 py-2.5 text-sm cursor-pointer font-medium text-white bg-[#3D8C6C] rounded-lg transition-colors"
+            className="px-5 flex gap-2 py-2.5 text-sm cursor-pointer font-medium text-white bg-[#3D8C6C] rounded-lg transition-colors hover:bg-[#3D8C6C]/90"
           >
             <CreatePIOIcon />
             Create POI
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -274,12 +278,12 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-background p-8">
-      <button
+      <Button
         onClick={() => setIsModalOpen(true)}
-        className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600"
+        className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 cursor-pointer"
       >
         Create Point of Interest
-      </button>
+      </Button>
       <CreatePOIModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

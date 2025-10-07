@@ -10,7 +10,7 @@ export default function MapManagerHeader() {
 
   return (
     <>
-      <div className="flex items-start justify-between">
+      <div className="flex items-start flex-col md:flex-row justify-between">
         <div>
           <h1 className="text-3xl font-bold text-foreground mb-2">
             Map Management
@@ -21,7 +21,7 @@ export default function MapManagerHeader() {
         </div>
         <Button 
           onClick={() => setIsUploadModalOpen(true)}
-          className="bg-[#3D8C6C] hover:bg-[#2D6B4F] text-white rounded-xl cursor-pointer"
+          className="bg-[#3D8C6C] cursor-pointer hover:bg-[#2D6B4F] text-white rounded-xl cursor-pointer mt-4 md:mt-0"
         >
           <Upload className="w-4 h-4" />
           Upload Floor Plan

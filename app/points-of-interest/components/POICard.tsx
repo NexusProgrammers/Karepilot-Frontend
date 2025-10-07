@@ -1,7 +1,7 @@
 "use client";
 
 import { POI } from "@/lib/points-of-interest/types";
-import { Settings } from "lucide-react";
+import { MapPin, Settings } from "lucide-react";
 
 interface POICardProps {
   poi: POI;
@@ -26,7 +26,8 @@ export default function POICard({ poi }: POICardProps) {
         </div>
 
         <div className="mb-4">
-          <p className="text-base font-medium text-card-foreground mb-2">
+          <p className="text-base font-normal text-card-foreground mb-2 flex items-center gap-2">
+            <MapPin className="w-4 h-4 text-muted-foreground" />
             {poi.roomNumber}
           </p>
           <p className="text-sm text-muted-foreground leading-relaxed">
@@ -38,7 +39,7 @@ export default function POICard({ poi }: POICardProps) {
           {poi.categories.map((category, index) => (
             <span
               key={index}
-              className="text-xs px-3 py-1.5 rounded-md bg-muted text-muted-foreground font-medium"
+              className="text-xs px-3 py-1.5 rounded-lg bg-muted text-muted-foreground font-medium"
             >
               {category}
             </span>
@@ -46,34 +47,17 @@ export default function POICard({ poi }: POICardProps) {
         </div>
       </div>
 
-      <div className="px-6 py-3 border-t border-border">
-        <div className="flex items-center gap-3">
-          {poi.amenities.map((amenity, index) => {
-            const IconComponent = amenity.icon;
-            return (
-              <div key={index} title={amenity.label}>
-                <IconComponent className="w-5 h-5 text-blue-600" />
-              </div>
-            );
-          })}
-          <span className="text-xs text-muted-foreground ml-auto">
-            Updated {poi.updatedDate}
-          </span>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-3 border-t border-border">
-        <button className="px-4 py-3 text-sm font-medium text-card-foreground hover:bg-muted transition-colors border-r border-border">
+      <div className="px-6 py-4 flex items-center gap-3 border-t border-border">
+        <button className="flex-1 cursor-pointer px-4 py-3 text-sm font-medium text-card-foreground bg-card border border-border rounded-lg hover:bg-muted transition-colors">
           View
         </button>
-        <button className="px-4 py-3 text-sm font-medium text-card-foreground hover:bg-muted transition-colors border-r border-border">
+        <button className="flex-1 cursor-pointer px-4 py-3 text-sm font-medium text-card-foreground bg-card border border-border rounded-lg hover:bg-muted transition-colors">
           Edit
         </button>
-        <button className="px-4 py-3 text-sm font-medium text-card-foreground hover:bg-muted transition-colors flex items-center justify-center">
-          <Settings className="w-4 h-4 text-muted-foreground" />
+        <button className="w-10 h-10 cursor-pointer flex items-center justify-center text-card-foreground bg-card border border-border rounded-2xl hover:bg-muted transition-colors">
+          <Settings className="w-4 h-4" />
         </button>
       </div>
     </div>
   );
 }
-

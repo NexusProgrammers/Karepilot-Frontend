@@ -8,6 +8,7 @@ import airportIcon from "@/assets/organization/jkf-international-airport.svg";
 import shoppingIcon from "@/assets/organization/shopping.svg";
 import openPlaceIcon from "@/assets/organization/one.svg";
 import { mailIcon, phoneIcon, clockIcon, deleteIcon } from "@/icons/dashboard";
+import { Button } from "@/components/ui/button";
 
 type OrganizationCardProps = {
   organization: OrganizationItem;
@@ -118,7 +119,8 @@ export default function OrganizationCard({
       <div className="border-t border-border mb-4 w-full"></div>
 
       <div className="flex gap-2 justify-end">
-        <button
+        <Button
+          variant="outline"
           className={`py-2 px-[186px] text-sm font-medium rounded-lg border transition-colors cursor-pointer ${
             organization.hasNotification
               ? "bg-background border-border text-muted-foreground hover:bg-accent relative"
@@ -126,16 +128,25 @@ export default function OrganizationCard({
           }`}
         >
           Select
-        </button>
-        <button className="py-2 px-12 text-sm font-medium text-muted-foreground bg-background border cursor-pointer border-border rounded-lg hover:bg-accent transition-colors">
+        </Button>
+        <Button
+          variant="outline"
+          className="py-2 px-12 text-sm font-medium text-muted-foreground bg-background border cursor-pointer border-border rounded-lg hover:bg-accent transition-colors"
+        >
           Edit
-        </button>
-        <button className="py-2 px-12 text-sm font-medium text-muted-foreground bg-background border cursor-pointer border-border rounded-lg hover:bg-accent transition-colors">
+        </Button>
+        <Button
+          variant="outline"
+          className="py-2 px-12 text-sm font-medium text-muted-foreground bg-background border cursor-pointer border-border rounded-lg hover:bg-accent transition-colors"
+        >
           View
-        </button>
-        <button className="py-2 px-3 text-red-500 bg-background border border-border rounded-lg hover:bg-red-50 transition-colors cursor-pointer">
+        </Button>
+        <Button
+          variant="outline"
+          className="py-2 px-3 text-red-500 bg-background border border-border rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
+        >
           {deleteIcon({}) as React.ReactNode}
-        </button>
+        </Button>
       </div>
     </div>
   );
