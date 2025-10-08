@@ -11,6 +11,17 @@ import downloadDailyReportIcon from "@/assets/dashboard/quick-actions/download-d
 import addWardLocationIcon from "@/assets/dashboard/quick-actions/add-ward-location.svg";
 import markEmergencyExitIcon from "@/assets/dashboard/quick-actions/mark-emergency-exist-location.svg";
 import { ActivityItem } from "./types";
+import { 
+  Compass, 
+  Building2, 
+  Settings, 
+  Bell, 
+  Coffee, 
+  Camera, 
+  Pill, 
+  TestTube, 
+  Image as ImageIcon 
+} from "lucide-react";
 
 
 export const hospitalStats: StatItem[] = [
@@ -58,6 +69,18 @@ export const categories = [
   "Pharmacy",
   "Laboratory",
   "Medical Imaging",
+];
+
+export const facilities = [
+  { name: "Navigation", icon: Compass },
+  { name: "Facility", icon: Building2 },
+  { name: "Service", icon: Settings },
+  { name: "Emergency", icon: Bell },
+  { name: "Amenity", icon: Coffee },
+  { name: "Medical Department", icon: Camera },
+  { name: "Pharmacy", icon: Pill },
+  { name: "Laboratory", icon: TestTube },
+  { name: "Medical Imaging", icon: ImageIcon },
 ];
 
 export const buildings = [

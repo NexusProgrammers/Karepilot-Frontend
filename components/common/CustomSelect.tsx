@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface CustomSelectProps {
   value: string;
   onChange: (value: string) => void;
-  options: string[];
+  options: string[] | { name: string; icon: LucideIcon }[];
   placeholder: string;
   label: string;
   required?: boolean;
@@ -71,20 +71,28 @@ export function CustomSelect({
             <div className="px-4 py-2 text-xs font-medium text-muted-foreground">
               {placeholder}
             </div>
-            {options.map((option) => (
-              <Button
-                key={option}
-                type="button"
-                onClick={() => {
-                  onChange(option);
-                  setIsOpen(false);
-                }}
-                variant="ghost"
-                className="w-full px-4 py-2.5 text-left text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer justify-start"
-              >
-                {option}
-              </Button>
-            ))}
+            {options.map((option) => {
+              const optionName = typeof option === 'string' ? option : option.name;
+              const IconComponent = typeof option === 'string' ? null : option.icon;
+              
+              return (
+                <Button
+                  key={optionName}
+                  type="button"
+                  onClick={() => {
+                    onChange(optionName);
+                    setIsOpen(false);
+                  }}
+                  variant="ghost"
+                  className="w-full px-4 py-2.5 text-left text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer justify-start"
+                >
+                  <div className="flex items-center gap-2">
+                    {IconComponent && <IconComponent className="w-4 h-4" />}
+                    <span>{optionName}</span>
+                  </div>
+                </Button>
+              );
+            })}
           </div>
         )}
       </div>

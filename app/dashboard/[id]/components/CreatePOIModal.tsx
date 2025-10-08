@@ -3,7 +3,7 @@ import { CustomSelect } from "@/components/common/CustomSelect";
 import { CustomTextarea } from "@/components/common/CustomTextarea";
 import { ToggleSwitch } from "@/components/common/ToggleSwitch";
 import { CreatePIOIcon } from "@/icons/dashboard";
-import { buildings, categories, floors } from "@/lib/dashboard/data";
+import { buildings, facilities, floors } from "@/lib/dashboard/data";
 import { MapPin, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ interface CreatePOIModalProps {
 
 export function CreatePOIModal({ isOpen, onClose }: CreatePOIModalProps) {
   const [poiName, setPoiName] = useState("");
-  const [category, setCategory] = useState("");
+  const [facility, setFacility] = useState("");
   const [building, setBuilding] = useState("");
   const [floor, setFloor] = useState("");
   const [roomNumber, setRoomNumber] = useState("");
@@ -34,7 +34,7 @@ export function CreatePOIModal({ isOpen, onClose }: CreatePOIModalProps) {
   const handleSubmit = () => {
     console.log({
       poiName,
-      category,
+      facility,
       building,
       floor,
       roomNumber,
@@ -106,11 +106,11 @@ export function CreatePOIModal({ isOpen, onClose }: CreatePOIModalProps) {
               />
 
               <CustomSelect
-                value={category}
-                onChange={setCategory}
-                options={categories}
-                placeholder="Select category"
-                label="Category"
+                value={facility}
+                onChange={setFacility}
+                options={facilities}
+                placeholder="Select facility"
+                label="Facility"
                 required
               />
             </div>

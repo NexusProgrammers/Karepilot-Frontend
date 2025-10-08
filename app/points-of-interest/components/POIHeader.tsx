@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface POIHeaderProps {
@@ -22,7 +22,7 @@ export default function POIHeader({ onCreatePOI }: POIHeaderProps) {
         onClick={onCreatePOI}
         className="flex items-center dark:text-white cursor-pointer max-w-[200px] justify-center gap-2 px-3 sm:px-4 py-3 sm:py-2.5 bg-[#3D8C6C] hover:bg-[#3D8C6C]/90 text-sm sm:text-base w-full sm:w-auto"
       >
-        <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+        <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
         <span className="inline">Add New POI</span>
       </Button>
     </div>
