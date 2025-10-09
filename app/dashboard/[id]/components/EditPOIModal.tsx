@@ -262,7 +262,6 @@ export function EditPOIModal({ isOpen, onClose, poi }: EditPOIModalProps) {
               </div>
             </div>
 
-            {/* Current Location Display */}
             <div className="bg-muted/30 rounded-lg p-4 flex items-center gap-3">
               <MapPin className="w-5 h-5 text-muted-foreground" />
               <div>
