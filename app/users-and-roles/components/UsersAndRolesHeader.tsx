@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Plus, Building2, User } from "lucide-react";
+import {  Building2, User } from "lucide-react";
 
 interface UsersAndRolesHeaderProps {
   onCreateUserClick: () => void;
