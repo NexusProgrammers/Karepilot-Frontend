@@ -42,15 +42,30 @@ export const poisData: POI[] = [
     title: "Emergency Department",
     building: "Main Hospital",
     floor: "Ground Floor",
-    roomNumber: "Room ED-008",
+    roomNumber: "ED-001",
     description: "24/7 emergency medical services with trauma care",
     categories: ["24/7", "Trauma", "Emergency"],
     amenities: [
       { icon: Wifi, label: "WiFi" },
       { icon: Zap, label: "Power" },
     ],
-    updatedDate: "2024-01-16",
+    updatedDate: "2025-08-12",
     categoryType: "Unknown Category",
+    accessibility: {
+      wheelchair: true,
+      hearingLoop: true,
+      visualAidSupport: false,
+    },
+    contact: {
+      phone: "+1 345-874-7894",
+      email: "emergency@hospital.com",
+      operatingHours: "24/7",
+    },
+    status: "Active",
+    coordinates: {
+      x: 120,
+      y: 80,
+    },
   },
   {
     id: 2,
@@ -66,6 +81,21 @@ export const poisData: POI[] = [
     ],
     updatedDate: "2024-01-16",
     categoryType: "Unknown Category",
+    accessibility: {
+      wheelchair: true,
+      hearingLoop: true,
+      visualAidSupport: false,
+    },
+    contact: {
+      phone: "+1 345-874-7895",
+      email: "pharmacy@hospital.com",
+      operatingHours: "8:00 AM - 8:00 PM",
+    },
+    status: "Active",
+    coordinates: {
+      x: 150,
+      y: 120,
+    },
   },
   {
     id: 3,
@@ -81,6 +111,21 @@ export const poisData: POI[] = [
     ],
     updatedDate: "2024-01-16",
     categoryType: "Unknown Category",
+    accessibility: {
+      wheelchair: true,
+      hearingLoop: false,
+      visualAidSupport: true,
+    },
+    contact: {
+      phone: "+1 345-874-7896",
+      email: "radiology@hospital.com",
+      operatingHours: "7:00 AM - 6:00 PM",
+    },
+    status: "Active",
+    coordinates: {
+      x: 200,
+      y: 150,
+    },
   },
   {
     id: 4,
@@ -96,6 +141,21 @@ export const poisData: POI[] = [
     ],
     updatedDate: "2024-01-16",
     categoryType: "Unknown Category",
+    accessibility: {
+      wheelchair: true,
+      hearingLoop: true,
+      visualAidSupport: true,
+    },
+    contact: {
+      phone: "+1 345-874-7897",
+      email: "emergency2@hospital.com",
+      operatingHours: "24/7",
+    },
+    status: "Active",
+    coordinates: {
+      x: 100,
+      y: 90,
+    },
   },
 ];
 

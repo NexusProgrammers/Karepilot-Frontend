@@ -38,10 +38,9 @@ export default function SearchAndFilter({
     };
   }, [isFilterOpen]);
 
-  // Get the display name for the selected filter
   const getSelectedFilterName = () => {
     const filter = venueTypeFilters.find((f) => f.value === selectedFilter);
-    return filter ? filter.name : venueTypeFilters[0].name; // Default to first filter if not found
+    return filter ? filter.name : venueTypeFilters[0].name; 
   };
 
   return (

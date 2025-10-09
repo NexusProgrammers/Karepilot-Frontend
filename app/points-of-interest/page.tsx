@@ -27,7 +27,6 @@ export default function PointsOfInterestPage() {
         <POISearchAndFilters />
         <POIGrid />
       </div>
-
       <CreatePOIModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}

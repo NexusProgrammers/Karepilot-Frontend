@@ -14,6 +14,21 @@ export interface POI {
   }[];
   updatedDate: string;
   categoryType: string;
+  accessibility: {
+    wheelchair: boolean;
+    hearingLoop: boolean;
+    visualAidSupport?: boolean;
+  };
+  contact?: {
+    phone?: string;
+    email?: string;
+    operatingHours?: string;
+  };
+  status: "Active" | "Inactive" | "Maintenance";
+  coordinates?: {
+    x: number;
+    y: number;
+  };
 }
 
 export interface POIStats {
