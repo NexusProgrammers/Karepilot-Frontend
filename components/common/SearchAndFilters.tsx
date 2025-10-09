@@ -71,7 +71,7 @@ export default function SearchAndFilters({
   };
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between border border-border rounded-2xl p-2 bg-card">
+    <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between border border-border rounded-2xl p-4 bg-card">
       <div className="relative flex-1 w-full">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-6 h-6" />
@@ -86,11 +86,11 @@ export default function SearchAndFilters({
       </div>
 
       {filters.length > 0 && (
-        <div className="flex gap-3">
+        <div className="flex gap-3 overflow-x-auto scrollbar-hide w-full sm:w-auto">
           {filters.map((filter) => (
             <div
               key={filter.label}
-              className="relative"
+              className="relative flex-shrink-0"
               ref={(el) => {
                 dropdownRefs.current[filter.label] = el;
               }}
@@ -98,7 +98,7 @@ export default function SearchAndFilters({
               <Button
                 onClick={() => toggleDropdown(filter.label)}
                 variant="ghost"
-                className="flex items-center justify-between gap-2 px-6 py-2.5 bg-muted border-0 rounded-lg text-foreground hover:bg-muted/80 transition-colors min-w-[140px] md:min-w-[200px] cursor-pointer"
+                className="flex items-center justify-between gap-2 px-6 py-2.5 bg-muted border-0 rounded-lg text-foreground hover:bg-muted/80 transition-colors min-w-[140px] md:min-w-[200px] cursor-pointer whitespace-nowrap"
               >
                 <span className="text-sm">
                   {filter.options.find(
@@ -146,4 +146,3 @@ export default function SearchAndFilters({
     </div>
   );
 }
-

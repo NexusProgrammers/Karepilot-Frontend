@@ -28,6 +28,11 @@ export default function NavigationTabs({
     if (tab.href === "/organizations" || tab.href === "/map-manager") {
       return pathname === tab.href;
     }
+    
+    if (tab.href.startsWith("/users-and-roles")) {
+      return pathname === tab.href;
+    }
+    
     return pathname.startsWith(tab.href);
   };
 
