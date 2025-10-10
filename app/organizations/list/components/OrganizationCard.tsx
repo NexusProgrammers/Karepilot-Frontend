@@ -3,10 +3,7 @@
 import { useState } from "react";
 import { OrganizationItem } from "@/lib/organization/types";
 import Image from "next/image";
-import DashboardIcon from "@/assets/dashboard/dashboard.svg";
-import airportIcon from "@/assets/organization/jkf-international-airport.svg";
-import shoppingIcon from "@/assets/organization/shopping.svg";
-import openPlaceIcon from "@/assets/organization/one.svg";
+import { DashboardIcon, airportIcon, shoppingIcon, openPlaceIcon } from "@/icons/Assets";
 import { mailIcon, phoneIcon, clockIcon, deleteIcon } from "@/icons/Svg";
 import { Button } from "@/components/ui/button";
 

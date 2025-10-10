@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import dashboardIcon from "@/assets/dashboard/dashboard.svg";
 import Image from "next/image";
 import Link from "next/link";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import KarepilotLogin from "@/components/Login";
 import { menuOptions, organizations } from "@/lib/dashboard/data";
+import { dashboardIcon } from "@/icons/Assets";
 
 export function OrganizationSelection() {
   const [loggedIn, setLoggedIn] = useState(false);

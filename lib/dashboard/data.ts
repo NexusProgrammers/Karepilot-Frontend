@@ -1,28 +1,29 @@
 import { StatItem } from "../organization/types";
-import activePatientsIcon from "@/assets/dashboard/central-medical-hospital/active-patients.svg";
-import emergencyAlertsIcon from "@/assets/dashboard/central-medical-hospital/emergency-alerts.svg";
-import equipmentTrackedIcon from "@/assets/dashboard/central-medical-hospital/equipment-tracked.svg";
-import navigationRequestsIcon from "@/assets/dashboard/central-medical-hospital/navigation-requests.svg";
-import uploadFloorPlanIcon from "@/assets/dashboard/quick-actions/upload-floor-plan.svg";
-import addMedicalPoiIcon from "@/assets/dashboard/quick-actions/add-medical-poi.svg";
-import trackEquipmentIcon from "@/assets/dashboard/quick-actions/track-equipment.svg";
-import assignNurseStaffZoneIcon from "@/assets/dashboard/quick-actions/assign-nurse-staff-zone.svg";
-import downloadDailyReportIcon from "@/assets/dashboard/quick-actions/download-daily-report.svg";
-import addWardLocationIcon from "@/assets/dashboard/quick-actions/add-ward-location.svg";
-import markEmergencyExitIcon from "@/assets/dashboard/quick-actions/mark-emergency-exist-location.svg";
+import {
+  activePatientsIcon,
+  emergencyAlertsIcon,
+  equipmentTrackedIcon,
+  navigationRequestsIcon,
+  uploadFloorPlanIcon,
+  addMedicalPoiIcon,
+  trackEquipmentIcon,
+  assignNurseStaffZoneIcon,
+  downloadDailyReportIcon,
+  addWardLocationIcon,
+  markEmergencyExitIcon,
+} from "@/icons/Assets";
 import { ActivityItem } from "./types";
-import { 
-  Compass, 
-  Building2, 
-  Settings, 
-  Bell, 
-  Coffee, 
-  Camera, 
-  Pill, 
-  TestTube, 
-  Image as ImageIcon 
+import {
+  Compass,
+  Building2,
+  Settings,
+  Bell,
+  Coffee,
+  Camera,
+  Pill,
+  TestTube,
+  Image as ImageIcon,
 } from "lucide-react";
-
 
 export const hospitalStats: StatItem[] = [
   {
@@ -92,83 +93,80 @@ export const buildings = [
 
 export const floors = ["Ground Floor", "1st Floor", "2nd Floor", "3rd Floor"];
 
-
 export const quickActions = [
-    {
-      id: 1,
-      title: "Upload Floor Plan",
-      description: "Import a floor plan for a hospital in PDF, PNG, or CAD",
-      icon: uploadFloorPlanIcon,
-      action: "upload-floor-plan",
-    },
-    {
-      id: 2,
-      title: "Add Medical POI",
-      description: "Edit key reports, Crisis, ERs, Pharmacists, Waiting Areas",
-      icon: addMedicalPoiIcon,
-      action: "add-medical-poi"
-    },
-    {
-      id: 3,
-      title: "Track Equipment",
-      description:
-        "Track live location of staff, visitors, or equipment on floors",
-      icon: trackEquipmentIcon,
-    },
-    {
-      id: 4,
-      title: "Emergency Alerts",
-      description: "Set alerts for unauthorized access to critical areas",
-      icon: emergencyAlertsIcon,
-    },
-    {
-      id: 5,
-      title: "Assign a Nurse or Staff to a Zone",
-      description:
-        "Allocate medical or support staff to specific layer or geofenced zones",
-      icon: assignNurseStaffZoneIcon,
-    },
-    {
-      id: 6,
-      title: "Add Ward Locations",
-      description:
-        "Create markers for patient wards and assign floor/ward numbers",
-      icon: addWardLocationIcon,
-    },
-    {
-      id: 7,
-      title: "Download Daily Report",
-      description:
-        "View and export live reports showing hospital events and departments",
-      icon: downloadDailyReportIcon,
-    },
-    {
-      id: 8,
-      title: "Mark Emergency Exit Location",
-      description: "Define and label safe exit routes for emergencies",
-      icon: markEmergencyExitIcon,
-    },
-  ];
-  
+  {
+    id: 1,
+    title: "Upload Floor Plan",
+    description: "Import a floor plan for a hospital in PDF, PNG, or CAD",
+    icon: uploadFloorPlanIcon,
+    action: "upload-floor-plan",
+  },
+  {
+    id: 2,
+    title: "Add Medical POI",
+    description: "Edit key reports, Crisis, ERs, Pharmacists, Waiting Areas",
+    icon: addMedicalPoiIcon,
+    action: "add-medical-poi",
+  },
+  {
+    id: 3,
+    title: "Track Equipment",
+    description:
+      "Track live location of staff, visitors, or equipment on floors",
+    icon: trackEquipmentIcon,
+  },
+  {
+    id: 4,
+    title: "Emergency Alerts",
+    description: "Set alerts for unauthorized access to critical areas",
+    icon: emergencyAlertsIcon,
+  },
+  {
+    id: 5,
+    title: "Assign a Nurse or Staff to a Zone",
+    description:
+      "Allocate medical or support staff to specific layer or geofenced zones",
+    icon: assignNurseStaffZoneIcon,
+  },
+  {
+    id: 6,
+    title: "Add Ward Locations",
+    description:
+      "Create markers for patient wards and assign floor/ward numbers",
+    icon: addWardLocationIcon,
+  },
+  {
+    id: 7,
+    title: "Download Daily Report",
+    description:
+      "View and export live reports showing hospital events and departments",
+    icon: downloadDailyReportIcon,
+  },
+  {
+    id: 8,
+    title: "Mark Emergency Exit Location",
+    description: "Define and label safe exit routes for emergencies",
+    icon: markEmergencyExitIcon,
+  },
+];
 
-  export const systemHealth = [
-    { name: "Database", health: 99, status: "Healthy", time: "Update" },
-    {
-      name: "Location Services",
-      health: 90,
-      status: "Healthy",
-      time: "Uptime",
-    },
-    { name: "Map Rendering", health: 70, status: "Warning", time: "Uptime" },
-    { name: "Tracking", health: 91, status: "Healthy", time: "Uptime" },
-    {
-      name: "Notification System",
-      health: 99,
-      status: "Healthy",
-      time: "Uptime",
-    },
-  ];
-
+export const systemHealth = [
+  { name: "Database", health: 99, status: "Healthy", time: "Update" },
+  {
+    name: "Location Services",
+    health: 90,
+    status: "Healthy",
+    time: "Uptime",
+  },
+  { name: "Map Rendering", health: 70, status: "Warning", time: "Uptime" },
+  { name: "Tracking", health: 91, status: "Healthy", time: "Uptime" },
+  {
+    name: "Notification System",
+    health: 99,
+    status: "Healthy",
+    time: "Uptime",
+  },
+];
 
 export const dashboardActivities: ActivityItem[] = [
   {
@@ -215,7 +213,6 @@ export const dashboardActivities: ActivityItem[] = [
   },
 ];
 
-  
 export const organizations = [
   {
     name: "Central Medical Hospital",
@@ -248,7 +245,7 @@ export const organizations = [
     type: "Shopping Mall",
   },
 ];
- 
+
 export const menuOptions = [
   "Local Mall",
   "Shopping Center",
