@@ -1,0 +1,69 @@
+"use client";
+
+import { AlertStats } from "@/lib/alerts-and-geofencing/types";
+import { Shield, AlertTriangle, Square, SquareCheck } from "lucide-react";
+
+interface AlertStatsCardsProps {
+  stats: AlertStats;
+}
+
+export function AlertStatsCards({ stats }: AlertStatsCardsProps) {
+  const statCards = [
+    {
+      title: "Active Alerts",
+      value: stats.activeAlerts,
+      icon: Shield,
+      iconColor: "text-green-600 dark:text-green-400",
+      iconBg: "bg-green-100 dark:bg-green-900/20"
+    },
+    {
+      title: "Critical",
+      value: stats.critical,
+      icon: AlertTriangle,
+      iconColor: "text-red-600 dark:text-red-400",
+      iconBg: "bg-red-100 dark:bg-red-900/20"
+    },
+    {
+      title: "Geofence Zones",
+      value: stats.geofenceZones,
+      icon: Square,
+      iconColor: "text-orange-600 dark:text-orange-400",
+      iconBg: "bg-orange-100 dark:bg-orange-900/20"
+    },
+    {
+      title: "Zone Triggers",
+      value: stats.zoneTriggers,
+      icon: SquareCheck,
+      iconColor: "text-blue-600 dark:text-blue-400",
+      iconBg: "bg-blue-100 dark:bg-blue-900/20"
+    }
+  ];
+
+  return (
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      {statCards.map((card, index) => {
+        const IconComponent = card.icon;
+        return (
+          <div
+            key={index}
+            className="bg-card rounded-xl border border-border p-4"
+          >
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-muted-foreground mb-1">
+                  {card.title}
+                </p>
+                <p className="text-2xl font-bold text-card-foreground">
+                  {card.value}
+                </p>
+              </div>
+              <div className={`w-10 h-10 rounded-full ${card.iconBg} flex items-center justify-center`}>
+                <IconComponent className={`w-5 h-5 ${card.iconColor}`} />
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
