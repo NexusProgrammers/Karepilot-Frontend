@@ -7,7 +7,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { LogoIcon } from "@/icons/dashboard";
+import { LogoIcon } from "@/icons/icons";
 import logoImg from "@/assets/common/logo.svg";
 import Image from "next/image";
 import { navigationItems } from "@/lib/sidebar/data";

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { LogoIcon } from "@/icons/dashboard";
+import { LogoIcon } from "@/icons/icons";
 import { Button } from "@/components/ui/button";
 
 export default function KarepilotLogin({ onLogin }: { onLogin: () => void }) {

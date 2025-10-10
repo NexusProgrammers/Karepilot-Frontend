@@ -7,7 +7,7 @@ import DashboardIcon from "@/assets/dashboard/dashboard.svg";
 import airportIcon from "@/assets/organization/jkf-international-airport.svg";
 import shoppingIcon from "@/assets/organization/shopping.svg";
 import openPlaceIcon from "@/assets/organization/one.svg";
-import { mailIcon, phoneIcon, clockIcon, deleteIcon } from "@/icons/dashboard";
+import { mailIcon, phoneIcon, clockIcon, deleteIcon } from "@/icons/icons";
 import { Button } from "@/components/ui/button";
 
 type OrganizationCardProps = {
