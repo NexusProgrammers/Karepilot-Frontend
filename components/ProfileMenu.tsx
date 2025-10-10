@@ -1,17 +1,17 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Settings, User, LogOut, Moon, Sun } from 'lucide-react';
-import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useTheme } from "next-themes";
+import { Settings, User, LogOut, Moon, Sun } from "@/icons/Icons";
 
 export function ProfileMenu() {
   const { theme, setTheme } = useTheme();
@@ -22,12 +22,15 @@ export function ProfileMenu() {
   }, []);
 
   const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
+    setTheme(theme === "dark" ? "light" : "dark");
   };
 
   if (!mounted) {
     return (
-      <Button variant="ghost" className="relative h-10 w-10 rounded-full cursor-pointer">
+      <Button
+        variant="ghost"
+        className="relative h-10 w-10 rounded-full cursor-pointer"
+      >
         <Avatar className="h-10 w-10">
           <AvatarFallback className="bg-[#3D8C6C]/10 text-[#3D8C6C] font-medium">
             EG
@@ -40,7 +43,10 @@ export function ProfileMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-10 w-10 rounded-full cursor-pointer">
+        <Button
+          variant="ghost"
+          className="relative h-10 w-10 rounded-full cursor-pointer"
+        >
           <Avatar className="h-10 w-10">
             <AvatarFallback className="bg-[#3D8C6C]/10 text-[#3D8C6C] font-medium">
               EG
@@ -59,12 +65,12 @@ export function ProfileMenu() {
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="cursor-pointer" onClick={toggleTheme}>
-          {theme === 'dark' ? (
+          {theme === "dark" ? (
             <Sun className="mr-2 h-4 w-4" />
           ) : (
             <Moon className="mr-2 h-4 w-4" />
           )}
-          <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+          <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer">
           <Settings className="mr-2 h-4 w-4" />

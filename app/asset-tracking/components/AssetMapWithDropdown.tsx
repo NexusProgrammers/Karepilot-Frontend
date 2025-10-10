@@ -1,6 +1,5 @@
 import { FilterOption } from "@/lib/asset-tracking/types";
 import { FilterDropdown } from "./FilterDropdown";
-import { AssetMap } from "./AssetMap";
 
 interface AssetMapWithDropdownProps {
   selectedBuilding: string;

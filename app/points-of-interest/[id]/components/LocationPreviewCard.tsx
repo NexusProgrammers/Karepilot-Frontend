@@ -1,4 +1,4 @@
-import { Map } from "lucide-react";
+import { Map } from "@/icons/Icons";
 import { POI } from "@/lib/points-of-interest/types";
 
 interface LocationPreviewCardProps {

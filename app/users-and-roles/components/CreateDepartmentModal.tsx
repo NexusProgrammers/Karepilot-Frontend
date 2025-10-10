@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Building2 } from "lucide-react";
+import { X, Building2 } from "@/icons/Icons";
 import { Button } from "@/components/ui/button";
 import { CustomInput } from "@/components/common/CustomInput";
 import { CustomTextarea } from "@/components/common/CustomTextarea";

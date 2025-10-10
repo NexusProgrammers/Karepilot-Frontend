@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { Check } from "@/icons/Icons";
 
 interface CustomCheckboxProps {
   checked: boolean;

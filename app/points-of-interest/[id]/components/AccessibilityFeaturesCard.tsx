@@ -1,4 +1,4 @@
-import { Eye, Ear } from "lucide-react";
+import { Eye, Ear } from "@/icons/Icons";
 import { GrWheelchairActive } from "react-icons/gr";
 import { POI } from "@/lib/points-of-interest/types";
 

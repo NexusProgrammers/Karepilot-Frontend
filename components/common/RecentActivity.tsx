@@ -1,8 +1,8 @@
 "use client";
 
 import { RecentActivityProps } from "@/lib/dashboard/types";
-import { MoveRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MoveRight } from "@/icons/Icons";
 
 export default function RecentActivity({
   title = "Recent Activity",

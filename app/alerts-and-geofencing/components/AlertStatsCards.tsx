@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertStats } from "@/lib/alerts-and-geofencing/types";
-import { Shield, AlertTriangle, Square, SquareCheck } from "lucide-react";
+import { Shield, AlertTriangle, Square, SquareCheck } from "@/icons/Icons";
 
 interface AlertStatsCardsProps {
   stats: AlertStats;
@@ -14,29 +14,29 @@ export function AlertStatsCards({ stats }: AlertStatsCardsProps) {
       value: stats.activeAlerts,
       icon: Shield,
       iconColor: "text-green-600 dark:text-green-400",
-      iconBg: "bg-green-100 dark:bg-green-900/20"
+      iconBg: "bg-green-100 dark:bg-green-900/20",
     },
     {
       title: "Critical",
       value: stats.critical,
       icon: AlertTriangle,
       iconColor: "text-red-600 dark:text-red-400",
-      iconBg: "bg-red-100 dark:bg-red-900/20"
+      iconBg: "bg-red-100 dark:bg-red-900/20",
     },
     {
       title: "Geofence Zones",
       value: stats.geofenceZones,
       icon: Square,
       iconColor: "text-orange-600 dark:text-orange-400",
-      iconBg: "bg-orange-100 dark:bg-orange-900/20"
+      iconBg: "bg-orange-100 dark:bg-orange-900/20",
     },
     {
       title: "Zone Triggers",
       value: stats.zoneTriggers,
       icon: SquareCheck,
       iconColor: "text-blue-600 dark:text-blue-400",
-      iconBg: "bg-blue-100 dark:bg-blue-900/20"
-    }
+      iconBg: "bg-blue-100 dark:bg-blue-900/20",
+    },
   ];
 
   return (
@@ -57,7 +57,9 @@ export function AlertStatsCards({ stats }: AlertStatsCardsProps) {
                   {card.value}
                 </p>
               </div>
-              <div className={`w-10 h-10 rounded-full ${card.iconBg} flex items-center justify-center`}>
+              <div
+                className={`w-10 h-10 rounded-full ${card.iconBg} flex items-center justify-center`}
+              >
                 <IconComponent className={`w-5 h-5 ${card.iconColor}`} />
               </div>
             </div>

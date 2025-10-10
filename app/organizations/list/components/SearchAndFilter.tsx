@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { venueTypeFilters } from "@/lib/organization/data";
-import { searchIcon } from "@/icons/icons";
+import { searchIcon } from "@/icons/Svg";
 import { Button } from "@/components/ui/button";
 
 type SearchAndFilterProps = {

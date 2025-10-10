@@ -1,21 +1,21 @@
 "use client";
 
-import { 
-  HospitalIcon, 
-  PlaneIcon, 
-  ShoppingBagIcon, 
-  MapPinIcon 
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  HospitalIcon,
+  PlaneIcon,
+  ShoppingBagIcon,
+  MapPinIcon,
+} from "@/icons/Icons";
 
 interface VenueTemplateSelectorProps {
   selectedTemplate: string;
   onTemplateSelect: (template: string) => void;
 }
 
-export function VenueTemplateSelector({ 
-  selectedTemplate, 
-  onTemplateSelect 
+export function VenueTemplateSelector({
+  selectedTemplate,
+  onTemplateSelect,
 }: VenueTemplateSelectorProps) {
   const templates = [
     {
@@ -26,9 +26,9 @@ export function VenueTemplateSelector({
         "Emergency tracking",
         "Patient navigation",
         "Equipment monitoring",
-        "Staff coordination"
+        "Staff coordination",
       ],
-      icon: <HospitalIcon className="w-6 h-6 text-[#3D8C6C]" />
+      icon: <HospitalIcon className="w-6 h-6 text-[#3D8C6C]" />,
     },
     {
       id: "airport",
@@ -38,9 +38,9 @@ export function VenueTemplateSelector({
         "Terminal navigation",
         "Gate tracking",
         "Baggage monitoring",
-        "Flight information"
+        "Flight information",
       ],
-      icon: <PlaneIcon className="w-6 h-6 text-[#3D8C6C]" />
+      icon: <PlaneIcon className="w-6 h-6 text-[#3D8C6C]" />,
     },
     {
       id: "shopping-mall",
@@ -50,9 +50,9 @@ export function VenueTemplateSelector({
         "Store locator",
         "Event tracking",
         "Customer flow",
-        "Promotion zones"
+        "Promotion zones",
       ],
-      icon: <ShoppingBagIcon className="w-6 h-6 text-[#3D8C6C]" />
+      icon: <ShoppingBagIcon className="w-6 h-6 text-[#3D8C6C]" />,
     },
     {
       id: "open-place",
@@ -62,10 +62,10 @@ export function VenueTemplateSelector({
         "Area navigation",
         "Event management",
         "Visitor tracking",
-        "Safety zones"
+        "Safety zones",
       ],
-      icon: <MapPinIcon className="w-6 h-6 text-[#3D8C6C]" />
-    }
+      icon: <MapPinIcon className="w-6 h-6 text-[#3D8C6C]" />,
+    },
   ];
 
   return (
@@ -97,21 +97,24 @@ export function VenueTemplateSelector({
                 </p>
               </div>
             </div>
-            
+
             <div className="mb-3">
               <h5 className="text-xs font-medium text-card-foreground mb-1">
                 Included Features:
               </h5>
               <ul className="space-y-0.5">
                 {template.features.map((feature, index) => (
-                  <li key={index} className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <li
+                    key={index}
+                    className="flex items-center gap-2 text-xs text-muted-foreground"
+                  >
                     <div className="w-2 h-2 bg-[#3D8C6C] rounded-full shrink-0"></div>
                     {feature}
                   </li>
                 ))}
               </ul>
             </div>
-            
+
             <hr className="border-border mb-3" />
             <Button
               variant="outline"

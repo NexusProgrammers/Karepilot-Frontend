@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { X, MapPin } from "lucide-react";
 import { CustomInput } from "@/components/common/CustomInput";
 import { CustomSelect } from "@/components/common/CustomSelect";
 import { CustomTextarea } from "@/components/common/CustomTextarea";
 import { ToggleSwitch } from "@/components/common/ToggleSwitch";
 import { Button } from "@/components/ui/button";
 import { CreateGeofenceZoneData, NotificationSettings } from "@/lib/alerts-and-geofencing/types";
+import { X, MapPin } from "@/icons/Icons";
 
 interface CreateGeofenceZoneModalProps {
   isOpen: boolean;

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Upload } from "lucide-react";
+import { Upload } from "@/icons/Icons";
 import { UploadFloorPlanModal } from "../../dashboard/[id]/components/UploadFloorPlanModal";
 
 export default function MapManagerHeader() {

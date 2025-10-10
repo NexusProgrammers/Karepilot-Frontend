@@ -1,4 +1,4 @@
-import { Edit3, MapPin, Compass, Trash2 } from "lucide-react";
+import { Edit3, MapPin, Compass, Trash2 } from "@/icons/Icons";
 import { Button } from "@/components/ui/button";
 import { POI } from "@/lib/points-of-interest/types";
 

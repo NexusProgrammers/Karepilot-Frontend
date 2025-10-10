@@ -1,8 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { Alert, FilterOption } from "@/lib/alerts-and-geofencing/types";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
 
 interface AlertLogProps {
   alerts: Alert[];

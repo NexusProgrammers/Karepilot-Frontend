@@ -1,6 +1,6 @@
 import { Department } from "@/lib/users-and-roles/types";
 import { Button } from "@/components/ui/button";
-import { Building2, Edit, Trash2 } from "lucide-react";
+import { Building2, Edit, Trash2 } from "@/icons/Icons";
 
 interface DepartmentCardProps {
   department: Department;

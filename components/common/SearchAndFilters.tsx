@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Search, ChevronDown, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Search, ChevronDown, Check } from "@/icons/Icons";
 
 export type FilterOption = {
   label: string;
@@ -27,16 +27,16 @@ export default function SearchAndFilters({
   onFilterChange,
 }: SearchAndFiltersProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedFilters, setSelectedFilters] = useState<Record<string, string>>(
-    () => {
-      const initialFilters: Record<string, string> = {};
-      filters.forEach((filter) => {
-        initialFilters[filter.label] =
-          filter.defaultValue || filter.options[0]?.value || "";
-      });
-      return initialFilters;
-    }
-  );
+  const [selectedFilters, setSelectedFilters] = useState<
+    Record<string, string>
+  >(() => {
+    const initialFilters: Record<string, string> = {};
+    filters.forEach((filter) => {
+      initialFilters[filter.label] =
+        filter.defaultValue || filter.options[0]?.value || "";
+    });
+    return initialFilters;
+  });
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const dropdownRefs = useRef<Record<string, HTMLDivElement | null>>({});

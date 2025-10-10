@@ -4,13 +4,13 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { LogoIcon } from "@/icons/icons";
-import logoImg from "@/assets/common/logo.svg";
+import { LogoIcon } from "@/icons/Svg";
+import { logoImg } from "@/icons/Assets";
 import Image from "next/image";
 import { navigationItems } from "@/lib/sidebar/data";
+import { Menu } from "@/icons/Icons";
 
 interface SidebarProps {
   className?: string;

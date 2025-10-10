@@ -1,7 +1,7 @@
 import { User } from "@/lib/users-and-roles/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { MapPin } from "lucide-react";
+import { MapPin } from "@/icons/Icons";
 
 interface UserCardProps {
   user: User;

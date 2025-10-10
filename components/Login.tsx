@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
-import { LogoIcon } from "@/icons/icons";
+import { Eye, EyeOff } from "@/icons/Icons";
+import { LogoIcon } from "@/icons/Svg";
 import { Button } from "@/components/ui/button";
 
 export default function KarepilotLogin({ onLogin }: { onLogin: () => void }) {

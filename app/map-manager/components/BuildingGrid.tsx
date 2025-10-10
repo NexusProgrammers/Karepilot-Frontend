@@ -1,7 +1,7 @@
 "use client";
 
 import { buildings } from "@/lib/map-manager/data";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart } from "@/icons/Icons";
 import { Button } from "@/components/ui/button";
 
 export default function BuildingGrid() {

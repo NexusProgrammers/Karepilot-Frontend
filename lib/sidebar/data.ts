@@ -8,7 +8,7 @@ import {
   AlertsAndGeofencingIcon,
   AnalyticsIcon,
   SettingsIcon,
-} from "@/icons/icons";
+} from "@/icons/Svg";
 
 export const navigationItems = [
   {

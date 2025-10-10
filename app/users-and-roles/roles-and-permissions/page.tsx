@@ -5,7 +5,12 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import SearchAndFilters from "@/components/common/SearchAndFilters";
 import StatsGridWithIcons from "@/components/common/StatsGridWithIcons";
 import NavigationTabs from "@/components/common/NavigationTabs";
-import { filterOptions, rolesData, statsData, tabs } from "@/lib/users-and-roles/data";
+import {
+  filterOptions,
+  rolesData,
+  statsData,
+  tabs,
+} from "@/lib/users-and-roles/data";
 import {
   UsersAndRolesHeader,
   RolesList,
@@ -15,9 +20,8 @@ import {
 
 export default function RolesAndPermissionsPage() {
   const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
-  const [isCreateDepartmentModalOpen, setIsCreateDepartmentModalOpen] = useState(false);
-
-  
+  const [isCreateDepartmentModalOpen, setIsCreateDepartmentModalOpen] =
+    useState(false);
 
   return (
     <DashboardLayout
@@ -35,8 +39,8 @@ export default function RolesAndPermissionsPage() {
 
         <StatsGridWithIcons stats={statsData} />
 
-        <NavigationTabs 
-          tabs={tabs} 
+        <NavigationTabs
+          tabs={tabs}
           className="max-w-[400px]"
           responsive={true}
         />

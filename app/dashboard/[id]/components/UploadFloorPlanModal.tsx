@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, CloudUpload } from "lucide-react";
+import { X, CloudUpload } from "@/icons/Icons";
 import { CustomSelect } from "@/components/common/CustomSelect";
 import { CustomTextarea } from "@/components/common/CustomTextarea";
 import { Button } from "@/components/ui/button";

@@ -6,7 +6,8 @@ import {
   PlaneIcon,
   ShoppingBagIcon,
   MapPinIcon,
-} from "lucide-react";
+} from "@/icons/Icons";
+
 
 export function VenueTemplatesGrid() {
   const templates = [

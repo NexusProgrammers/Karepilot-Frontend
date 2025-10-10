@@ -2,9 +2,9 @@ import { CustomInput } from "@/components/common/CustomInput";
 import { CustomSelect } from "@/components/common/CustomSelect";
 import { CustomTextarea } from "@/components/common/CustomTextarea";
 import { ToggleSwitch } from "@/components/common/ToggleSwitch";
-import { CreatePIOIcon } from "@/icons/icons";
+import { CreatePIOIcon } from "@/icons/Svg";
 import { buildings, facilities, floors } from "@/lib/dashboard/data";
-import { MapPin, X } from "lucide-react";
+import { MapPin, X } from "@/icons/Icons";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 

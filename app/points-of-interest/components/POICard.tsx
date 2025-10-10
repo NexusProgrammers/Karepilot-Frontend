@@ -1,7 +1,7 @@
 "use client";
 
 import { POI } from "@/lib/points-of-interest/types";
-import { MapPin, Settings, Ear } from "lucide-react";
+import { MapPin, Settings, Ear } from "@/icons/Icons";
 import { GrWheelchairActive } from "react-icons/gr";
 import { Button } from "@/components/ui/button";
 import { EditPOIModal } from "@/app/dashboard/[id]/components/EditPOIModal";

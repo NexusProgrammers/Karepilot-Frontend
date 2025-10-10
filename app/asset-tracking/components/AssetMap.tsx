@@ -1,10 +1,7 @@
-import { Map, Building, Users } from "lucide-react";
+import { Map, Building, Users } from "@/icons/Icons";
 
-interface AssetMapProps {
-  selectedBuilding: string;
-}
 
-export function AssetMap({ selectedBuilding }: AssetMapProps) {
+export function AssetMap() {
   return (
     <div className="bg-card border border-border rounded-xl p-6">
       <div className="mb-4">

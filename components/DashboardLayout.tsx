@@ -3,8 +3,8 @@
 import { ReactNode } from "react";
 import { Sidebar } from "./Sidebar";
 import { ProfileMenu } from "./ProfileMenu";
-import { ArrowLeft, Building2, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { ArrowLeft, Building2, ChevronRight } from "@/icons/Icons";
 
 interface DashboardLayoutProps {
   children: ReactNode;

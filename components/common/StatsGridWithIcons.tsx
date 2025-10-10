@@ -1,6 +1,6 @@
 "use client";
 
-import { LucideIcon } from "lucide-react";
+import { LucideIcon } from "@/icons/Icons";
 
 export type StatItemWithIcon = {
   id: number | string;

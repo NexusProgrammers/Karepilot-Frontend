@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin } from "lucide-react";
+import { MapPin } from "@/icons/Icons";
 import { Button } from "@/components/ui/button";
 
 interface POIHeaderProps {

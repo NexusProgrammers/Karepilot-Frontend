@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, Check } from "lucide-react";
 import { FilterOption } from "@/lib/asset-tracking/types";
+import { ChevronDown, Check } from "@/icons/Icons";
 
 interface FilterDropdownProps {
   label: string;

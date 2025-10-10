@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { OrganizationIcon } from "@/icons/icons";
+import { OrganizationIcon } from "@/icons/Svg";
 import { CreateOrganizationModal } from "./CreateOrganizationModal";
 import { Button } from "@/components/ui/button";
 

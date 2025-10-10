@@ -1,20 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { X, Building2 } from "lucide-react";
 import { CustomInput } from "./CustomInput";
 import { CustomSelect } from "./CustomSelect";
 import { VenueTemplateSelector } from "./VenueTemplateSelector";
 import { Button } from "@/components/ui/button";
+import { X, Building2 } from "@/icons/Icons";
 
 interface CreateOrganizationModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function CreateOrganizationModal({ 
-  isOpen, 
-  onClose 
+export function CreateOrganizationModal({
+  isOpen,
+  onClose,
 }: CreateOrganizationModalProps) {
   const [selectedTemplate, setSelectedTemplate] = useState("hospital");
   const [formData, setFormData] = useState({
@@ -24,15 +24,15 @@ export function CreateOrganizationModal({
     country: "United States",
     city: "",
     timezone: "Eastern Time (UTC-5)",
-    fullAddress: ""
+    fullAddress: "",
   });
 
   const countries = [
     "United States",
-    "Canada", 
+    "Canada",
     "United Kingdom",
     "Germany",
-    "France"
+    "France",
   ];
 
   const timezones = [
@@ -40,13 +40,13 @@ export function CreateOrganizationModal({
     "Pacific Time (UTC-8)",
     "Mountain Time (UTC-7)",
     "Central Time (UTC-6)",
-    "Eastern European Time (UTC+2)"
+    "Eastern European Time (UTC+2)",
   ];
 
   const handleSubmit = () => {
     console.log("Creating organization:", {
       template: selectedTemplate,
-      ...formData
+      ...formData,
     });
     onClose();
   };
@@ -100,14 +100,18 @@ export function CreateOrganizationModal({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <CustomInput
                   value={formData.organizationName}
-                  onChange={(value) => setFormData({...formData, organizationName: value})}
+                  onChange={(value) =>
+                    setFormData({ ...formData, organizationName: value })
+                  }
                   placeholder="e.g. Central Medical hospital"
                   label="Organization Name"
                   required
                 />
                 <CustomInput
                   value={formData.contactEmail}
-                  onChange={(value) => setFormData({...formData, contactEmail: value})}
+                  onChange={(value) =>
+                    setFormData({ ...formData, contactEmail: value })
+                  }
                   placeholder="e.g. admin@organization.com"
                   label="Contact Email"
                   required
@@ -117,14 +121,18 @@ export function CreateOrganizationModal({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <CustomInput
                   value={formData.contactPhone}
-                  onChange={(value) => setFormData({...formData, contactPhone: value})}
+                  onChange={(value) =>
+                    setFormData({ ...formData, contactPhone: value })
+                  }
                   placeholder="+1-555-012-4353"
                   label="Contact Phone"
                   required
                 />
                 <CustomSelect
                   value={formData.country}
-                  onChange={(value) => setFormData({...formData, country: value})}
+                  onChange={(value) =>
+                    setFormData({ ...formData, country: value })
+                  }
                   options={countries}
                   placeholder="Select Country"
                   label="Country"
@@ -135,14 +143,18 @@ export function CreateOrganizationModal({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <CustomInput
                   value={formData.city}
-                  onChange={(value) => setFormData({...formData, city: value})}
+                  onChange={(value) =>
+                    setFormData({ ...formData, city: value })
+                  }
                   placeholder="e.g. New York"
                   label="City"
                   required
                 />
                 <CustomSelect
                   value={formData.timezone}
-                  onChange={(value) => setFormData({...formData, timezone: value})}
+                  onChange={(value) =>
+                    setFormData({ ...formData, timezone: value })
+                  }
                   options={timezones}
                   placeholder="Select Timezone"
                   label="Timezone"
@@ -152,7 +164,9 @@ export function CreateOrganizationModal({
 
               <CustomInput
                 value={formData.fullAddress}
-                onChange={(value) => setFormData({...formData, fullAddress: value})}
+                onChange={(value) =>
+                  setFormData({ ...formData, fullAddress: value })
+                }
                 placeholder="Address"
                 label="Full Address"
                 required

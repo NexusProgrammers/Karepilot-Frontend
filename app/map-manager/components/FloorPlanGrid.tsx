@@ -1,7 +1,7 @@
 "use client";
 
 import { floorPlans } from "@/lib/map-manager/data";
-import { MapPin, Settings } from "lucide-react";
+import { MapPin, Settings } from "@/icons/Icons";
 import { Button } from "@/components/ui/button";
 
 export default function FloorPlanGrid() {

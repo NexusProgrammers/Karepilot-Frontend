@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ChevronDown, LucideIcon } from "@/icons/Icons";
 
 interface CustomSelectProps {
   value: string;
@@ -54,8 +54,12 @@ export function CustomSelect({
           focus:outline-none focus:border-foreground transition-colors flex items-center justify-between gap-2 cursor-pointer"
         >
           <div className="flex items-center gap-2 flex-1 min-w-0">
-            {icon && <span className="text-muted-foreground shrink-0">{icon}</span>}
-            <span className={value ? "text-foreground" : "text-muted-foreground"}>
+            {icon && (
+              <span className="text-muted-foreground shrink-0">{icon}</span>
+            )}
+            <span
+              className={value ? "text-foreground" : "text-muted-foreground"}
+            >
               {value || placeholder}
             </span>
           </div>
@@ -72,9 +76,11 @@ export function CustomSelect({
               {placeholder}
             </div>
             {options.map((option) => {
-              const optionName = typeof option === 'string' ? option : option.name;
-              const IconComponent = typeof option === 'string' ? null : option.icon;
-              
+              const optionName =
+                typeof option === "string" ? option : option.name;
+              const IconComponent =
+                typeof option === "string" ? null : option.icon;
+
               return (
                 <Button
                   key={optionName}

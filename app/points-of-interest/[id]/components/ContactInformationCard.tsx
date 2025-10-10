@@ -1,4 +1,4 @@
-import { Phone, Mail, Clock } from "lucide-react";
+import { Phone, Mail, Clock } from "@/icons/Icons";
 import { POI } from "@/lib/points-of-interest/types";
 
 interface ContactInformationCardProps {
