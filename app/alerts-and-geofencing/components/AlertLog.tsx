@@ -126,6 +126,7 @@ export function AlertLog({ alerts, tabs, currentFilter = "all" }: AlertLogProps)
             </div>
           </div>
         ))}
+        
       </div>
     </div>
   );
