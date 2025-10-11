@@ -25,7 +25,7 @@ export default function NavigationTabs({
   const pathname = usePathname();
 
   const isActive = (tab: TabItem) => {
-    if (tab.href === "/organizations" || tab.href === "/map-manager") {
+    if (tab.href === "/organizations" || tab.href === "/map-manager" || tab.href === "/alerts-and-geofencing") {
       return pathname === tab.href;
     }
     
@@ -53,7 +53,7 @@ export default function NavigationTabs({
           <Link
             key={tab.id}
             href={tab.href}
-            className={`whitespace-nowrap transition cursor-pointer rounded-full ${textClasses} ${
+            className={`whitespace-nowrap transition cursor-pointer rounded-full ${responsive ? 'flex-shrink-0' : ''} ${textClasses} ${
               active
                 ? "bg-background text-foreground shadow-sm"
                 : "bg-muted text-muted-foreground hover:bg-accent"

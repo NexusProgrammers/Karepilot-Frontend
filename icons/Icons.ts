@@ -41,7 +41,8 @@ import {
   Trash2,
   Compass,
   UserPlus,
-  Edit
+  Edit,
+  Siren 
 } from "lucide-react";
 
 export {
@@ -86,6 +87,7 @@ export {
   Trash2,
   Compass,
   UserPlus,
-  Edit
+  Edit,
+  Siren
 };
 export type { LucideIcon };

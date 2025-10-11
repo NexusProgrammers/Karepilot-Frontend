@@ -18,7 +18,7 @@ export default function RecentActivity({
 
   return (
     <div className="bg-card rounded-xl border border-border p-6">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center md:flex-row flex-col justify-between mb-6">
         <div>
           <h2 className="text-lg font-semibold text-card-foreground mb-1">{title}</h2>
           <p className="text-sm text-muted-foreground">{subtitle}</p>

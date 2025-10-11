@@ -17,16 +17,14 @@ export function RealTimeAssetMap({
   onToggleZone,
 }: RealTimeAssetMapProps) {
   return (
-    <div className="bg-card border border-border rounded-xl p-6">
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex-1">
-          <h3 className="text-lg font-semibold text-card-foreground mb-1">
-            Real-time Asset Map
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            Live tracking of assets across hospital buildings
-          </p>
-        </div>
+    <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
+      <div className="mb-4">
+        <h3 className="text-base sm:text-lg font-semibold text-card-foreground mb-1">
+          Real-time Asset Map
+        </h3>
+        <p className="text-xs sm:text-sm text-muted-foreground">
+          Live tracking of assets across hospital buildings
+        </p>
       </div>
 
       <div className="space-y-3">

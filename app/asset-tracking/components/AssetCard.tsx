@@ -27,7 +27,7 @@ export function AssetCard({ asset }: AssetCardProps) {
 
   return (
     <div className="bg-card border border-border rounded-xl p-4">
-      <div className="flex items-start justify-between mb-3">
+      <div className="flex flex-col sm:flex-row items-start justify-between mb-3">
         <div className="flex items-center gap-3 flex-1">
           <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
             <Building2 className="w-5 h-5 text-muted-foreground" />

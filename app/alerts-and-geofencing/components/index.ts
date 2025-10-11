@@ -6,3 +6,4 @@ export { AlertLog } from './AlertLog';
 export { GeofenceZoneCard } from './GeofenceZoneCard';
 export { CreateGeofenceZoneModal } from './CreateGeofenceZoneModal';
 export { CreateAlertModal } from './CreateAlertModal';
+export { AlertsPageContent } from './AlertsPageContent';

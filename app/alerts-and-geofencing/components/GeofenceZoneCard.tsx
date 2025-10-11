@@ -30,18 +30,18 @@ export function GeofenceZoneCard({
   };
 
   return (
-    <div className="bg-card border border-border rounded-xl p-4">
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex-1">
-          <h3 className="text-sm font-semibold text-card-foreground mb-1">
+    <div className="bg-card border border-border rounded-xl p-3 sm:p-4">
+      <div className="space-y-3">
+        <div className="space-y-2">
+          <h3 className="text-sm font-semibold text-card-foreground">
             {zone.name}
           </h3>
-          <p className="text-xs text-muted-foreground mb-2">
+          <p className="text-xs text-muted-foreground">
             {zone.location}
           </p>
           
-          <div className="flex items-center gap-2 mb-3">
-            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getAlertTypeStyles(zone.alertType)}`}>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium w-fit ${getAlertTypeStyles(zone.alertType)}`}>
               {zone.alertType}
             </span>
             <span className="text-xs text-muted-foreground">
@@ -49,47 +49,47 @@ export function GeofenceZoneCard({
             </span>
           </div>
           
-          <p className="text-xs text-muted-foreground mb-3">
+          <p className="text-xs text-muted-foreground line-clamp-2">
             {zone.description}
           </p>
         </div>
-      </div>
 
-      <div className="flex items-center justify-between">
-        <div className="flex gap-2">
-          <Button
-            onClick={() => onEdit(zone)}
-            variant="outline"
-            size="sm"
-            className="px-3 py-1.5 text-xs font-medium text-muted-foreground bg-transparent border border-border rounded-lg hover:bg-accent transition-colors cursor-pointer"
-          >
-            Edit
-          </Button>
-          <Button
-            onClick={() => onViewInMap(zone)}
-            variant="outline"
-            size="sm"
-            className="px-3 py-1.5 text-xs font-medium text-muted-foreground bg-transparent border border-border rounded-lg hover:bg-accent transition-colors cursor-pointer"
-          >
-            View in Map
-          </Button>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">Active</span>
-          <button
-            type="button"
-            onClick={() => onToggle(zone)}
-            className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors cursor-pointer ${
-              zone.isActive ? "bg-[#3D8C6C]" : "bg-muted"
-            }`}
-          >
-            <span
-              className={`inline-block h-4 w-4 transform rounded-full bg-background transition-transform ${
-                zone.isActive ? "translate-x-6" : "translate-x-1"
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2 border-t border-border">
+          <div className="flex flex-wrap gap-2">
+            <Button
+              onClick={() => onEdit(zone)}
+              variant="outline"
+              size="sm"
+              className="px-3 py-1.5 text-xs font-medium text-muted-foreground bg-transparent border border-border rounded-lg hover:bg-accent transition-colors cursor-pointer"
+            >
+              Edit
+            </Button>
+            <Button
+              onClick={() => onViewInMap(zone)}
+              variant="outline"
+              size="sm"
+              className="px-3 py-1.5 text-xs font-medium text-muted-foreground bg-transparent border border-border rounded-lg hover:bg-accent transition-colors cursor-pointer"
+            >
+              View in Map
+            </Button>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Active</span>
+            <button
+              type="button"
+              onClick={() => onToggle(zone)}
+              className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors cursor-pointer ${
+                zone.isActive ? "bg-[#3D8C6C]" : "bg-muted"
               }`}
-            />
-          </button>
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-background transition-transform ${
+                  zone.isActive ? "translate-x-6" : "translate-x-1"
+                }`}
+              />
+            </button>
+          </div>
         </div>
       </div>
     </div>

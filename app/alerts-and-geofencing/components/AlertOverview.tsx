@@ -35,60 +35,66 @@ export function AlertOverview({ stats, recentAlerts }: AlertOverviewProps) {
   };
 
   return (
-    <div className="bg-card border border-border rounded-xl p-6">
+    <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-card-foreground mb-1">
+        <h3 className="text-base sm:text-lg font-semibold text-card-foreground mb-1">
           Alert Overview
         </h3>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-xs sm:text-sm text-muted-foreground">
           Current alert status and statistics
         </p>
       </div>
 
-      <div className="grid grid-cols-3 gap-3 mb-6">
-        <div className="text-center">
-          <div className="text-2xl font-bold text-red-600 dark:text-red-400 mb-1">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6">
+        <div className="text-center border border-border dark:border-gray-700 rounded-3xl bg-muted/50 dark:bg-muted/30 p-3 sm:p-4 lg:p-6">
+          <div className="text-xl sm:text-2xl font-bold text-red-600 dark:text-red-400 mb-0.5 sm:mb-1">
             {stats.active}
           </div>
-          <div className="text-xs text-muted-foreground">Active</div>
+          <div className="text-[10px] sm:text-xs text-muted-foreground">Active</div>
         </div>
-        <div className="text-center">
-          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">
+        <div className="text-center border border-border dark:border-gray-700 rounded-3xl bg-muted/50 dark:bg-muted/30 p-3 sm:p-4 lg:p-6">
+          <div className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400 mb-0.5 sm:mb-1">
             {stats.acknowledged}
           </div>
-          <div className="text-xs text-muted-foreground">Acknowledged</div>
+          <div className="text-[10px] sm:text-xs text-muted-foreground">Acknowledged</div>
         </div>
-        <div className="text-center">
-          <div className="text-2xl font-bold text-green-600 dark:text-green-400 mb-1">
+        <div className="text-center border border-border dark:border-gray-700 rounded-3xl bg-muted/50 dark:bg-muted/30 p-3 sm:p-4 lg:p-6">
+          <div className="text-xl sm:text-2xl font-bold text-green-600 dark:text-green-400 mb-0.5 sm:mb-1">
             {stats.resolved}
           </div>
-          <div className="text-xs text-muted-foreground">Resolved</div>
+          <div className="text-[10px] sm:text-xs text-muted-foreground">Resolved</div>
         </div>
       </div>
 
       <div>
-        <h4 className="text-sm font-semibold text-card-foreground mb-3">
+        <h4 className="text-sm font-semibold text-card-foreground mb-3 hidden sm:block">
           Recent Alerts
         </h4>
-        <div className="space-y-3">
-          {recentAlerts.map((alert, index) => (
+        <div className="space-y-2 sm:space-y-3">
+          {recentAlerts.map((alert) => (
             <div
               key={alert.id}
-              className={`flex items-start gap-3 p-3 rounded-lg border ${
-                index !== recentAlerts.length - 1 ? "border-border" : "border-transparent"
-              }`}
+              className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border border-border"
             >
-              <div className={`w-3 h-3 rounded-full mt-1.5 shrink-0 ${getStatusDotColor(alert.status)}`}></div>
-              
+              <div
+                className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full mt-1.5 shrink-0 ${getStatusDotColor(
+                  alert.status
+                )}`}
+              ></div>
+
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-card-foreground font-medium mb-1 line-clamp-2">
+                <p className="text-xs sm:text-sm text-card-foreground font-medium mb-1 line-clamp-2">
                   {alert.title}
                 </p>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getSeverityStyles(alert.severity)}`}>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                  <span
+                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-medium w-fit ${getSeverityStyles(
+                      alert.severity
+                    )}`}
+                  >
                     {alert.severity}
                   </span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-[10px] sm:text-xs text-muted-foreground truncate">
                     {alert.location}
                   </span>
                 </div>

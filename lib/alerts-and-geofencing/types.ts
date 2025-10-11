@@ -60,4 +60,7 @@ export interface CreateAlertData {
   email: string;
   phone: string;
   department: string;
+  location: string;
+  floor: string;
+  room: string;
 }
