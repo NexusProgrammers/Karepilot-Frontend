@@ -470,7 +470,10 @@ export interface QuickExportItem {
   id: number;
   title: string;
   description: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{
+    className?: string;
+    style?: React.CSSProperties;
+  }>;
   iconColor?: string;
 }
 
@@ -481,6 +484,20 @@ export interface RecentReport {
   date: string;
   status: "Ready" | "Processing";
   statusColor: string;
+}
+
+export interface ReportTemplate {
+  id: number;
+  title: string;
+  description: string;
+  tags: string[];
+  isSelected?: boolean;
+}
+
+export interface ReportSection {
+  id: number;
+  name: string;
+  checked: boolean;
 }
 
 export const quickExportData: QuickExportItem[] = [
@@ -566,4 +583,44 @@ export const recentReports = [
     status: "Processing" as const,
     statusColor: "text-orange-600",
   },
+];
+
+export const reportTemplates: ReportTemplate[] = [
+  {
+    id: 1,
+    title: "Comprehensive Analytics Report",
+    description: "Complete overview of all metrics and KPIs",
+    tags: ["User engagement", "System performance", "Venue analytics", "Trends"],
+    isSelected: false,
+  },
+  {
+    id: 2,
+    title: "System Performance Report",
+    description: "Technical metrics, uptime, and system health",
+    tags: ["Uptime statistics", "Response times", "Error rates", "Throughput"],
+    isSelected: true,
+  },
+  {
+    id: 3,
+    title: "User Engagement Report",
+    description: "User behavior, feature usage, and retention metrics",
+    tags: ["Active users", "Feature usage", "Session data", "Retention"],
+    isSelected: false,
+  },
+  {
+    id: 4,
+    title: "Venue-Specific Report",
+    description: "Detailed specific analytics and insights",
+    tags: ["Navigation usage", "POI interactions", "Location data", "Emergency metrics"],
+    isSelected: false,
+  },
+];
+
+export const reportSections: ReportSection[] = [
+  { id: 1, name: "Executive Summary", checked: true },
+  { id: 2, name: "Key Metrics", checked: true },
+  { id: 3, name: "Charts & Graphs", checked: false },
+  { id: 4, name: "Detailed Data Tables", checked: false },
+  { id: 5, name: "Recommendations", checked: false },
+  { id: 6, name: "Appendix", checked: false },
 ];

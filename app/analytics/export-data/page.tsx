@@ -4,7 +4,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { AnalyticsHeader } from "../components/AnalyticsHeader";
 import { QuickExport } from "./components/QuickExport";
 import { CustomExport } from "./components/CustomExport";
-import { RecentReports } from "./components/RecentReports";
+import { RecentReports } from "../../../components/common/RecentReports";
 import {
   quickExportData,
   dataCategories,

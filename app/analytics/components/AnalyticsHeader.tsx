@@ -59,13 +59,16 @@ export function AnalyticsHeader({
             </Button>
           </Link>
 
-          <Button
-            onClick={handleGenerateReport}
-            className="flex items-center gap-2 cursor-pointer bg-[#3D8C6C] hover:bg-[#2F6B54] text-white"
-          >
-            <BarChart3 className="w-4 h-4" />
-            <span>Generate Report</span>
-          </Button>
+          <Link href="/analytics/generate-report">
+            <Button
+              variant="outline"
+              onClick={handleGenerateReport}
+              className="flex items-center gap-2 cursor-pointer bg-[#3D8C6C] hover:bg-[#2F6B54] hover:text-white text-white"
+            >
+              <BarChart3 className="w-4 h-4" />
+              <span>Generate Report</span>
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

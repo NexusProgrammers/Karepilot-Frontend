@@ -35,3 +35,17 @@ export interface RecentReport {
   status: "Ready" | "Processing";
   statusColor: string;
 }
+
+export interface ReportTemplate {
+  id: number;
+  title: string;
+  description: string;
+  tags: string[];
+  isSelected?: boolean;
+}
+
+export interface ReportSection {
+  id: number;
+  name: string;
+  checked: boolean;
+}

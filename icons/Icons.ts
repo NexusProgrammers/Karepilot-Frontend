@@ -74,7 +74,9 @@ import {
   Wifi,
   Zap,
   Tag,
-  FileText, Download
+  FileText,
+  Download,
+  ArrowUpRight,
 } from "lucide-react";
 
 export {
@@ -154,5 +156,6 @@ export {
   Tag,
   FileText,
   Download,
+  ArrowUpRight,
 };
 export type { LucideIcon };

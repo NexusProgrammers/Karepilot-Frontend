@@ -56,7 +56,7 @@ export function DashboardLayout({
                           {crumb.href ? (
                             <Link
                               href={crumb.href}
-                              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                              className="text-sm font-medium text-muted-foreground hidden md:flex hover:text-foreground transition-colors"
                             >
                               {crumb.label}
                             </Link>
