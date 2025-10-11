@@ -99,7 +99,12 @@ export function Sidebar({ className }: SidebarProps) {
             <nav className="flex-1 px-3 py-2 overflow-y-auto">
               <ul className="space-y-1">
                 {navigationItems.map((item, index) => {
-                  const isActive = pathname === item.path;
+                  const isActive =
+                    item.path === "/"
+                      ? pathname === "/" || pathname.startsWith("/dashboard")
+                      : pathname === item.path ||
+                        pathname.startsWith(item.path + "/");
+
                   const IconComponent = item.icon;
 
                   return (
