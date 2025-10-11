@@ -65,7 +65,7 @@ export function AlertLog({ alerts, tabs, currentFilter = "all" }: AlertLogProps)
 
       <NavigationTabs 
         tabs={navigationTabs} 
-        maxWidth="max-w-[420px]"
+        maxWidth="max-w-[440px]"
         responsive={true}
       />
 
