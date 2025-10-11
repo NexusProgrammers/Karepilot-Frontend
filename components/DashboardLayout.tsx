@@ -6,6 +6,11 @@ import { ProfileMenu } from "./ProfileMenu";
 import Link from "next/link";
 import { ArrowLeft, Building2, ChevronRight } from "@/icons/Icons";
 
+interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
+
 interface DashboardLayoutProps {
   children: ReactNode;
   showBackButton?: boolean;
@@ -13,6 +18,7 @@ interface DashboardLayoutProps {
   organizationName?: string;
   showOrganizationHeader?: boolean;
   pageTitle?: string;
+  breadcrumbs?: BreadcrumbItem[];
 }
 
 export function DashboardLayout({
@@ -22,6 +28,7 @@ export function DashboardLayout({
   organizationName = "",
   showOrganizationHeader = false,
   pageTitle = "Dashboard",
+  breadcrumbs,
 }: DashboardLayoutProps) {
   return (
     <div className="min-h-screen bg-background">
@@ -41,12 +48,41 @@ export function DashboardLayout({
                       Back
                     </span>
                   </Link>
-                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
+                  {breadcrumbs && breadcrumbs.length > 0 ? (
+                    <>
+                      {breadcrumbs.map((crumb, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                          {crumb.href ? (
+                            <Link
+                              href={crumb.href}
+                              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                              {crumb.label}
+                            </Link>
+                          ) : (
+                            <span className="text-sm font-medium text-muted-foreground">
+                              {crumb.label}
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </>
+                  ) : (
+                    <>
+                      <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
+                      <h1 className="text-sm font-medium hidden md:flex text-muted-foreground truncate">
+                        {pageTitle}
+                      </h1>
+                    </>
+                  )}
                 </>
               )}
-              <h1 className="text-sm font-medium hidden md:flex text-muted-foreground truncate">
-                {pageTitle}
-              </h1>
+              {!showBackButton && (
+                <h1 className="text-sm font-medium hidden md:flex text-muted-foreground truncate">
+                  {pageTitle}
+                </h1>
+              )}
             </div>
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               {showOrganizationHeader && organizationName && (

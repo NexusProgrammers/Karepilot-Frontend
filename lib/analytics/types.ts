@@ -15,3 +15,23 @@ export interface UserActivityData {
   newUsers: number;
   returningUsers: number;
 }
+
+export interface QuickExportItem {
+  id: number;
+  title: string;
+  description: string;
+  icon: React.ComponentType<{
+    className?: string;
+    style?: React.CSSProperties;
+  }>;
+  iconColor?: string;
+}
+
+export interface RecentReport {
+  id: number;
+  filename: string;
+  size: string;
+  date: string;
+  status: "Ready" | "Processing";
+  statusColor: string;
+}

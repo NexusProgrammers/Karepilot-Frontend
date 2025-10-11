@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Upload, BarChart3 } from "@/icons/Icons";
-
+import Link from "next/link";
 
 interface AnalyticsHeaderProps {
   title?: string;
@@ -48,18 +48,20 @@ export function AnalyticsHeader({
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3">
-          <Button
-            variant="outline"
-            onClick={handleExportData}
-            className="flex items-center gap-2 bg-background hover:bg-accent hover:text-accent-foreground border-border text-foreground"
-          >
-            <Upload className="w-4 h-4" />
-            <span>Export Data</span>
-          </Button>
-          
+          <Link href="/analytics/export-data">
+            <Button
+              variant="outline"
+              onClick={handleExportData}
+              className="flex items-center cursor-pointer gap-2 bg-background hover:bg-accent hover:text-accent-foreground border-border text-foreground"
+            >
+              <Upload className="w-4 h-4" />
+              <span>Export Data</span>
+            </Button>
+          </Link>
+
           <Button
             onClick={handleGenerateReport}
-            className="flex items-center gap-2 bg-[#3D8C6C] hover:bg-[#2F6B54] text-white"
+            className="flex items-center gap-2 cursor-pointer bg-[#3D8C6C] hover:bg-[#2F6B54] text-white"
           >
             <BarChart3 className="w-4 h-4" />
             <span>Generate Report</span>

@@ -73,6 +73,8 @@ import {
   Accessibility,
   Wifi,
   Zap,
+  Tag,
+  FileText, Download
 } from "lucide-react";
 
 export {
@@ -149,5 +151,8 @@ export {
   Accessibility,
   Wifi,
   Zap,
+  Tag,
+  FileText,
+  Download,
 };
 export type { LucideIcon };

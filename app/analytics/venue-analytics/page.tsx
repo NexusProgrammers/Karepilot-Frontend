@@ -34,7 +34,7 @@ export default function page() {
 
   return (
     <DashboardLayout
-      pageTitle=""
+      pageTitle="Analytics & Reports"
       showOrganizationHeader={true}
       showBackButton={true}
       backLink="/"

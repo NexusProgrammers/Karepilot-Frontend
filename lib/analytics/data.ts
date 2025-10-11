@@ -1,8 +1,23 @@
-import { activeIcon, DashboardIcon, hospitalsIcon, navigationRequestsIcon } from "@/icons/Assets";
+import {
+  activeIcon,
+  DashboardIcon,
+  hospitalsIcon,
+  navigationRequestsIcon,
+} from "@/icons/Assets";
 import { StatItem } from "../organization/types";
 import { TabItem } from "@/components/common/NavigationTabs";
-import { InsightCard } from "./types";
-import { AlertTriangleIcon, ClockIcon, CheckCircleIcon, MapPin, AlertTriangle, Building } from "@/icons/Icons";
+import {
+  AlertTriangleIcon,
+  ClockIcon,
+  CheckCircleIcon,
+  MapPin,
+  AlertTriangle,
+  Building,
+  User,
+  Settings,
+  Bell,
+  Tag,
+} from "@/icons/Icons";
 
 export const performanceStats = [
   {
@@ -164,7 +179,7 @@ export const navigationTabs: TabItem[] = [
   },
 ];
 
-export const insightCards: InsightCard[] = [
+export const insightCards = [
   {
     title: "High User Engagement",
     description:
@@ -413,7 +428,7 @@ export const venueAnalyticsStats: StatItem[] = [
     value: "673,384",
     change: "15% higher",
     note: "from last week",
-    icon: Map,
+    icon: MapPin,
   },
   {
     id: 4,
@@ -430,5 +445,125 @@ export const venueAnalyticsStats: StatItem[] = [
     change: "5% higher",
     note: "from last week",
     icon: Building,
+  },
+];
+
+export interface InsightCard {
+  title: string;
+  description: string;
+  actionText: string;
+}
+
+export interface UserDemographic {
+  category: string;
+  count: number;
+  color: string;
+}
+
+export interface UserActivityData {
+  month: string;
+  newUsers: number;
+  returningUsers: number;
+}
+
+export interface QuickExportItem {
+  id: number;
+  title: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
+  iconColor?: string;
+}
+
+export interface RecentReport {
+  id: number;
+  filename: string;
+  size: string;
+  date: string;
+  status: "Ready" | "Processing";
+  statusColor: string;
+}
+
+export const quickExportData: QuickExportItem[] = [
+  {
+    id: 1,
+    title: "User Activity Data",
+    description: "Daily/weekly/monthly user engagement metrics",
+    icon: User,
+    iconColor: "#3b82f6",
+  },
+  {
+    id: 2,
+    title: "System Performance Logs",
+    description: "Server metrics, uptime, and error logs",
+    icon: Settings,
+    iconColor: "#10b981",
+  },
+  {
+    id: 3,
+    title: "Navigation Analytics",
+    description: "POI interactions and map usage statistics",
+    icon: MapPin,
+    iconColor: "#f59e0b",
+  },
+  {
+    id: 4,
+    title: "Alert History",
+    description: "Emergency alerts and response times",
+    icon: Bell,
+    iconColor: "#ef4444",
+  },
+  {
+    id: 5,
+    title: "Asset Tracking Data",
+    description: "Device locations and movement patterns",
+    icon: Tag,
+    iconColor: "#8b5cf6",
+  },
+];
+
+export const dataCategories = [
+  { id: 1, name: "User Data", checked: true },
+  { id: 2, name: "System Logs", checked: true },
+  { id: 3, name: "Performance Metrics", checked: true },
+  { id: 4, name: "Navigation Data", checked: true },
+  { id: 5, name: "Alert History", checked: false },
+  { id: 6, name: "Asset Data", checked: false },
+  { id: 7, name: "Map Analytics", checked: false },
+  { id: 8, name: "Session Data", checked: false },
+];
+
+export const exportFormats = ["CSV", "JSON", "XLSX", "PDF"];
+export const dateRanges = [
+  "Last 7 days",
+  "Last 30 days",
+  "Last 90 days",
+  "Last 180 days",
+  "Last 365 days",
+];
+
+export const recentReports = [
+  {
+    id: 1,
+    filename: "user_activity_2024_01.csv",
+    size: "2.4 MB",
+    date: "2024-01-20 14:30",
+    status: "Ready" as const,
+    statusColor: "text-green-600",
+  },
+  {
+    id: 2,
+    filename: "system_performance_logs.json",
+    size: "5.8 MB",
+    date: "2024-01-19 09:15",
+    status: "Ready" as const,
+    statusColor: "text-green-600",
+  },
+  {
+    id: 3,
+    filename: "navigation_analytics.xlsx",
+    size: "1.2 MB",
+    date: "2024-01-18 16:45",
+    status: "Processing" as const,
+    statusColor: "text-orange-600",
   },
 ];
