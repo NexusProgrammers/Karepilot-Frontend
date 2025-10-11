@@ -2,11 +2,11 @@
 
 import { DashboardLayout } from "@/components/DashboardLayout";
 import NavigationTabs from "@/components/common/NavigationTabs";
-import { ProfileSettings } from "@/components/common/ProfileSettings";
-import { UserPreferences } from "@/components/common/UserPreferences";
-import { settingsTabs, userPreferences } from "@/lib/settings/data";
+import { SecuritySettings } from "./components/SecuritySettings";
+import { PasswordSettings } from "./components/PasswordSettings";
+import { settingsTabs, securitySettings } from "@/lib/settings/data";
 
-export default function SettingsPage() {
+export default function SecurityPage() {
   return (
     <DashboardLayout
       pageTitle="Settings"
@@ -30,15 +30,15 @@ export default function SettingsPage() {
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <ProfileSettings
-            title="Profile Settings"
-            subtitle="Update your profile information"
+          <SecuritySettings
+            title="Security Settings"
+            subtitle="Configure security and access control settings"
+            settings={securitySettings}
           />
 
-          <UserPreferences
-            title="User Preferences"
-            subtitle="Customize your interface and default settings"
-            preferences={userPreferences}
+          <PasswordSettings
+            title="Password Settings"
+            subtitle="Update your password for enhanced security"
           />
         </div>
       </div>

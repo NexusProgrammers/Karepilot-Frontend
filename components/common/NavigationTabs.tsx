@@ -33,6 +33,14 @@ export default function NavigationTabs({
       return pathname === tab.href;
     }
 
+    if (tab.href === "/settings") {
+      return pathname === "/settings";
+    }
+
+    if (tab.href.startsWith("/settings/")) {
+      return pathname === tab.href;
+    }
+
     if (
       tab.href === "/organizations" ||
       tab.href === "/map-manager" ||

@@ -1,12 +1,14 @@
+
+
+
 "use client";
 
 import { DashboardLayout } from "@/components/DashboardLayout";
 import NavigationTabs from "@/components/common/NavigationTabs";
-import { ProfileSettings } from "@/components/common/ProfileSettings";
-import { UserPreferences } from "@/components/common/UserPreferences";
-import { settingsTabs, userPreferences } from "@/lib/settings/data";
+import { NotificationSettings } from "./components/NotificationSettings";
+import { settingsTabs, notificationSettings } from "@/lib/settings/data";
 
-export default function SettingsPage() {
+export default function NotificationsPage() {
   return (
     <DashboardLayout
       pageTitle="Settings"
@@ -29,18 +31,11 @@ export default function SettingsPage() {
           responsive={true}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <ProfileSettings
-            title="Profile Settings"
-            subtitle="Update your profile information"
-          />
-
-          <UserPreferences
-            title="User Preferences"
-            subtitle="Customize your interface and default settings"
-            preferences={userPreferences}
-          />
-        </div>
+        <NotificationSettings
+          title="Notification Settings"
+          subtitle="Configure how you receive alerts and notifications"
+          settings={notificationSettings}
+        />
       </div>
     </DashboardLayout>
   );
