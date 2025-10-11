@@ -12,6 +12,7 @@ import { AnalyticsHeader } from "../components/AnalyticsHeader";
 import { PerformanceStatistics } from "@/components/common/PerformanceStatistics";
 import { MostPopularDestinations } from "./components/MostPopularDestinations";
 import { UsagePatterns } from "./components/UsagePatterns";
+import { VenuePerformanceStatistics } from "./components/VenuePerformanceStatistics";
 
 export default function page() {
   const handleDateRangeChange = (range: string) => {
@@ -75,6 +76,7 @@ export default function page() {
             subtitle="Peak hours and usage distribution"
           />
         </div>
+        <VenuePerformanceStatistics />
       </div>
     </DashboardLayout>
   );
