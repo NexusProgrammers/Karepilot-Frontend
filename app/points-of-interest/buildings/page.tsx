@@ -1,20 +1,37 @@
-import { DashboardLayout } from "@/components/DashboardLayout";
-import React from "react";
+"use client";
 
-function page() {
+import { useState } from "react";
+import { DashboardLayout } from "@/components/DashboardLayout";
+import { CreatePOIModal } from "@/app/dashboard/[id]/components/CreatePOIModal";
+import POIHeader from "../components/POIHeader";
+import POIStats from "../components/POIStats";
+import POITabs from "../components/POITabs";
+import POISearchAndFilters from "../components/POISearchAndFilters";
+
+export default function PointsOfInterestPage() {
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
   return (
     <DashboardLayout
-      pageTitle="Buildings"
-      organizationName="Central Medical Hospital"
-      showOrganizationHeader={true}
-      backLink="/points-of-interest"
       showBackButton={true}
+      showOrganizationHeader={true}
+      organizationName="Central Medical Hospital"
+      pageTitle="Points of Interest"
+      backLink="/dashboard/central-medical-hospital"
     >
-     <h1>
-        Buildings
-     </h1>
+      <div className="space-y-6">
+        <POIHeader onCreatePOI={() => setIsCreateModalOpen(true)} />
+        <POIStats />
+        <POITabs />
+        <POISearchAndFilters />
+        <div>
+          <h1>Buildings</h1>
+        </div>
+      </div>
+      <CreatePOIModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
     </DashboardLayout>
   );
 }
-
-export default page;
