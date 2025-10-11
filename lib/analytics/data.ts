@@ -4,7 +4,7 @@ import { TabItem } from "@/components/common/NavigationTabs";
 import { InsightCard } from "./types";
 import { AlertTriangleIcon, ClockIcon, CheckCircleIcon } from "@/icons/Icons";
 
-export const performanceStats=  [
+export const performanceStats = [
   {
     id: 1,
     title: "System Uptime",
@@ -14,8 +14,8 @@ export const performanceStats=  [
     icon: "",
     iconComponent: CheckCircleIcon,
     showIcon: true,
-    iconColor: "#10b981", 
-    iconBackgroundColor: "#dcfce7", 
+    iconColor: "#10b981",
+    iconBackgroundColor: "#dcfce7",
   },
   {
     id: 2,
@@ -26,7 +26,7 @@ export const performanceStats=  [
     icon: "",
     iconComponent: ClockIcon,
     showIcon: true,
-    iconColor: "#3b82f6", 
+    iconColor: "#3b82f6",
     iconBackgroundColor: "#dbeafe",
   },
   {
@@ -38,8 +38,8 @@ export const performanceStats=  [
     icon: "",
     iconComponent: AlertTriangleIcon,
     showIcon: true,
-    iconColor: "#ef4444", 
-    iconBackgroundColor: "#fef2f2", 
+    iconColor: "#ef4444",
+    iconBackgroundColor: "#fef2f2",
   },
 ];
 
@@ -315,6 +315,39 @@ export const performanceStatisticsData = [
     id: 4,
     value: "24/7",
     label: "Monitoring",
+    color: "#10b981",
+  },
+];
+
+export const venuePerformanceStats = [
+  {
+    id: 1,
+    value: "1654,394",
+    label: "Navigations Requests",
+    color: "#f97316",
+  },
+  {
+    id: 2,
+    value: "342,019",
+    label: "POI Interactions",
+    color: "#10b981",
+  },
+  {
+    id: 3,
+    value: "673,384",
+    label: "Map Views",
+    color: "#3b82f6",
+  },
+  {
+    id: 4,
+    value: "20",
+    label: "Emergency Alerts",
+    color: "#ef4444",
+  },
+  {
+    id: 5,
+    value: "345",
+    label: "Assets Tracking",
     color: "#10b981",
   },
 ];

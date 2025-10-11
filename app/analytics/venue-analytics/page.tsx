@@ -1,11 +1,11 @@
 "use client";
 
 import { DashboardLayout } from "@/components/DashboardLayout";
-import StatsGrid from "@/components/common/StatsGrid";
-import { analyticsStats, navigationTabs } from "@/lib/analytics/data";
+import { navigationTabs, venuePerformanceStats } from "@/lib/analytics/data";
 import NavigationTabs from "@/components/common/NavigationTabs";
 import { DateRangePicker } from "../components/DateRangePicker";
 import { AnalyticsHeader } from "../components/AnalyticsHeader";
+import { PerformanceStatistics } from "@/components/common/PerformanceStatistics";
 
 export default function page() {
   const handleDateRangeChange = (range: string) => {
@@ -20,14 +20,14 @@ export default function page() {
   const handleExportData = () => {
     console.log("Exporting analytics data...");
   };
-  
+
   const handleGenerateReport = () => {
     console.log("Generating analytics report...");
   };
 
   return (
     <DashboardLayout
-      pageTitle="Analytics & Reports"
+      pageTitle=""
       showOrganizationHeader={true}
       showBackButton={true}
       backLink="/"
@@ -38,19 +38,23 @@ export default function page() {
           onExportData={handleExportData}
           onGenerateReport={handleGenerateReport}
         />
+
         <DateRangePicker
           onDateRangeChange={handleDateRangeChange}
           onRefresh={handleRefresh}
           defaultRange="Last 7 days"
         />
+
         <NavigationTabs
           tabs={navigationTabs}
           maxWidth="max-w-[550px]"
           responsive={true}
         />
-        <StatsGrid
-          stats={analyticsStats}
-          gridClassName="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+
+        <PerformanceStatistics
+          stats={venuePerformanceStats}
+          showBorder={false}
+          gridClassName="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-4 xl:grid-cols-5 gap-4"
         />
       </div>
     </DashboardLayout>

@@ -14,7 +14,7 @@ import { LineChartComponent } from "@/components/common/LineChartComponent";
 import { performanceTrendsData, performanceLines } from "@/lib/analytics/data";
 import { SystemHealthComponent } from "@/components/common/SystemHealthComponent";
 import { performanceSystemHealth } from "@/lib/analytics/data";
-import { PerformanceStatistics } from "./components/PerformanceStatistics";
+import { PerformanceStatistics } from "@/components/common/PerformanceStatistics";
 import { AnalyticsHeader } from "../components/AnalyticsHeader";
 
 export default function page() {
@@ -85,6 +85,7 @@ export default function page() {
         <PerformanceStatistics
           title="Performance Statistics"
           stats={performanceStatisticsData}
+          showBorder={true}
         />
       </div>
     </DashboardLayout>
