@@ -25,6 +25,14 @@ export default function NavigationTabs({
   const pathname = usePathname();
 
   const isActive = (tab: TabItem) => {
+    if (tab.href === "/analytics") {
+      return pathname === "/analytics";
+    }
+
+    if (tab.href.startsWith("/analytics/")) {
+      return pathname === tab.href;
+    }
+
     if (
       tab.href === "/organizations" ||
       tab.href === "/map-manager" ||
