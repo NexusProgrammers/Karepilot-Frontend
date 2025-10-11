@@ -58,7 +58,7 @@ export function DateRangePicker({
             onClick={handleRefresh}
             disabled={isRefreshing}
             variant="outline"
-            className="w-full sm:w-auto cursor-pointer bg-background hover:bg-accent hover:text-accent-foreground border-border/50 shadow-sm transition-all duration-200"
+            className="w-full sm:w-auto cursor-pointer mt-0 md:mt-2 bg-background hover:bg-accent hover:text-accent-foreground border-border/50 shadow-sm transition-all duration-200"
           >
             <RefreshCw
               className={`w-4 h-4 mr-2 transition-transform duration-300 ${

@@ -8,6 +8,7 @@ import NavigationTabs from "@/components/common/NavigationTabs";
 import { UserGrowthChart } from "./components/UserGrowthChart";
 import FeatureUsageChart from "./components/FeatureUsageChart";
 import { QuickInsights } from "./components/insightCards";
+import { AnalyticsHeader } from "./components/AnalyticsHeader";
 
 export default function page() {
   const handleDateRangeChange = (range: string) => {
@@ -19,15 +20,28 @@ export default function page() {
     await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
+  const handleExportData = () => {
+    console.log("Exporting analytics data...");
+  };
+
+  const handleGenerateReport = () => {
+    console.log("Generating analytics report...");
+  };
+
   return (
     <DashboardLayout
-      pageTitle="Analytics & Reports"
+      pageTitle=""
       showOrganizationHeader={true}
       showBackButton={true}
       backLink="/"
       organizationName="Central Medical Hospital"
     >
       <div className="space-y-6">
+        <AnalyticsHeader
+          onExportData={handleExportData}
+          onGenerateReport={handleGenerateReport}
+        />
+
         <DateRangePicker
           onDateRangeChange={handleDateRangeChange}
           onRefresh={handleRefresh}

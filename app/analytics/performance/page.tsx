@@ -15,6 +15,7 @@ import { performanceTrendsData, performanceLines } from "@/lib/analytics/data";
 import { SystemHealthComponent } from "@/components/common/SystemHealthComponent";
 import { performanceSystemHealth } from "@/lib/analytics/data";
 import { PerformanceStatistics } from "./components/PerformanceStatistics";
+import { AnalyticsHeader } from "../components/AnalyticsHeader";
 
 export default function page() {
   const handleDateRangeChange = (range: string) => {
@@ -26,6 +27,14 @@ export default function page() {
     await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 
+  const handleExportData = () => {
+    console.log("Exporting analytics data...");
+  };
+
+  const handleGenerateReport = () => {
+    console.log("Generating analytics report...");
+  };
+
   return (
     <DashboardLayout
       pageTitle="Analytics & Reports"
@@ -35,6 +44,10 @@ export default function page() {
       organizationName="Central Medical Hospital"
     >
       <div className="space-y-6">
+        <AnalyticsHeader
+          onExportData={handleExportData}
+          onGenerateReport={handleGenerateReport}
+        />
         <DateRangePicker
           onDateRangeChange={handleDateRangeChange}
           onRefresh={handleRefresh}

@@ -297,24 +297,24 @@ export const performanceStatisticsData = [
     id: 1,
     value: "0",
     label: "Requests/min",
-    color: "#f97316", // Orange color
+    color: "#f97316",
   },
   {
     id: 2,
     value: "0",
     label: "Alerts Resolved",
-    color: "#10b981", // Green color
+    color: "#10b981",
   },
   {
     id: 3,
     value: "0h",
     label: "Maintenance Time",
-    color: "#3b82f6", // Blue color
+    color: "#3b82f6",
   },
   {
     id: 4,
     value: "24/7",
     label: "Monitoring",
-    color: "#10b981", // Green color
+    color: "#10b981",
   },
 ];
