@@ -59,7 +59,7 @@ export default function POIDetailPage() {
             <div className="w-full lg:w-[60%] flex flex-col gap-5">
               <BasicInformationCard poi={foundPoi} />
               <ContactInformationCard poi={foundPoi} />
-              <AccessibilityFeaturesCard poi={foundPoi} />
+              <AccessibilityFeaturesCard />
             </div>
 
             <div className="w-full lg:w-[40%] flex flex-col gap-5">
