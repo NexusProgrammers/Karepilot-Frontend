@@ -86,7 +86,7 @@ export default function SearchAndFilters({
       </div>
 
       {filters.length > 0 && (
-        <div className="flex gap-3 overflow-x-auto scrollbar-hide w-full sm:w-auto">
+        <div className="flex gap-3 w-full sm:w-auto">
           {filters.map((filter) => (
             <div
               key={filter.label}

@@ -19,7 +19,7 @@ interface NavigationTabsProps {
 export default function NavigationTabs({
   tabs,
   className = "",
-  maxWidth = "max-w-[300px]",
+  maxWidth = "max-w-[320px]",
   responsive = false,
 }: NavigationTabsProps) {
   const pathname = usePathname();
