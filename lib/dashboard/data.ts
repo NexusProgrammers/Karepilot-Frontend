@@ -151,19 +151,19 @@ export const quickActions = [
 ];
 
 export const systemHealth = [
-  { name: "Database", health: 99, status: "Healthy", time: "Update" },
+  { name: "Database", health: 99, status: "Healthy" as const, time: "Update" },
   {
     name: "Location Services",
     health: 90,
-    status: "Healthy",
+    status: "Healthy" as const,
     time: "Uptime",
   },
-  { name: "Map Rendering", health: 70, status: "Warning", time: "Uptime" },
-  { name: "Tracking", health: 91, status: "Healthy", time: "Uptime" },
+  { name: "Map Rendering", health: 70, status: "Warning" as const, time: "Uptime" },
+  { name: "Tracking", health: 91, status: "Healthy" as const, time: "Uptime" },
   {
     name: "Notification System",
     health: 99,
-    status: "Healthy",
+    status: "Healthy" as const,
     time: "Uptime",
   },
 ];

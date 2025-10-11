@@ -42,7 +42,15 @@ import {
   Compass,
   UserPlus,
   Edit,
-  Siren 
+  Siren,
+  Cpu,
+  HardDrive,
+  MemoryStick,
+  Network,
+  CheckCircleIcon,
+  AlertTriangleIcon,
+  ClockIcon,
+  SquareEqual,
 } from "lucide-react";
 
 export {
@@ -88,6 +96,14 @@ export {
   Compass,
   UserPlus,
   Edit,
-  Siren
+  Siren,
+  Cpu,
+  HardDrive,
+  MemoryStick,
+  Network,
+  CheckCircleIcon,
+  AlertTriangleIcon,
+  ClockIcon,
+  SquareEqual,
 };
 export type { LucideIcon };

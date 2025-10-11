@@ -6,7 +6,7 @@ export type StatItem = {
   value: string | number;
   change?: string;
   note?: string;
-  icon: StaticImageData | string;
+  icon: string;
 };
 
 export type VenueTypeItem = {

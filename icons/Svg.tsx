@@ -536,3 +536,4 @@ export const searchIcon: React.FC<IconProps> = ({ className = "" }) => (
     <circle cx="11" cy="11" r="8" />
   </svg>
 );
+

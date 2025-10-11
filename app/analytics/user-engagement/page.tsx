@@ -2,9 +2,11 @@
 
 import { DashboardLayout } from "@/components/DashboardLayout";
 import StatsGrid from "@/components/common/StatsGrid";
-import { analyticsStats, navigationTabs } from "@/lib/analytics/data";
+import { userEngagementStats, navigationTabs } from "@/lib/analytics/data";
 import NavigationTabs from "@/components/common/NavigationTabs";
 import { DateRangePicker } from "../components/DateRangePicker";
+import { UserActivityChart } from "./component/UserActivityChart";
+import { UserDemographics } from "./component/UserDemographics";
 
 export default function page() {
   const handleDateRangeChange = (range: string) => {
@@ -30,15 +32,25 @@ export default function page() {
           onRefresh={handleRefresh}
           defaultRange="Last 7 days"
         />
+        
         <NavigationTabs
           tabs={navigationTabs}
           maxWidth="max-w-[550px]"
           responsive={true}
         />
+        
         <StatsGrid
-          stats={analyticsStats}
-          gridClassName="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          stats={userEngagementStats}
         />
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <UserActivityChart />
+          </div>
+          <div className="lg:col-span-1">
+            <UserDemographics />
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   );
