@@ -26,7 +26,7 @@ export default function POICard({ poi }: POICardProps) {
   return (
     <div className="bg-card border border-border rounded-2xl overflow-hidden">
       <div className="p-6">
-        <div className="flex items-start justify-between mb-3">
+        <div className="flex items-start flex-col sm:flex-row justify-between mb-3">
           <div className="flex-1">
             <h3 className="text-xl font-semibold text-card-foreground mb-1">
               {poi.title}
