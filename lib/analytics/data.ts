@@ -1,8 +1,8 @@
-import { activeIcon, DashboardIcon, hospitalsIcon } from "@/icons/Assets";
+import { activeIcon, DashboardIcon, hospitalsIcon, navigationRequestsIcon } from "@/icons/Assets";
 import { StatItem } from "../organization/types";
 import { TabItem } from "@/components/common/NavigationTabs";
 import { InsightCard } from "./types";
-import { AlertTriangleIcon, ClockIcon, CheckCircleIcon } from "@/icons/Icons";
+import { AlertTriangleIcon, ClockIcon, CheckCircleIcon, MapPin, AlertTriangle, Building } from "@/icons/Icons";
 
 export const performanceStats = [
   {
@@ -349,5 +349,86 @@ export const venuePerformanceStats = [
     value: "345",
     label: "Assets Tracking",
     color: "#10b981",
+  },
+];
+
+export const mostPopularDestinationsData = [
+  {
+    id: 1,
+    name: "Information Desk",
+    count: "2,340",
+    trend: "up" as const,
+    trendColor: "#10b981",
+  },
+  {
+    id: 2,
+    name: "Food Court",
+    count: "1,243",
+    trend: "neutral" as const,
+    trendColor: "#ef4444",
+  },
+  {
+    id: 3,
+    name: "Main Entrance",
+    count: "1,987",
+    trend: "up" as const,
+    trendColor: "#10b981",
+  },
+  {
+    id: 4,
+    name: "Restrooms",
+    count: "1,756",
+    trend: "neutral" as const,
+    trendColor: "#3b82f6",
+  },
+  {
+    id: 5,
+    name: "Parking",
+    count: "892",
+    trend: "down" as const,
+    trendColor: "#ef4444",
+  },
+];
+
+export const venueAnalyticsStats: StatItem[] = [
+  {
+    id: 1,
+    title: "Navigation Requests",
+    value: "1,654,394",
+    change: "12% higher",
+    note: "from last week",
+    icon: navigationRequestsIcon,
+  },
+  {
+    id: 2,
+    title: "POI Interactions",
+    value: "342,019",
+    change: "8% higher",
+    note: "from last week",
+    icon: MapPin,
+  },
+  {
+    id: 3,
+    title: "Map Views",
+    value: "673,384",
+    change: "15% higher",
+    note: "from last week",
+    icon: Map,
+  },
+  {
+    id: 4,
+    title: "Emergency Alerts",
+    value: "20",
+    change: "2% lower",
+    note: "from last week",
+    icon: AlertTriangle,
+  },
+  {
+    id: 5,
+    title: "Asset Tracking",
+    value: "345",
+    change: "5% higher",
+    note: "from last week",
+    icon: Building,
   },
 ];

@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { CustomSelect } from "@/components/common/CustomSelect";
 import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
 import { dateRangeOptions } from "@/lib/analytics/data";
+import { RefreshCw } from "@/icons/Icons";
 
 interface DateRangePickerProps {
   onRefresh?: () => void;

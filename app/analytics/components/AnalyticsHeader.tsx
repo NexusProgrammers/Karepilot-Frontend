@@ -1,7 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Upload, BarChart3 } from "lucide-react";
+import { Upload, BarChart3 } from "@/icons/Icons";
+
 
 interface AnalyticsHeaderProps {
   title?: string;

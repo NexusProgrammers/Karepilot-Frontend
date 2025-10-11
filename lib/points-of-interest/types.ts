@@ -1,4 +1,5 @@
-import { LucideIcon } from "lucide-react";
+import { LucideIcon } from "@/icons/Icons";
+
 
 export interface POI {
   id: number;

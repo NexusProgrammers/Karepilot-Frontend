@@ -1,5 +1,6 @@
 import { User, Role, Department } from "./types";
-import { Users, CheckCircle, Building, Wifi } from "lucide-react";
+import { Users, CheckCircle, Building, Wifi } from "@/icons/Icons";
+
 
 export const usersData: User[] = [
   {

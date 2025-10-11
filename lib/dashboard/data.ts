@@ -22,8 +22,8 @@ import {
   Camera,
   Pill,
   TestTube,
-  Image as ImageIcon,
-} from "lucide-react";
+  ImageIcon,
+} from "@/icons/Icons";
 
 export const hospitalStats: StatItem[] = [
   {
@@ -158,7 +158,12 @@ export const systemHealth = [
     status: "Healthy" as const,
     time: "Uptime",
   },
-  { name: "Map Rendering", health: 70, status: "Warning" as const, time: "Uptime" },
+  {
+    name: "Map Rendering",
+    health: 70,
+    status: "Warning" as const,
+    time: "Uptime",
+  },
   { name: "Tracking", health: 91, status: "Healthy" as const, time: "Uptime" },
   {
     name: "Notification System",

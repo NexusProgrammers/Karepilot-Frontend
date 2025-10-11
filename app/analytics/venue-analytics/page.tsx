@@ -1,11 +1,17 @@
 "use client";
 
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { navigationTabs, venuePerformanceStats } from "@/lib/analytics/data";
+import {
+  navigationTabs,
+  mostPopularDestinationsData,
+  venuePerformanceStats,
+} from "@/lib/analytics/data";
 import NavigationTabs from "@/components/common/NavigationTabs";
 import { DateRangePicker } from "../components/DateRangePicker";
 import { AnalyticsHeader } from "../components/AnalyticsHeader";
 import { PerformanceStatistics } from "@/components/common/PerformanceStatistics";
+import { MostPopularDestinations } from "./components/MostPopularDestinations";
+import { UsagePatterns } from "./components/UsagePatterns";
 
 export default function page() {
   const handleDateRangeChange = (range: string) => {
@@ -54,8 +60,21 @@ export default function page() {
         <PerformanceStatistics
           stats={venuePerformanceStats}
           showBorder={false}
-          gridClassName="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+          gridClassName="grid grid-cols-2 lg:grid-cols-5 gap-4"
         />
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <MostPopularDestinations
+            title="Most Popular Destinations"
+            subtitle="Top visited POIs and areas"
+            destinations={mostPopularDestinationsData}
+          />
+
+          <UsagePatterns
+            title="Usage Patterns"
+            subtitle="Peak hours and usage distribution"
+          />
+        </div>
       </div>
     </DashboardLayout>
   );

@@ -1,5 +1,5 @@
 import { TabItem } from "@/components/common/NavigationTabs";
-import { MapPin, CheckCircle, Edit3, Building2 } from "lucide-react";
+import { MapPin, CheckCircle, Edit3, Building2 } from "@/icons/Icons";
 import { StatItemWithIcon } from "@/components/common/StatsGridWithIcons";
 
 export interface FloorPlan {

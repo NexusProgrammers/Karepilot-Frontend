@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { X, Bell } from "lucide-react";
 import { CustomInput } from "@/components/common/CustomInput";
 import { CustomSelect } from "@/components/common/CustomSelect";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,7 @@ import {
   priorityLevels,
   departments,
 } from "@/lib/alerts-and-geofencing/data";
+import { X, Bell } from "@/icons/Icons";
 
 interface CreateAlertModalProps {
   isOpen: boolean;

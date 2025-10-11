@@ -1,5 +1,5 @@
 import { Asset, StatItem, FilterOption } from "./types";
-import { PieChart, CheckCircle, Battery, Circle } from "lucide-react";
+import { PieChart, CheckCircle, Battery, Circle } from "@/icons/Icons";
 
 export const assetsData: Asset[] = [
   {

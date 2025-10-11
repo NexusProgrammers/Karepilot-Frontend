@@ -1,4 +1,13 @@
-import { MapPin, CheckCircle, Grid3x3, Accessibility, Wifi, Coffee, Zap } from "lucide-react";
+import {
+  MapPin,
+  CheckCircle,
+  Grid3x3,
+  Accessibility,
+  Wifi,
+  Coffee,
+  Zap,
+} from "@/icons/Icons";
+
 import { POI, POIStats } from "./types";
 
 export const poiStats: POIStats[] = [
@@ -161,7 +170,10 @@ export const poisData: POI[] = [
 
 export const poiTabs = [
   { id: "floor-plans", label: "Floor Plans", href: "/points-of-interest" },
-  { id: "buildings", label: "Buildings", href: "/points-of-interest/buildings" },
+  {
+    id: "buildings",
+    label: "Buildings",
+    href: "/points-of-interest/buildings",
+  },
   { id: "settings", label: "Settings", href: "/points-of-interest/settings" },
 ];
-
