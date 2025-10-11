@@ -30,7 +30,9 @@ interface AlertsPageContentProps {
   filterStatus?: "all" | "active" | "acknowledged" | "resolved";
 }
 
-export function AlertsPageContent({ filterStatus = "all" }: AlertsPageContentProps) {
+export function AlertsPageContent({
+  filterStatus = "all",
+}: AlertsPageContentProps) {
   const [isCreateZoneModalOpen, setIsCreateZoneModalOpen] = useState(false);
   const [isCreateAlertModalOpen, setIsCreateAlertModalOpen] = useState(false);
   const [zones, setZones] = useState<GeofenceZone[]>(geofenceZones);
@@ -77,12 +79,21 @@ export function AlertsPageContent({ filterStatus = "all" }: AlertsPageContentPro
     );
   };
 
-  const filteredAlerts: Alert[] = filterStatus === "all" 
-    ? allAlerts 
-    : allAlerts.filter(alert => alert.status.toLowerCase() === filterStatus);
+  const filteredAlerts: Alert[] =
+    filterStatus === "all"
+      ? allAlerts
+      : allAlerts.filter(
+          (alert) => alert.status.toLowerCase() === filterStatus
+        );
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      showBackButton={true}
+      backLink="/users-and-roles"
+      pageTitle="Alerts & Geofencing"
+      organizationName="Central Medical Hospital"
+      showOrganizationHeader={true}
+    >
       <div className="">
         <AlertsAndGeofencingHeader
           onCreateZone={handleCreateZone}
@@ -105,7 +116,11 @@ export function AlertsPageContent({ filterStatus = "all" }: AlertsPageContentPro
           />
         </div>
 
-        <AlertLog alerts={filteredAlerts} tabs={alertTabs} currentFilter={filterStatus} />
+        <AlertLog
+          alerts={filteredAlerts}
+          tabs={alertTabs}
+          currentFilter={filterStatus}
+        />
 
         <CreateGeofenceZoneModal
           isOpen={isCreateZoneModalOpen}
