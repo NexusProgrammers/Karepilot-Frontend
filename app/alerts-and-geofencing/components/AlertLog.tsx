@@ -10,7 +10,7 @@ interface AlertLogProps {
   currentFilter?: string;
 }
 
-export function AlertLog({ alerts, tabs, currentFilter = "all" }: AlertLogProps) {
+export function AlertLog({ alerts, tabs, }: AlertLogProps) {
 
   const getSeverityStyles = (severity: string) => {
     switch (severity) {

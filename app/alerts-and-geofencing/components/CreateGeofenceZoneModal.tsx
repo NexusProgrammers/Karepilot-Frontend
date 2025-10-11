@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { CustomInput } from "@/components/common/CustomInput";
 import { CustomSelect } from "@/components/common/CustomSelect";
-import { CustomTextarea } from "@/components/common/CustomTextarea";
 import { ToggleSwitch } from "@/components/common/ToggleSwitch";
 import { Button } from "@/components/ui/button";
 import {

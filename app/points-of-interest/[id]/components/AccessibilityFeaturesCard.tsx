@@ -1,14 +1,8 @@
 import { Eye, Ear } from "@/icons/Icons";
 import { GrWheelchairActive } from "react-icons/gr";
-import { POI } from "@/lib/points-of-interest/types";
 
-interface AccessibilityFeaturesCardProps {
-  poi: POI;
-}
 
-export function AccessibilityFeaturesCard({
-  poi,
-}: AccessibilityFeaturesCardProps) {
+export function AccessibilityFeaturesCard() {
   return (
     <div className="bg-card border border-border rounded-xl p-6">
       <h3 className="text-lg font-semibold text-card-foreground mb-4">
