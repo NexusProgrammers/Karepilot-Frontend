@@ -4,3 +4,5 @@ export { Layers } from "./Layers";
 export { Properties } from "./Properties";
 export { MapCanvas } from "./MapCanvas";
 export { ActionButtons } from "./ActionButtons";
+export { AddPOIModal } from "./AddPOIModal";
+export { AddLabelModal } from "./AddLabelModal";

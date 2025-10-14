@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Stage, Layer, Rect, Circle, Line } from "react-konva";
+import { Stage, Layer, Rect, Circle, Line, Text, Group } from "react-konva";
 import Konva from "konva";
 import {
   Minus,
@@ -17,22 +17,170 @@ import { Button } from "@/components/ui/button";
 
 interface MapElement {
   id: string;
-  type: "poi" | "path" | "zone" | "label";
-  x: number;
-  y: number;
+  type: "poi" | "path" | "zone" | "label" | "entrance";
+  x?: number;
+  y?: number;
   width?: number;
   height?: number;
+  radius?: number;
   color: string;
   label?: string;
+  points?: number[];
+  stroke?: string;
+  strokeWidth?: number;
+  tension?: number;
+  pointerLength?: number;
+  pointerWidth?: number;
+  draggable?: boolean;
 }
 
 export function MapCanvas() {
   const [zoom, setZoom] = useState(100);
-  const [elements, setElements] = useState<MapElement[]>([]);
-  const [selectedTool] = useState<string>("poi");
   const [stageSize, setStageSize] = useState({ width: 0, height: 0 });
   const stageRef = useRef<Konva.Stage>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const [elements, setElements] = useState<MapElement[]>([
+    {
+      id: "zone1",
+      type: "zone",
+      x: 100,
+      y: 100,
+      width: 150,
+      height: 80,
+      color: "#D4EDDA",
+      label: "Zone 1",
+      draggable: true,
+    },
+    {
+      id: "zone2",
+      type: "zone",
+      x: 600,
+      y: 100,
+      width: 150,
+      height: 80,
+      color: "#F8D7DA",
+      label: "Zone 2",
+      draggable: true,
+    },
+    {
+      id: "zone3",
+      type: "zone",
+      x: 600,
+      y: 450,
+      width: 150,
+      height: 80,
+      color: "#FFEECF",
+      label: "Zone 3",
+      draggable: true,
+    },
+    {
+      id: "toilet",
+      type: "zone",
+      x: 100,
+      y: 450,
+      width: 120,
+      height: 70,
+      color: "#FFEECF",
+      label: "Toilet",
+      draggable: true,
+    },
+    {
+      id: "cafeteria",
+      type: "zone",
+      x: 350,
+      y: 250,
+      width: 180,
+      height: 100,
+      color: "#D1ECF1",
+      label: "Cafeteria",
+      draggable: true,
+    },
+    {
+      id: "meeting-room",
+      type: "zone",
+      x: 550,
+      y: 280,
+      width: 160,
+      height: 80,
+      color: "#FFEECF",
+      label: "Meeting Room",
+      draggable: true,
+    },
+    {
+      id: "office-space",
+      type: "zone",
+      x: 150,
+      y: 280,
+      width: 180,
+      height: 80,
+      color: "#FFEECF",
+      label: "Office Space",
+      draggable: true,
+    },
+    {
+      id: "reception",
+      type: "zone",
+      x: 150,
+      y: 380,
+      width: 180,
+      height: 80,
+      color: "#FFEECF",
+      label: "Reception",
+      draggable: true,
+    },
+
+    {
+      id: "poi1",
+      type: "poi",
+      x: 200,
+      y: 200,
+      radius: 8,
+      color: "red",
+      draggable: true,
+    },
+    {
+      id: "poi2",
+      type: "poi",
+      x: 650,
+      y: 400,
+      radius: 8,
+      color: "black",
+      draggable: true,
+    },
+
+    {
+      id: "label1",
+      type: "label",
+      x: 120,
+      y: 530,
+      color: "black",
+      label: "Entry Point",
+      draggable: true,
+    },
+    {
+      id: "label2",
+      type: "label",
+      x: 620,
+      y: 420,
+      color: "black",
+      label: "Main Road",
+      draggable: true,
+    },
+
+    {
+      id: "path1",
+      type: "path",
+      points: [100, 520, 100, 550, 300, 550, 300, 350, 400, 350],
+      color: "#007bff",
+      stroke: "#007bff",
+      strokeWidth: 3,
+      tension: 0.5,
+      pointerLength: 10,
+      pointerWidth: 10,
+      draggable: true,
+    },
+  ]);
 
   useEffect(() => {
     const updateSize = () => {
@@ -53,62 +201,104 @@ export function MapCanvas() {
   const handleZoomIn = () => setZoom((prev) => Math.min(prev + 10, 200));
   const handleZoomOut = () => setZoom((prev) => Math.max(prev - 10, 50));
 
-  const handleStageClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
-    if (selectedTool === "poi") {
-      const stage = e.target.getStage();
-      const pointerPosition = stage?.getPointerPosition();
-
-      if (pointerPosition) {
-        const newElement: MapElement = {
-          id: `poi-${Date.now()}`,
-          type: "poi",
-          x: pointerPosition.x,
-          y: pointerPosition.y,
-          color: "#3D8C6C",
-          label: "New POI",
-        };
-        setElements((prev) => [...prev, newElement]);
-      }
-    }
+  const handleDragEnd = (id: string, newX: number, newY: number) => {
+    setElements((prev) =>
+      prev.map((el) => (el.id === id ? { ...el, x: newX, y: newY } : el))
+    );
   };
 
   const renderElement = (element: MapElement) => {
     switch (element.type) {
+      case "zone":
+        return (
+          <Group
+            key={element.id}
+            x={element.x}
+            y={element.y}
+            draggable={element.draggable}
+            onDragEnd={(e) =>
+              handleDragEnd(element.id, e.target.x(), e.target.y())
+            }
+          >
+            <Rect
+              width={element.width || 100}
+              height={element.height || 100}
+              fill={element.color}
+              stroke="#E5E7EB"
+              strokeWidth={1}
+              cornerRadius={4}
+            />
+            {element.label && (
+              <Text
+                text={element.label}
+                x={10}
+                y={element.height! / 2 - 10}
+                fontSize={14}
+                fontFamily="Arial"
+                fontWeight="bold"
+                fill="#374151"
+                width={element.width! - 20}
+                align="center"
+              />
+            )}
+          </Group>
+        );
       case "poi":
         return (
           <Circle
             key={element.id}
             x={element.x}
             y={element.y}
-            radius={8}
+            radius={element.radius || 8}
             fill={element.color}
             stroke="#fff"
             strokeWidth={2}
-            draggable
+            draggable={element.draggable}
+            onDragEnd={(e) =>
+              handleDragEnd(element.id, e.target.x(), e.target.y())
+            }
+          />
+        );
+      case "path":
+        return (
+          <Line
+            key={element.id}
+            points={element.points || []}
+            stroke={element.stroke || element.color}
+            strokeWidth={element.strokeWidth || 3}
+            tension={element.tension || 0.5}
+            lineCap="round"
+            lineJoin="round"
+            pointerLength={element.pointerLength || 10}
+            pointerWidth={element.pointerWidth || 10}
+            draggable={element.draggable}
             onDragEnd={(e) => {
-              const newX = e.target.x();
-              const newY = e.target.y();
+              const newPoints =
+                element.points?.map((point, index) =>
+                  index % 2 === 0 ? point + e.target.x() : point + e.target.y()
+                ) || [];
               setElements((prev) =>
                 prev.map((el) =>
-                  el.id === element.id ? { ...el, x: newX, y: newY } : el
+                  el.id === element.id ? { ...el, points: newPoints } : el
                 )
               );
             }}
           />
         );
-      case "zone":
+      case "label":
         return (
-          <Rect
+          <Text
             key={element.id}
             x={element.x}
             y={element.y}
-            width={element.width || 100}
-            height={element.height || 100}
+            text={element.label || ""}
+            fontSize={12}
+            fontFamily="Arial"
             fill={element.color}
-            opacity={0.3}
-            stroke={element.color}
-            strokeWidth={2}
-            draggable
+            draggable={element.draggable}
+            onDragEnd={(e) =>
+              handleDragEnd(element.id, e.target.x(), e.target.y())
+            }
           />
         );
       default:
@@ -147,8 +337,8 @@ export function MapCanvas() {
 
   return (
     <div className="flex-1 flex flex-col bg-background border border-border rounded-xl overflow-hidden">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border-b border-border bg-card gap-3 sm:gap-0 mt-10 md:mt-0">
-        <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border-b border-border bg-card gap-3 sm:gap-0">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-8 g:mt-0">
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -225,7 +415,6 @@ export function MapCanvas() {
           ref={stageRef}
           width={stageSize.width}
           height={stageSize.height}
-          onClick={handleStageClick}
           className="w-full h-full"
         >
           <Layer>
@@ -235,7 +424,9 @@ export function MapCanvas() {
         </Stage>
 
         <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 text-xs text-muted-foreground bg-background/80 px-2 py-1 rounded">
-          <span className="hidden sm:inline">Click on map to add POIs + Drag to move elements</span>
+          <span className="hidden sm:inline">
+            Click on map to add POIs + Drag to move elements
+          </span>
           <span className="sm:hidden">Click to add POIs</span>
         </div>
       </div>

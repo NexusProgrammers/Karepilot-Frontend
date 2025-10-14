@@ -6,14 +6,18 @@ import { Layers } from "./Layers";
 import { Properties } from "./Properties";
 import { MapCanvas } from "./MapCanvas";
 import { ActionButtons } from "./ActionButtons";
+import { AddPOIModal } from "./AddPOIModal";
+import { AddLabelModal } from "./AddLabelModal";
 import { Button } from "@/components/ui/button";
 import { PanelLeft, PanelLeftClose } from "lucide-react";
 
 export function MapEditorContent() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [showPOIModal, setShowPOIModal] = useState(false);
+  const [showLabelModal, setShowLabelModal] = useState(false);
 
   return (
-    <div className="flex h-[calc(100vh-120px)] relative">
+    <div className="flex h-[calc(100vh-120px)] relative gap-4">
       <div className="lg:hidden absolute top-1 left-2 z-50 cursor-pointer">
         <Button
           variant="outline"
@@ -41,7 +45,12 @@ export function MapEditorContent() {
         `}
       >
         <div className="flex-1 p-4 space-y-4 lg:space-y-6 mt-32 lg:mt-0">
-          <DrawingTools />
+          <DrawingTools 
+            onToolSelect={(toolId) => {
+              if (toolId === "poi") setShowPOIModal(true);
+              if (toolId === "label") setShowLabelModal(true);
+            }}
+          />
           <Layers />
           <Properties />
         </div>
@@ -58,6 +67,18 @@ export function MapEditorContent() {
         <MapCanvas />
         <ActionButtons />
       </div>
+
+      <AddPOIModal
+        isOpen={showPOIModal}
+        onClose={() => setShowPOIModal(false)}
+        onAddPOI={(poiData) => console.log("Adding POI:", poiData)}
+      />
+      
+      <AddLabelModal
+        isOpen={showLabelModal}
+        onClose={() => setShowLabelModal(false)}
+        onAddLabel={(labelData) => console.log("Adding Label:", labelData)}
+      />
     </div>
   );
 }

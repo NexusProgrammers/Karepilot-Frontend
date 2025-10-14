@@ -169,6 +169,9 @@ export const buildings = [
 
 export const mapManagerTabs: TabItem[] = [
   { id: "floor-plans", label: "Floor Plans", href: "/map-manager" },
+  { id: "drawing-tools", label: "Drawing Tools", href: "/map-manager/drawing-tools" },
+  { id: "layers", label: "Layers", href: "/map-manager/layers" },
+  { id: "properties", label: "Properties", href: "/map-manager/properties" },
   { id: "buildings", label: "Buildings", href: "/map-manager/buildings" },
   { id: "settings", label: "Settings", href: "/map-manager/settings" },
 ];
