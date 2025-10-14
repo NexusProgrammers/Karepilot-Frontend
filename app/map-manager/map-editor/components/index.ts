@@ -6,3 +6,7 @@ export { MapCanvas } from "./MapCanvas";
 export { ActionButtons } from "./ActionButtons";
 export { AddPOIModal } from "./AddPOIModal";
 export { AddLabelModal } from "./AddLabelModal";
+export { MarkEntranceModal } from "./MarkEntranceModal";
+export { AddElevatorModal } from "./AddElevatorModal";
+export { AddRestrictedZoneModal } from "./AddRestrictedZoneModal";
+export { AddAnnotationModal } from "./AddAnnotationModal";
