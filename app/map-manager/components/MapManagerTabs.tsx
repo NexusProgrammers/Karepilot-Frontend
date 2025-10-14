@@ -2,5 +2,5 @@ import NavigationTabs from "@/components/common/NavigationTabs";
 import { mapManagerTabs } from "@/lib/map-manager/data";
 
 export default function MapManagerTabs() {
-  return <NavigationTabs tabs={mapManagerTabs} responsive={true}/>;
+  return <NavigationTabs tabs={mapManagerTabs} responsive={true} className="max-w-[650px]"/>;
 }
