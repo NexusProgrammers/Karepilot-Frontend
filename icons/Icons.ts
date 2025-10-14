@@ -77,6 +77,17 @@ import {
   FileText,
   Download,
   ArrowUpRight,
+  DoorOpen,
+  ArrowUpDown,
+  Route,
+  MessageSquare,
+  Minus,
+  RotateCcw,
+  Undo,
+  Redo,
+  Ruler,
+  Info,
+  HeartCrack 
 } from "lucide-react";
 
 export {
@@ -157,5 +168,16 @@ export {
   FileText,
   Download,
   ArrowUpRight,
+  DoorOpen,
+  ArrowUpDown,
+  Route,
+  MessageSquare,
+  Minus,
+  RotateCcw,
+  Undo,
+  Redo,
+  Ruler,
+  Info,
+  HeartCrack 
 };
 export type { LucideIcon };

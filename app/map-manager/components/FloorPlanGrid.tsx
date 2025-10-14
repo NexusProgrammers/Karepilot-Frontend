@@ -3,6 +3,7 @@
 import { floorPlans } from "@/lib/map-manager/data";
 import { MapPin, Settings } from "@/icons/Icons";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function FloorPlanGrid() {
   return (
@@ -69,27 +70,33 @@ export default function FloorPlanGrid() {
                 Scale: {plan.scale}
               </p>
             </div>
-              <hr className="mb-6" />
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                className="flex cursor-pointer items-center justify-center gap-2 flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground hover:bg-accent transition-colors"
-              >
-                Preview
-              </Button>
-              <Button
-                variant="outline"
-                className="flex cursor-pointer items-center justify-center gap-2 flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground hover:bg-accent transition-colors"
-              >
-                Edit
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex cursor-pointer items-center justify-center w-10 h-10 bg-background border border-border rounded-lg text-foreground hover:bg-accent transition-colors"
-              >
-                <Settings className="w-4 h-4 text-muted-foreground" />
-              </Button>
+            <hr className="mb-6" />
+            <div className="flex gap-2 w-full">
+              <Link href="/map-manager/map-editor" className="w-full">
+                <Button
+                  variant="outline"
+                  className="flex cursor-pointer w-full items-center justify-center gap-2 flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground hover:bg-accent transition-colors"
+                >
+                  Preview
+                </Button>
+              </Link>
+              <Link href="/map-manager/map-editor" className="w-full">
+                <Button
+                  variant="outline"
+                  className="flex cursor-pointer items-center w-full justify-center gap-2 flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground hover:bg-accent transition-colors"
+                >
+                  Edit
+                </Button>
+              </Link>
+              <Link href="/map-manager/map-editor">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex cursor-pointer items-center justify-center w-10 h-10 bg-background border border-border rounded-lg text-foreground hover:bg-accent transition-colors"
+                >
+                  <Settings className="w-4 h-4 text-muted-foreground" />
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
