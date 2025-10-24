@@ -30,7 +30,7 @@ export function AddElevatorModal({
 }: AddElevatorModalProps) {
   const [formData, setFormData] = useState({
     label: "",
-    connectsToFloors: ["Basement", "Floor 1"], // Default checked floors
+    connectsToFloors: ["Basement", "Floor 1"],
   });
 
   const floors = [

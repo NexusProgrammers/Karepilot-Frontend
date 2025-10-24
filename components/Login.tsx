@@ -5,13 +5,14 @@ import { Eye, EyeOff } from "@/icons/Icons";
 import { LogoIcon } from "@/icons/Svg";
 import { Button } from "@/components/ui/button";
 import { useDispatch } from "react-redux";
-import { setToken } from "@/lib/store/slices/authSlice";
+import { setToken, setLoading } from "@/lib/store/slices/authSlice";
 import { useLoginMutation } from "@/lib/api/authApi";
 import { tokenManager } from "@/lib/utils/tokenManager";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { loginValidationSchema } from "@/lib/validations/authSchemas";
 import { LoginFormValues, ApiError } from "@/lib/types";
 import toast from "react-hot-toast";
+import { ButtonLoading } from "@/components/common";
 
 export default function KarepilotLogin({ onLogin }: { onLogin: () => void }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -20,6 +21,7 @@ export default function KarepilotLogin({ onLogin }: { onLogin: () => void }) {
 
   const handleSubmit = async (values: LoginFormValues) => {
     try {
+      dispatch(setLoading(true)); 
       const result = await login({
         email: values.email,
         password: values.password,
@@ -28,6 +30,7 @@ export default function KarepilotLogin({ onLogin }: { onLogin: () => void }) {
       if (result.success) {
         dispatch(setToken(result.data.token));
         tokenManager.setToken(result.data.token);
+        dispatch(setLoading(false)); 
         
         toast.success(result.message || "Login successful!");
         onLogin();
@@ -53,6 +56,7 @@ export default function KarepilotLogin({ onLogin }: { onLogin: () => void }) {
       } else {
         toast.error("Login failed. Please try again");
       }
+      dispatch(setLoading(false)); 
     }
   };
 
@@ -143,7 +147,7 @@ export default function KarepilotLogin({ onLogin }: { onLogin: () => void }) {
                 disabled={isLoading}
                 className="w-full bg-[#3D8C6C] hover:bg-green-700 text-white py-3 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 font-medium transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? "Logging in..." : "Login"}
+                {isLoading ? <ButtonLoading /> : "Login"}
               </Button>
             </Form>
           )}

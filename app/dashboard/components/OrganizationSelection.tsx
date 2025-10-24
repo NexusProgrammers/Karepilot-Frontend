@@ -10,8 +10,9 @@ import { menuOptions, organizations } from "@/lib/dashboard/data";
 import { dashboardIcon } from "@/icons/Assets";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/lib/store";
-import { setToken, clearToken } from "@/lib/store/slices/authSlice";
+import { setToken, clearToken, setLoading } from "@/lib/store/slices/authSlice";
 import { tokenManager } from "@/lib/utils/tokenManager";
+import { FullScreenLoading } from "@/components/common";
 
 export function OrganizationSelection() {
   const [showMenu, setShowMenu] = useState(false);
@@ -20,7 +21,7 @@ export function OrganizationSelection() {
   >(null);
 
   const dispatch = useDispatch();
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated, isLoading } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     const checkAuth = () => {
@@ -34,6 +35,7 @@ export function OrganizationSelection() {
     };
 
     checkAuth();
+    dispatch(setLoading(false)); 
 
     const handleFocus = () => {
       checkAuth();
@@ -64,6 +66,10 @@ export function OrganizationSelection() {
       dispatch(setToken(token));
     }
   };
+
+  if (isLoading) {
+    return <FullScreenLoading message="Authenticating..." />;
+  }
 
   if (!isAuthenticated) {
     return <KarepilotLogin onLogin={handleLogin} />;
