@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { CustomSelect } from "@/components/common/CustomSelect";
 import { ToggleSwitch } from "@/components/common/ToggleSwitch";
 import { Check } from "@/icons/Icons";
 import { UserPreference } from "@/lib/settings/types";
+import { useTheme } from "next-themes";
+import toast from "react-hot-toast";
 
 interface UserPreferencesProps {
   title: string;
@@ -20,13 +22,37 @@ export function UserPreferences({
   preferences,
   className = "",
 }: UserPreferencesProps) {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [preferenceValues, setPreferenceValues] = useState(
     preferences.reduce((acc, pref) => ({ ...acc, [pref.id]: pref.value }), {})
   );
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && theme) {
+      const themePref = preferences.find((p) => p.label === "Theme");
+      if (themePref) {
+        const capitalizedTheme = theme.charAt(0).toUpperCase() + theme.slice(1);
+        setPreferenceValues((prev) => ({ ...prev, [themePref.id]: capitalizedTheme }));
+      }
+    }
+  }, [mounted, theme, preferences]);
+
   const handlePreferenceChange = (id: number, value: string) => {
     setPreferenceValues((prev) => ({ ...prev, [id]: value }));
+    
+    const themePref = preferences.find((p) => p.label === "Theme");
+    if (themePref && id === themePref.id) {
+      const themeValue = value.toLowerCase();
+      console.log('Changing theme from', theme, 'to', themeValue);
+      setTheme(themeValue);
+      toast.success(`Theme changed to ${value}`);
+    }
   };
 
   const handleSavePreferences = () => {
@@ -41,6 +67,25 @@ export function UserPreferences({
   const refreshIntervalPref = preferences.find(
     (p) => p.label === "Refresh Interval (seconds)"
   );
+
+  if (!mounted) {
+    return (
+      <div
+        className={`bg-background border border-border rounded-xl p-6 ${className}`}
+      >
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-foreground mb-1">{title}</h3>
+          <p className="text-sm text-muted-foreground">{subtitle}</p>
+        </div>
+        <div className="animate-pulse">
+          <div className="h-4 bg-muted rounded w-1/4 mb-4"></div>
+          <div className="h-10 bg-muted rounded mb-4"></div>
+          <div className="h-4 bg-muted rounded w-1/4 mb-4"></div>
+          <div className="h-10 bg-muted rounded"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
