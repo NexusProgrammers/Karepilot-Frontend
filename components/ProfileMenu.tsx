@@ -12,10 +12,17 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useTheme } from "next-themes";
 import { Settings, User, LogOut, Moon, Sun } from "@/icons/Icons";
+import { useDispatch } from "react-redux";
+import { clearToken } from "@/lib/store/slices/authSlice";
+import { tokenManager } from "@/lib/utils/tokenManager";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export function ProfileMenu() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const dispatch = useDispatch();
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
@@ -23,6 +30,31 @@ export function ProfileMenu() {
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
+  };
+
+  const handleLogout = () => {
+    try {
+      dispatch(clearToken());
+      tokenManager.clearAuth();
+      toast.success("Logged out successfully!");
+      router.push('/');
+      router.refresh();
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast.error("Logout failed. Please try again.");
+    }
+  };
+
+  const getUserInitials = () => {
+    return 'A';
+  };
+
+  const getUserName = () => {
+    return 'Admin User';
+  };
+
+  const getUserRole = () => {
+    return 'Admin';
   };
 
   if (!mounted) {
@@ -33,7 +65,7 @@ export function ProfileMenu() {
       >
         <Avatar className="h-10 w-10">
           <AvatarFallback className="bg-[#3D8C6C]/10 text-[#3D8C6C] font-medium">
-            EG
+            {getUserInitials()}
           </AvatarFallback>
         </Avatar>
       </Button>
@@ -49,7 +81,7 @@ export function ProfileMenu() {
         >
           <Avatar className="h-10 w-10">
             <AvatarFallback className="bg-[#3D8C6C]/10 text-[#3D8C6C] font-medium">
-              EG
+              {getUserInitials()}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -57,9 +89,9 @@ export function ProfileMenu() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <div className="flex items-center justify-start gap-2 p-2">
           <div className="flex flex-col space-y-1 leading-none">
-            <p className="font-medium text-foreground">Ezekiel Olayiwola</p>
+            <p className="font-medium text-foreground">{getUserName()}</p>
             <p className="w-[200px] truncate text-sm text-muted-foreground">
-              Super Admin
+              {getUserRole()}
             </p>
           </div>
         </div>
@@ -81,7 +113,7 @@ export function ProfileMenu() {
           <span>Profile</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer ">
+        <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Logout</span>
         </DropdownMenuItem>
