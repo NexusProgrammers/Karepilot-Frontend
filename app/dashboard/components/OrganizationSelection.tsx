@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,13 +8,43 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import KarepilotLogin from "@/components/Login";
 import { menuOptions, organizations } from "@/lib/dashboard/data";
 import { dashboardIcon } from "@/icons/Assets";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/lib/store";
+import { setToken, clearToken } from "@/lib/store/slices/authSlice";
+import { tokenManager } from "@/lib/utils/tokenManager";
 
 export function OrganizationSelection() {
-  const [loggedIn, setLoggedIn] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [selectedOrg, setSelectedOrg] = useState<
     (typeof organizations)[0] | null
   >(null);
+
+  const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = tokenManager.getToken();
+
+      if (token) {
+        dispatch(setToken(token));
+      } else {
+        dispatch(clearToken());
+      }
+    };
+
+    checkAuth();
+
+    const handleFocus = () => {
+      checkAuth();
+    };
+
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [dispatch]);
 
   const handleSelectClick = (org: (typeof organizations)[0]) => {
     setSelectedOrg(org);
@@ -27,8 +57,16 @@ export function OrganizationSelection() {
     }
   };
 
-  if (!loggedIn) {
-    return <KarepilotLogin onLogin={() => setLoggedIn(true)} />;
+  const handleLogin = () => {
+    const token = tokenManager.getToken();
+
+    if (token) {
+      dispatch(setToken(token));
+    }
+  };
+
+  if (!isAuthenticated) {
+    return <KarepilotLogin onLogin={handleLogin} />;
   }
 
   return (
@@ -85,8 +123,12 @@ export function OrganizationSelection() {
                 <div className="flex w-full items-center justify-center">
                   <Image width={60} height={60} src={dashboardIcon} alt="img" />
                 </div>
-                <h3 className="font-semibold text-card-foreground mb-1">{org.name}</h3>
-                <p className="text-sm text-muted-foreground mb-1">{org.location}</p>
+                <h3 className="font-semibold text-card-foreground mb-1">
+                  {org.name}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-1">
+                  {org.location}
+                </p>
                 <span className="inline-block px-2 py-1 bg-muted text-muted-foreground text-xs rounded-full">
                   {org.type}
                 </span>
