@@ -1,19 +1,8 @@
 "use client";
 
-export interface PerformanceStatItem {
-  id: number;
-  value: string;
-  label: string;
-  color: string;
-}
+import { PerformanceStatItem, PerformanceStatisticsProps } from "@/lib/types/performance";
 
-export interface PerformanceStatisticsProps {
-  title?: string;
-  stats: PerformanceStatItem[];
-  className?: string;
-  showBorder?: boolean;
-  gridClassName?: string;
-}
+export type { PerformanceStatItem, PerformanceStatisticsProps };
 
 export function PerformanceStatistics({
   title = "",

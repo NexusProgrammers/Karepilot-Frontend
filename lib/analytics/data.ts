@@ -5,7 +5,7 @@ import {
   navigationRequestsIcon,
 } from "@/icons/Assets";
 import { StatItem } from "../organization/types";
-import { TabItem } from "@/components/common/NavigationTabs";
+import { TabItem } from "@/lib/types/navigation";
 import {
   AlertTriangleIcon,
   ClockIcon,

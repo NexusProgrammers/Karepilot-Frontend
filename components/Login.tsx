@@ -31,13 +31,11 @@ export default function KarepilotLogin({ onLogin }: { onLogin: () => void }) {
         dispatch(setToken(result.data.token));
         tokenManager.setToken(result.data.token);
         dispatch(setLoading(false)); 
-        
         toast.success(result.message || "Login successful!");
         onLogin();
       }
     } catch (error: unknown) {
       console.error('Login error:', error);
-      
       if (error && typeof error === 'object' && 'data' in error) {
         const err = error as ApiError;
         if (err.data?.message) {
