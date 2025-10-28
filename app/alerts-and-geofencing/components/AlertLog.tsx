@@ -2,7 +2,8 @@
 
 import { Alert, FilterOption } from "@/lib/alerts-and-geofencing/types";
 import { Button } from "@/components/ui/button";
-import NavigationTabs, { TabItem } from "@/components/common/NavigationTabs";
+import NavigationTabs from "@/components/common/NavigationTabs";
+import { TabItem } from "@/lib/types/navigation";
 
 interface AlertLogProps {
   alerts: Alert[];

@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { LoginRequest, LoginResponse } from '../types';
+import { tokenManager } from '../utils/tokenManager';
 
 const API_BASE_URL = 'https://karepilot-backend.vercel.app/api/v1';
 
@@ -9,6 +10,13 @@ export const authApi = createApi({
     baseUrl: API_BASE_URL,
     prepareHeaders: (headers) => {
       headers.set('Content-Type', 'application/json');
+      
+      // Get token from cookies
+      const token = tokenManager.getToken();
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+      
       return headers;
     },
   }),

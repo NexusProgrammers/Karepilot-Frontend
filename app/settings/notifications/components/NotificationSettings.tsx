@@ -4,14 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ToggleSwitch } from "@/components/common/ToggleSwitch";
 import { Check } from "@/icons/Icons";
-import { NotificationSetting } from "@/lib/settings/types";
-
-interface NotificationSettingsProps {
-  title: string;
-  subtitle: string;
-  settings: NotificationSetting[];
-  className?: string;
-}
+import { NotificationSettingsProps } from "@/lib/types/components";
 
 export function NotificationSettings({
   title,

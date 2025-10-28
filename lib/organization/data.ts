@@ -5,7 +5,7 @@ import {
   VenueTypeFilter,
 } from "./types";
 import { ActivityItem } from "../dashboard/types";
-import { TabItem } from "@/components/common/NavigationTabs";
+import { TabItem } from "@/lib/types/navigation";
 import {
   DashboardIcon,
   activeIcon,

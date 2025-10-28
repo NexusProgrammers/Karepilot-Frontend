@@ -5,14 +5,7 @@ import { Button } from "@/components/ui/button";
 import { CustomInput } from "@/components/common/CustomInput";
 import { ToggleSwitch } from "@/components/common/ToggleSwitch";
 import { Check } from "@/icons/Icons";
-import { SecuritySetting } from "@/lib/settings/types";
-
-interface SecuritySettingsProps {
-  title: string;
-  subtitle: string;
-  settings: SecuritySetting[];
-  className?: string;
-}
+import { SecuritySettingsProps, SecuritySettingsState } from "@/lib/types/components";
 
 export function SecuritySettings({
   title,
@@ -20,24 +13,22 @@ export function SecuritySettings({
   settings,
   className = "",
 }: SecuritySettingsProps) {
-  const [securitySettings, setSecuritySettings] = useState(
+  const [securitySettings, setSecuritySettings] = useState<SecuritySettingsState>(
     settings.reduce(
       (acc, setting) => ({ ...acc, [setting.name]: setting.value }),
       {}
-    )
+    ) as SecuritySettingsState
   );
 
   const handleToggle = (name: string) => {
     setSecuritySettings((prev) => {
-      const prevSettings = prev as Record<string, boolean | string>;
-      return { ...prevSettings, [name]: !prevSettings[name] as boolean };
+      return { ...prev, [name]: !prev[name] as boolean };
     });
   };
 
   const handleInputChange = (name: string, value: string) => {
     setSecuritySettings((prev) => {
-      const prevSettings = prev as Record<string, boolean | string>;
-      return { ...prevSettings, [name]: value };
+      return { ...prev, [name]: value };
     });
   };
 

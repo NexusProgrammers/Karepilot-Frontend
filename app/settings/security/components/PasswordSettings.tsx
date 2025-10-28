@@ -4,19 +4,14 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CustomInput } from "@/components/common/CustomInput";
 import { Check } from "@/icons/Icons";
-
-interface PasswordSettingsProps {
-  title: string;
-  subtitle: string;
-  className?: string;
-}
+import { PasswordSettingsProps, PasswordFormData } from "@/lib/types/components";
 
 export function PasswordSettings({
   title,
   subtitle,
   className = "",
 }: PasswordSettingsProps) {
-  const [passwordData, setPasswordData] = useState({
+  const [passwordData, setPasswordData] = useState<PasswordFormData>({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",

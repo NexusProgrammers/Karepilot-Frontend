@@ -2,19 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { TabItem, NavigationTabsProps } from "@/lib/types/navigation";
 
-export interface TabItem {
-  id: string;
-  label: string;
-  href: string;
-}
-
-interface NavigationTabsProps {
-  tabs: TabItem[];
-  className?: string;
-  maxWidth?: string;
-  responsive?: boolean;
-}
+export type { TabItem };
 
 export default function NavigationTabs({
   tabs,
@@ -26,7 +16,7 @@ export default function NavigationTabs({
 
   const isActive = (tab: TabItem) => {
     if (tab.href === "/analytics") {
-      return pathname === "/analytics";
+      return pathname ===  "/analytics";
     }
 
     if (tab.href.startsWith("/analytics/")) {

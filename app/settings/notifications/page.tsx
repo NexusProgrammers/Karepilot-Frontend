@@ -1,6 +1,3 @@
-
-
-
 "use client";
 
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -21,7 +18,8 @@ export default function NotificationsPage() {
         <div>
           <h1 className="text-2xl font-bold text-foreground mb-2">Settings</h1>
           <p className="text-muted-foreground">
-            Configure system preferences and manage your account for your organization
+            Configure system preferences and manage your account for your
+            organization
           </p>
         </div>
 

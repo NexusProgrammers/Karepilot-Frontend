@@ -1,34 +1,70 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { CustomInput } from "@/components/common/CustomInput";
 import { Check } from "@/icons/Icons";
-
-interface ProfileSettingsProps {
-  title: string;
-  subtitle: string;
-  className?: string;
-}
+import { useGetGeneralSettingsQuery, useUpdateGeneralSettingsMutation } from "@/lib/api/settingsApi";
+import toast from "react-hot-toast";
+import { ProfileSettingsSkeleton } from "@/app/settings/components/ProfileSettingsSkeleton";
+import { ProfileSettingsProps, ProfileFormData } from "@/lib/types/components";
 
 export function ProfileSettings({
   title,
   subtitle,
   className = "",
 }: ProfileSettingsProps) {
-  const [formData, setFormData] = useState({
-    firstName: "Ezekiel",
-    lastName: "Olayiwola",
-    email: "ezeydesign1@gmail.com",
+  const { data: settingsData, isLoading } = useGetGeneralSettingsQuery();
+  const [updateSettings] = useUpdateGeneralSettingsMutation();
+  
+  const [formData, setFormData] = useState<ProfileFormData>({
+    firstName: "",
+    lastName: "",
+    email: "",
   });
+
+  useEffect(() => {
+    if (settingsData?.data) {
+      setFormData({
+        firstName: settingsData.data.firstName,
+        lastName: settingsData.data.lastName,
+        email: settingsData.data.email,
+      });
+    }
+  }, [settingsData]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleUpdateProfile = () => {
-    console.log("Updating profile:", formData);
+  const handleUpdateProfile = async () => {
+    try {
+      const result = await updateSettings({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+      }).unwrap();
+      toast.success(result.message || "Profile updated successfully");
+    } catch (error: unknown) {
+      console.error('Error updating profile:', error);
+      const apiError = error as { data?: { message?: string } };
+      if (apiError?.data?.message) {
+        toast.error(apiError.data.message);
+      } else {
+        toast.error("Failed to update profile. Please try again.");
+      }
+    }
   };
+
+  if (isLoading) {
+    return (
+      <ProfileSettingsSkeleton
+        title={title}
+        subtitle={subtitle}
+        className={className}
+      />
+    );
+  }
 
   return (
     <div
