@@ -1,29 +1,10 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { RootState } from '../store';
+import { createApi } from '@reduxjs/toolkit/query/react';
 import { GeneralSettingsResponse, UpdateGeneralSettingsRequest, UpdatePreferencesRequest, UpdateProfileSettingsRequest } from '../types';
-import { tokenManager } from '../utils/tokenManager';
-
-const API_BASE_URL = 'https://karepilot-backend.vercel.app/api/v1';
+import { baseQuery } from './baseConfig';
 
 export const settingsApi = createApi({
   reducerPath: 'settingsApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: API_BASE_URL,
-    prepareHeaders: (headers, { getState }) => {
-      headers.set('Content-Type', 'application/json');
-      const state = getState() as RootState;
-      let token = state.auth.token;
-      if (!token) {
-        const cookieToken = tokenManager.getToken();
-        token = cookieToken || null;
-      }
-      
-      if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery,
   tagTypes: ['Settings'],
   endpoints: (builder) => ({
     getGeneralSettings: builder.query<GeneralSettingsResponse, void>({
