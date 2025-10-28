@@ -18,6 +18,7 @@ export interface ProfileFormData {
   firstName: string;
   lastName: string;
   email: string;
+  profileImage?: string;
 }
 
 export interface UserPreferencesProps extends BaseSettingsProps {

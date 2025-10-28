@@ -4,6 +4,7 @@ export interface GeneralSettings {
   firstName: string;
   lastName: string;
   email: string;
+  profileImage?: string;
   theme: string;
   language: string;
   timezone: string;
@@ -26,6 +27,7 @@ export interface UpdateGeneralSettingsRequest {
   firstName?: string;
   lastName?: string;
   email?: string;
+  profileImage?: string;
   theme?: string;
   language?: string;
   timezone?: string;
@@ -33,6 +35,13 @@ export interface UpdateGeneralSettingsRequest {
   timeFormat?: string;
   autoRefresh?: boolean;
   refreshInterval?: number;
+}
+
+export interface UpdateProfileSettingsRequest {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  profileImage?: string;
 }
 
 export interface UpdatePreferencesRequest {

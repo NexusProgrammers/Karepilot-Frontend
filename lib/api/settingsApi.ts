@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../store';
-import { GeneralSettingsResponse, UpdateGeneralSettingsRequest, UpdatePreferencesRequest } from '../types';
+import { GeneralSettingsResponse, UpdateGeneralSettingsRequest, UpdatePreferencesRequest, UpdateProfileSettingsRequest } from '../types';
 import { tokenManager } from '../utils/tokenManager';
 
 const API_BASE_URL = 'https://karepilot-backend.vercel.app/api/v1';
@@ -46,7 +46,20 @@ export const settingsApi = createApi({
       }),
       invalidatesTags: ['Settings'],
     }),
+    updateProfileSettings: builder.mutation<GeneralSettingsResponse, UpdateProfileSettingsRequest>({
+      query: (data) => ({
+        url: '/users/admin/settings/general/profile',
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['Settings'],
+    }),
   }),
 });
 
-export const { useGetGeneralSettingsQuery, useUpdateGeneralSettingsMutation, useUpdatePreferencesMutation } = settingsApi;
+export const { 
+  useGetGeneralSettingsQuery, 
+  useUpdateGeneralSettingsMutation, 
+  useUpdatePreferencesMutation,
+  useUpdateProfileSettingsMutation 
+} = settingsApi;

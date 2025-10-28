@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { CustomInput } from "@/components/common/CustomInput";
-import { Check } from "@/icons/Icons";
-import { useGetGeneralSettingsQuery, useUpdateGeneralSettingsMutation } from "@/lib/api/settingsApi";
+import { Check, Edit } from "@/icons/Icons";
+import { useGetGeneralSettingsQuery, useUpdateProfileSettingsMutation } from "@/lib/api/settingsApi";
+import { uploadFile } from "@/lib/api/uploadApi";
 import toast from "react-hot-toast";
 import { ProfileSettingsSkeleton } from "@/app/settings/components/ProfileSettingsSkeleton";
 import { ProfileSettingsProps, ProfileFormData } from "@/lib/types/components";
@@ -15,12 +17,14 @@ export function ProfileSettings({
   className = "",
 }: ProfileSettingsProps) {
   const { data: settingsData, isLoading } = useGetGeneralSettingsQuery();
-  const [updateSettings] = useUpdateGeneralSettingsMutation();
+  const [updateProfile] = useUpdateProfileSettingsMutation();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState<ProfileFormData>({
     firstName: "",
     lastName: "",
     email: "",
+    profileImage: "",
   });
 
   useEffect(() => {
@@ -29,6 +33,7 @@ export function ProfileSettings({
         firstName: settingsData.data.firstName,
         lastName: settingsData.data.lastName,
         email: settingsData.data.email,
+        profileImage: settingsData.data.profileImage || "",
       });
     }
   }, [settingsData]);
@@ -37,12 +42,33 @@ export function ProfileSettings({
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleImageUpload = async (file: File) => {
+    try {
+      toast.loading("Uploading image...");
+      const result = await uploadFile(file, "admin-profiles");
+      setFormData((prev) => ({ ...prev, profileImage: result.data.url }));
+      toast.dismiss();
+      toast.success("Image uploaded successfully");
+    } catch (error: unknown) {
+      toast.dismiss();
+      toast.error(error instanceof Error ? error.message : "Failed to upload image");
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      handleImageUpload(file);
+    }
+  };
+
   const handleUpdateProfile = async () => {
     try {
-      const result = await updateSettings({
+      const result = await updateProfile({
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
+        profileImage: formData.profileImage,
       }).unwrap();
       toast.success(result.message || "Profile updated successfully");
     } catch (error: unknown) {
@@ -78,12 +104,36 @@ export function ProfileSettings({
       <div className="space-y-6">
         <div className="flex items-center gap-4">
           <div className="relative">
-            <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center">
-              <span className="text-2xl font-semibold text-muted-foreground">
-                {formData.firstName[0]}
-                {formData.lastName[0]}
-              </span>
-            </div>
+            {formData.profileImage ? (
+              <Image
+                src={formData.profileImage}
+                alt="Profile"
+                width={80}
+                height={80}
+                className="w-20 h-20 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center">
+                <span className="text-2xl font-semibold text-muted-foreground">
+                  {formData.firstName[0] || "U"}
+                  {formData.lastName[0] || ""}
+                </span>
+              </div>
+            )}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="image/*"
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute bottom-0 right-0 bg-[#3D8C6C] text-white cursor-pointer rounded-full p-1.5 hover:bg-green-700 transition-colors"
+              type="button"
+            >
+              <Edit className="w-3 h-3" />
+            </button>
           </div>
         </div>
 

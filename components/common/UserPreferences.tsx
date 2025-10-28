@@ -95,9 +95,9 @@ export function UserPreferences({
 
   const handleThemeChange = (value: string, setFieldValue: (field: string, value: string | boolean) => void) => {
     setFieldValue("theme", value);
-    const themeValue = value.toLowerCase();
-    setTheme(themeValue);
-    toast.success(`Theme changed to ${value}`);
+      const themeValue = value.toLowerCase();
+      setTheme(themeValue);
+      toast.success(`Theme changed to ${value}`);
   };
 
   if (!mounted || isLoading) {
@@ -136,120 +136,120 @@ export function UserPreferences({
       >
         {({ values, setFieldValue }) => (
           <Form className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {themePref && (
-                <div>
-                  <label className="text-sm font-medium text-foreground mb-2 block">
-                    {themePref.label} *
-                  </label>
-                  <CustomSelect
-                    options={themePref.options}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {themePref && (
+            <div>
+              <label className="text-sm font-medium text-foreground mb-2 block">
+                {themePref.label} *
+              </label>
+              <CustomSelect
+                options={themePref.options}
                     value={values.theme}
                     onChange={(value) => handleThemeChange(value, setFieldValue)}
-                    placeholder={`Select ${themePref.label.toLowerCase()}`}
-                    label=""
-                  />
-                </div>
-              )}
+                placeholder={`Select ${themePref.label.toLowerCase()}`}
+                label=""
+              />
+            </div>
+          )}
 
-              {languagePref && (
-                <div>
-                  <label className="text-sm font-medium text-foreground mb-2 block">
-                    {languagePref.label} *
-                  </label>
-                  <CustomSelect
-                    options={languagePref.options}
+          {languagePref && (
+            <div>
+              <label className="text-sm font-medium text-foreground mb-2 block">
+                {languagePref.label} *
+              </label>
+              <CustomSelect
+                options={languagePref.options}
                     value={values.language}
                     onChange={(value) => setFieldValue("language", value)}
-                    placeholder={`Select ${languagePref.label.toLowerCase()}`}
-                    label=""
-                  />
-                </div>
-              )}
+                placeholder={`Select ${languagePref.label.toLowerCase()}`}
+                label=""
+              />
             </div>
+          )}
+        </div>
 
-            {timezonePref && (
-              <div>
-                <label className="text-sm font-medium text-foreground mb-2 block">
-                  {timezonePref.label} *
-                </label>
-                <CustomSelect
-                  options={timezonePref.options}
+        {timezonePref && (
+          <div>
+            <label className="text-sm font-medium text-foreground mb-2 block">
+              {timezonePref.label} *
+            </label>
+            <CustomSelect
+              options={timezonePref.options}
                   value={values.timezone}
                   onChange={(value) => setFieldValue("timezone", value)}
-                  placeholder={`Select ${timezonePref.label.toLowerCase()}`}
-                  label=""
-                />
-              </div>
-            )}
+              placeholder={`Select ${timezonePref.label.toLowerCase()}`}
+              label=""
+            />
+          </div>
+        )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {dateFormatPref && (
-                <div>
-                  <label className="text-sm font-medium text-foreground mb-2 block">
-                    {dateFormatPref.label} *
-                  </label>
-                  <CustomSelect
-                    options={dateFormatPref.options}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {dateFormatPref && (
+            <div>
+              <label className="text-sm font-medium text-foreground mb-2 block">
+                {dateFormatPref.label} *
+              </label>
+              <CustomSelect
+                options={dateFormatPref.options}
                     value={values.dateFormat}
                     onChange={(value) => setFieldValue("dateFormat", value)}
-                    placeholder={`Select ${dateFormatPref.label.toLowerCase()}`}
-                    label=""
-                  />
-                </div>
-              )}
+                placeholder={`Select ${dateFormatPref.label.toLowerCase()}`}
+                label=""
+              />
+            </div>
+          )}
 
-              {timeFormatPref && (
-                <div>
-                  <label className="text-sm font-medium text-foreground mb-2 block">
-                    {timeFormatPref.label} *
-                  </label>
-                  <CustomSelect
-                    options={timeFormatPref.options}
+          {timeFormatPref && (
+            <div>
+              <label className="text-sm font-medium text-foreground mb-2 block">
+                {timeFormatPref.label} *
+              </label>
+              <CustomSelect
+                options={timeFormatPref.options}
                     value={values.timeFormat}
                     onChange={(value) => setFieldValue("timeFormat", value)}
-                    placeholder={`Select ${timeFormatPref.label.toLowerCase()}`}
-                    label=""
-                  />
-                </div>
-              )}
+                placeholder={`Select ${timeFormatPref.label.toLowerCase()}`}
+                label=""
+              />
             </div>
+          )}
+        </div>
 
             <div>
               <Field name="autoRefresh">
                 {({ field, form }: { field: { value: boolean }; form: { setFieldValue: (field: string, value: boolean) => void } }) => (
-                  <ToggleSwitch
+        <ToggleSwitch
                     checked={field.value}
                     onChange={(checked) => form.setFieldValue("autoRefresh", checked)}
-                    label="Auto Refresh"
-                    description="Automatically refresh data"
-                  />
+          label="Auto Refresh"
+          description="Automatically refresh data"
+        />
                 )}
               </Field>
             </div>
 
-            {refreshIntervalPref && (
-              <div>
-                <label className="text-sm font-medium text-foreground mb-2 block">
-                  {refreshIntervalPref.label} *
-                </label>
-                <CustomSelect
-                  options={refreshIntervalPref.options}
+        {refreshIntervalPref && (
+          <div>
+            <label className="text-sm font-medium text-foreground mb-2 block">
+              {refreshIntervalPref.label} *
+            </label>
+            <CustomSelect
+              options={refreshIntervalPref.options}
                   value={values.refreshInterval}
                   onChange={(value) => setFieldValue("refreshInterval", value)}
-                  placeholder={`Select ${refreshIntervalPref.label.toLowerCase()}`}
-                  label=""
-                />
-              </div>
-            )}
+              placeholder={`Select ${refreshIntervalPref.label.toLowerCase()}`}
+              label=""
+            />
+          </div>
+        )}
 
-            <Button
+        <Button
               type="submit"
-              className="bg-[#3D8C6C] hover:bg-[#3D8C6C] cursor-pointer text-white flex items-center gap-2"
-            >
-              <Check className="w-4 h-4" />
-              Save Preference
-            </Button>
+          className="bg-[#3D8C6C] hover:bg-[#3D8C6C] cursor-pointer text-white flex items-center gap-2"
+        >
+          <Check className="w-4 h-4" />
+          Save Preference
+        </Button>
           </Form>
         )}
       </Formik>
