@@ -1,4 +1,3 @@
-// All component prop types
 export * from './skeletonComponents';
 export * from './settingsComponents';
 export * from './navigation';

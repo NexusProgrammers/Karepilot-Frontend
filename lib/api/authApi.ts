@@ -10,8 +10,6 @@ export const authApi = createApi({
     baseUrl: API_BASE_URL,
     prepareHeaders: (headers) => {
       headers.set('Content-Type', 'application/json');
-      
-      // Get token from cookies
       const token = tokenManager.getToken();
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);

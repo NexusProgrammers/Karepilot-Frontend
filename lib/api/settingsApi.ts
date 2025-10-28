@@ -11,11 +11,8 @@ export const settingsApi = createApi({
     baseUrl: API_BASE_URL,
     prepareHeaders: (headers, { getState }) => {
       headers.set('Content-Type', 'application/json');
-      // Try to get token from Redux state first
       const state = getState() as RootState;
       let token = state.auth.token;
-      
-      // If no token in state, try to get from cookies
       if (!token) {
         const cookieToken = tokenManager.getToken();
         token = cookieToken || null;
