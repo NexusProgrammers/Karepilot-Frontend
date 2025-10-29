@@ -5,7 +5,10 @@ import { Button } from "@/components/ui/button";
 import { CustomSelect } from "@/components/common/CustomSelect";
 import { ToggleSwitch } from "@/components/common/ToggleSwitch";
 import { Check } from "@/icons/Icons";
-import { useGetGeneralSettingsQuery, useUpdatePreferencesMutation } from "@/lib/api/settingsApi";
+import {
+  useGetGeneralSettingsQuery,
+  useUpdatePreferencesMutation,
+} from "@/lib/api/settingsApi";
 import { useTheme } from "next-themes";
 import toast from "react-hot-toast";
 import { Formik, Form, Field } from "formik";
@@ -22,7 +25,7 @@ export function UserPreferences({
   className = "",
 }: UserPreferencesProps) {
   const { data: settingsData, isLoading } = useGetGeneralSettingsQuery();
-  const [updatePreferences] = useUpdatePreferencesMutation();
+  const [updatePreferences, { isLoading: isUpdating }] = useUpdatePreferencesMutation();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -34,7 +37,10 @@ export function UserPreferences({
     if (settingsData?.data) {
       const data = settingsData.data;
       return {
-        theme: (data.theme ? data.theme.charAt(0).toUpperCase() + data.theme.slice(1) : "Dark") || "Dark",
+        theme:
+          (data.theme
+            ? data.theme.charAt(0).toUpperCase() + data.theme.slice(1)
+            : "Dark") || "Dark",
         language: data.language || "English",
         timezone: data.timezone || "UTC",
         dateFormat: data.dateFormat || "MM/DD/YYYY",
@@ -44,7 +50,9 @@ export function UserPreferences({
       };
     }
     return {
-      theme: (theme ? theme.charAt(0).toUpperCase() + theme.slice(1) : "Dark") || "Dark",
+      theme:
+        (theme ? theme.charAt(0).toUpperCase() + theme.slice(1) : "Dark") ||
+        "Dark",
       language: "English",
       timezone: "UTC",
       dateFormat: "MM/DD/YYYY",
@@ -84,7 +92,7 @@ export function UserPreferences({
         }
       }
     } catch (error: unknown) {
-      console.error('Error updating preferences:', error);
+      console.error("Error updating preferences:", error);
       const apiError = error as { data?: { message?: string } };
       if (apiError?.data?.message) {
         toast.error(apiError.data.message);
@@ -94,7 +102,10 @@ export function UserPreferences({
     }
   };
 
-  const handleThemeChange = (value: string, setFieldValue: (field: string, value: string | boolean) => void) => {
+  const handleThemeChange = (
+    value: string,
+    setFieldValue: (field: string, value: string | boolean) => void
+  ) => {
     setFieldValue("theme", value);
     const themeValue = value.toLowerCase();
     setTheme(themeValue);
@@ -105,7 +116,7 @@ export function UserPreferences({
     return timezones.map((tz) => tz.label);
   }, []);
 
-  if (!mounted || isLoading) {
+  if (!mounted || isLoading || isUpdating) {
     return (
       <UserPreferencesSkeleton
         title={title}
@@ -141,120 +152,133 @@ export function UserPreferences({
       >
         {({ values, setFieldValue }) => (
           <Form className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {themePref && (
-            <div>
-              <label className="text-sm font-medium text-foreground mb-2 block">
-                {themePref.label} *
-              </label>
-              <CustomSelect
-                options={themePref.options}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {themePref && (
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-2 block">
+                    {themePref.label} *
+                  </label>
+                  <CustomSelect
+                    options={themePref.options}
                     value={values.theme}
-                    onChange={(value) => handleThemeChange(value, setFieldValue)}
-                placeholder={`Select ${themePref.label.toLowerCase()}`}
-                label=""
-              />
-            </div>
-          )}
+                    onChange={(value) =>
+                      handleThemeChange(value, setFieldValue)
+                    }
+                    placeholder={`Select ${themePref.label.toLowerCase()}`}
+                    label=""
+                  />
+                </div>
+              )}
 
-          {languagePref && (
-            <div>
-              <label className="text-sm font-medium text-foreground mb-2 block">
-                {languagePref.label} *
-              </label>
-              <CustomSelect
-                options={languagePref.options}
+              {languagePref && (
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-2 block">
+                    {languagePref.label} *
+                  </label>
+                  <CustomSelect
+                    options={languagePref.options}
                     value={values.language}
                     onChange={(value) => setFieldValue("language", value)}
-                placeholder={`Select ${languagePref.label.toLowerCase()}`}
-                label=""
-              />
+                    placeholder={`Select ${languagePref.label.toLowerCase()}`}
+                    label=""
+                  />
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        {timezonePref && (
-          <div>
-            <label className="text-sm font-medium text-foreground mb-2 block">
-              {timezonePref.label} *
-            </label>
-            <CustomSelect
-              options={timezoneOptions}
-              value={values.timezone}
-              onChange={(value) => setFieldValue("timezone", value)}
-              placeholder={`Select ${timezonePref.label.toLowerCase()}`}
-              label=""
-            />
-          </div>
-        )}
+            {timezonePref && (
+              <div>
+                <label className="text-sm font-medium text-foreground mb-2 block">
+                  {timezonePref.label} *
+                </label>
+                <CustomSelect
+                  options={timezoneOptions}
+                  value={values.timezone}
+                  onChange={(value) => setFieldValue("timezone", value)}
+                  placeholder={`Select ${timezonePref.label.toLowerCase()}`}
+                  label=""
+                />
+              </div>
+            )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {dateFormatPref && (
-            <div>
-              <label className="text-sm font-medium text-foreground mb-2 block">
-                {dateFormatPref.label} *
-              </label>
-              <CustomSelect
-                options={dateFormatPref.options}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {dateFormatPref && (
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-2 block">
+                    {dateFormatPref.label} *
+                  </label>
+                  <CustomSelect
+                    options={dateFormatPref.options}
                     value={values.dateFormat}
                     onChange={(value) => setFieldValue("dateFormat", value)}
-                placeholder={`Select ${dateFormatPref.label.toLowerCase()}`}
-                label=""
-              />
-            </div>
-          )}
+                    placeholder={`Select ${dateFormatPref.label.toLowerCase()}`}
+                    label=""
+                  />
+                </div>
+              )}
 
-          {timeFormatPref && (
-            <div>
-              <label className="text-sm font-medium text-foreground mb-2 block">
-                {timeFormatPref.label} *
-              </label>
-              <CustomSelect
-                options={timeFormatPref.options}
+              {timeFormatPref && (
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-2 block">
+                    {timeFormatPref.label} *
+                  </label>
+                  <CustomSelect
+                    options={timeFormatPref.options}
                     value={values.timeFormat}
                     onChange={(value) => setFieldValue("timeFormat", value)}
-                placeholder={`Select ${timeFormatPref.label.toLowerCase()}`}
-                label=""
-              />
+                    placeholder={`Select ${timeFormatPref.label.toLowerCase()}`}
+                    label=""
+                  />
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
             <div>
               <Field name="autoRefresh">
-                {({ field, form }: { field: { value: boolean }; form: { setFieldValue: (field: string, value: boolean) => void } }) => (
-        <ToggleSwitch
+                {({
+                  field,
+                  form,
+                }: {
+                  field: { value: boolean };
+                  form: {
+                    setFieldValue: (field: string, value: boolean) => void;
+                  };
+                }) => (
+                  <ToggleSwitch
                     checked={field.value}
-                    onChange={(checked) => form.setFieldValue("autoRefresh", checked)}
-          label="Auto Refresh"
-          description="Automatically refresh data"
-        />
+                    onChange={(checked) =>
+                      form.setFieldValue("autoRefresh", checked)
+                    }
+                    label="Auto Refresh"
+                    description="Automatically refresh data"
+                  />
                 )}
               </Field>
             </div>
 
-        {refreshIntervalPref && (
-          <div>
-            <label className="text-sm font-medium text-foreground mb-2 block">
-              {refreshIntervalPref.label} *
-            </label>
-            <CustomSelect
-              options={refreshIntervalPref.options}
+            {refreshIntervalPref && (
+              <div>
+                <label className="text-sm font-medium text-foreground mb-2 block">
+                  {refreshIntervalPref.label} *
+                </label>
+                <CustomSelect
+                  options={refreshIntervalPref.options}
                   value={values.refreshInterval}
                   onChange={(value) => setFieldValue("refreshInterval", value)}
-              placeholder={`Select ${refreshIntervalPref.label.toLowerCase()}`}
-              label=""
-            />
-          </div>
-        )}
+                  placeholder={`Select ${refreshIntervalPref.label.toLowerCase()}`}
+                  label=""
+                />
+              </div>
+            )}
 
-        <Button
+            <Button
               type="submit"
-          className="bg-[#3D8C6C] hover:bg-[#3D8C6C] cursor-pointer text-white flex items-center gap-2"
-        >
-          <Check className="w-4 h-4" />
-          Save Preference
-        </Button>
+              disabled={isUpdating}
+              className="bg-[#3D8C6C] hover:bg-[#3D8C6C] cursor-pointer text-white flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Check className="w-4 h-4" />
+              {isUpdating ? "Saving..." : "Save Preference"}
+            </Button>
           </Form>
         )}
       </Formik>

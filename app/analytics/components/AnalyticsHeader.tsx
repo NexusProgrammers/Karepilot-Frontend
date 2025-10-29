@@ -22,16 +22,12 @@ export function AnalyticsHeader({
   const handleExportData = () => {
     if (onExportData) {
       onExportData();
-    } else {
-      console.log("Export Data clicked");
     }
   };
 
   const handleGenerateReport = () => {
     if (onGenerateReport) {
       onGenerateReport();
-    } else {
-      console.log("Generate Report clicked");
     }
   };
 

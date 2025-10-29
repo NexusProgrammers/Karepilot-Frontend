@@ -11,7 +11,7 @@ import { dashboardIcon } from "@/icons/Assets";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/lib/store";
 import { setToken, clearToken, setLoading } from "@/lib/store/slices/authSlice";
-import { tokenManager } from "@/lib/utils/tokenManager";
+import { getAuthToken } from "@/lib/actions/auth";
 import { FullScreenLoading } from "@/components/common";
 
 export function OrganizationSelection() {
@@ -24,21 +24,32 @@ export function OrganizationSelection() {
   const { isAuthenticated, isLoading } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    const checkAuth = () => {
-      const token = tokenManager.getToken();
+    const checkAuth = async () => {
+      try {
+        const token = await getAuthToken();
 
+        if (token) {
+          dispatch(setToken(token));
+        } else {
+          dispatch(clearToken());
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        dispatch(clearToken());
+      } finally {
+        dispatch(setLoading(false));
+      }
+    };
+
+    checkAuth();
+
+    const handleFocus = async () => {
+      const token = await getAuthToken();
       if (token) {
         dispatch(setToken(token));
       } else {
         dispatch(clearToken());
       }
-    };
-
-    checkAuth();
-    dispatch(setLoading(false)); 
-
-    const handleFocus = () => {
-      checkAuth();
     };
 
     window.addEventListener("focus", handleFocus);
@@ -59,11 +70,14 @@ export function OrganizationSelection() {
     }
   };
 
-  const handleLogin = () => {
-    const token = tokenManager.getToken();
-
-    if (token) {
-      dispatch(setToken(token));
+  const handleLogin = async () => {
+    try {
+      const token = await getAuthToken();
+      if (token) {
+        dispatch(setToken(token));
+      }
+    } catch (error) {
+      console.error('Login check error:', error);
     }
   };
 

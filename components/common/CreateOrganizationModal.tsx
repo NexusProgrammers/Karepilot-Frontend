@@ -44,10 +44,6 @@ export function CreateOrganizationModal({
   ];
 
   const handleSubmit = () => {
-    console.log("Creating organization:", {
-      template: selectedTemplate,
-      ...formData,
-    });
     onClose();
   };
 

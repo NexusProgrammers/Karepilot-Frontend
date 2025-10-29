@@ -1,6 +1,7 @@
 import * as Yup from 'yup';
 import { LoginFormValues } from '../types';
 import { UserPreferencesFormValues } from '../types/validation';
+import { ProfileFormData } from '../types/components';
 
 export const loginValidationSchema = Yup.object<LoginFormValues>({
   email: Yup.string()
@@ -20,4 +21,17 @@ export const userPreferencesValidationSchema = Yup.object<UserPreferencesFormVal
   timeFormat: Yup.string().required('Time format is required'),
   autoRefresh: Yup.boolean().required(),
   refreshInterval: Yup.string().required('Refresh interval is required'),
+});
+
+export const profileSettingsValidationSchema = Yup.object<ProfileFormData>({
+  firstName: Yup.string()
+    .min(2, 'First name must be at least 2 characters')
+    .required('First name is required'),
+  lastName: Yup.string()
+    .min(2, 'Last name must be at least 2 characters')
+    .required('Last name is required'),
+  email: Yup.string()
+    .email('Please enter a valid email address')
+    .required('Email is required'),
+  profileImage: Yup.string().optional(),
 });

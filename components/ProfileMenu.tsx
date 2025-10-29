@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,8 +15,7 @@ import { useTheme } from "next-themes";
 import { Settings, User, LogOut, Moon, Sun } from "@/icons/Icons";
 import { useDispatch } from "react-redux";
 import { clearToken } from "@/lib/store/slices/authSlice";
-import { tokenManager } from "@/lib/utils/tokenManager";
-import { useRouter } from "next/navigation";
+import { logoutAction } from "@/lib/actions/auth";
 import toast from "react-hot-toast";
 
 export function ProfileMenu() {
@@ -32,13 +32,12 @@ export function ProfileMenu() {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     try {
       dispatch(clearToken());
-      tokenManager.clearAuth();
-      toast.success("Logged out successfully!");
-      router.push('/');
-      router.refresh();
+      await logoutAction();
+      toast.success("Logged out successfully");
+      router.push("/");
     } catch (error) {
       console.error('Logout error:', error);
       toast.error("Logout failed. Please try again.");

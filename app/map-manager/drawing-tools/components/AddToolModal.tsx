@@ -29,7 +29,6 @@ export function AddToolModal({ isOpen, onClose }: AddToolModalProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Adding new tool:", formData);
     onClose();
     setFormData({
       name: "",

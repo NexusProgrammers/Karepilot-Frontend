@@ -46,13 +46,13 @@ export function AlertsPageContent({
   };
 
   const handleCreateZoneSubmit = (data: CreateGeofenceZoneData) => {
-    console.log("Creating geofence zone:", data);
 
     const newZone: GeofenceZone = {
       id: Date.now().toString(),
       name: data.name,
       location: "Main Hospital • New Floor",
       description: data.description,
+      
       alertType: data.type as "Restricted" | "Alert" | "Notification",
       alertDescription: "Alert on entry",
       isActive: true,
@@ -74,6 +74,7 @@ export function AlertsPageContent({
   };
 
   const handleToggleZone = (zone: GeofenceZone) => {
+    console.log("Toggling zone:", zone);
     setZones((prev) =>
       prev.map((z) => (z.id === zone.id ? { ...z, isActive: !z.isActive } : z))
     );
