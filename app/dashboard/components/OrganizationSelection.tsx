@@ -12,7 +12,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/lib/store";
 import { setToken, clearToken, setLoading } from "@/lib/store/slices/authSlice";
 import { getAuthToken } from "@/lib/actions/auth";
-import { FullScreenLoading } from "@/components/common";
+import { LoginSkeleton } from "@/components/LoginSkeleton";
 
 export function OrganizationSelection() {
   const [showMenu, setShowMenu] = useState(false);
@@ -82,7 +82,7 @@ export function OrganizationSelection() {
   };
 
   if (isLoading) {
-    return <FullScreenLoading message="Authenticating..." />;
+    return <LoginSkeleton />;
   }
 
   if (!isAuthenticated) {

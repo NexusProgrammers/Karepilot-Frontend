@@ -11,8 +11,8 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { loginValidationSchema } from "@/lib/validations/authSchemas";
 import { LoginFormValues, ApiError } from "@/lib/types";
 import toast from "react-hot-toast";
-import { ButtonLoading } from "@/components/common";
 import { setAuthToken } from "@/lib/actions";
+import { LoginSkeleton } from "@/components/LoginSkeleton";
 
 export default function KarepilotLogin({ onLogin }: { onLogin: () => void }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -58,6 +58,10 @@ export default function KarepilotLogin({ onLogin }: { onLogin: () => void }) {
       dispatch(setLoading(false)); 
     }
   };
+
+  if (isLoading) {
+    return <LoginSkeleton />;
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -143,10 +147,9 @@ export default function KarepilotLogin({ onLogin }: { onLogin: () => void }) {
 
               <Button
                 type="submit"
-                disabled={isLoading}
-                className="w-full bg-[#3D8C6C] hover:bg-green-700 text-white py-3 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 font-medium transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-[#3D8C6C] hover:bg-green-700 text-white py-3 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 font-medium transition duration-200"
               >
-                {isLoading ? <ButtonLoading /> : "Login"}
+                Login
               </Button>
             </Form>
           )}
