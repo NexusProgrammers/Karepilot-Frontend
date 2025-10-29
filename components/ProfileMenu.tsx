@@ -14,7 +14,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useTheme } from "next-themes";
 import { Settings, User, LogOut, Moon, Sun } from "@/icons/Icons";
 import { useDispatch } from "react-redux";
-import { clearToken } from "@/lib/store/slices/authSlice";
+import { clearAuth } from "@/lib/store/slices/authSlice";
 import { logoutAction } from "@/lib/actions/auth";
 import toast from "react-hot-toast";
 
@@ -34,8 +34,8 @@ export function ProfileMenu() {
 
   const handleLogout = async () => {
     try {
-      dispatch(clearToken());
       await logoutAction();
+      dispatch(clearAuth());
       toast.success("Logged out successfully");
       router.push("/");
     } catch (error) {

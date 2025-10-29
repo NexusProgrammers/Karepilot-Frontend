@@ -5,7 +5,7 @@ import { Eye, EyeOff } from "@/icons/Icons";
 import { LogoIcon } from "@/icons/Svg";
 import { Button } from "@/components/ui/button";
 import { useDispatch } from "react-redux";
-import { setToken, setLoading } from "@/lib/store/slices/authSlice";
+import { setAuthenticated, setLoading } from "@/lib/store/slices/authSlice";
 import { useLoginMutation } from "@/lib/api/authApi";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { loginValidationSchema } from "@/lib/validations/authSchemas";
@@ -30,7 +30,7 @@ export default function KarepilotLogin({ onLogin }: { onLogin: () => void }) {
 
       if (result.success && result.data.token) {
         await setAuthToken(result.data.token, values.rememberMe);
-        dispatch(setToken(result.data.token));
+        dispatch(setAuthenticated(true));
         dispatch(setLoading(false)); 
         toast.success(result.message || "Login successful!");
         onLogin();

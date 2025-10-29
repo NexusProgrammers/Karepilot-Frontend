@@ -10,7 +10,7 @@ import { menuOptions, organizations } from "@/lib/dashboard/data";
 import { dashboardIcon } from "@/icons/Assets";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/lib/store";
-import { setToken, clearToken, setLoading } from "@/lib/store/slices/authSlice";
+import { setAuthenticated, clearAuth, setLoading } from "@/lib/store/slices/authSlice";
 import { getAuthToken } from "@/lib/actions/auth";
 import { LoginSkeleton } from "@/components/LoginSkeleton";
 
@@ -27,36 +27,16 @@ export function OrganizationSelection() {
     const checkAuth = async () => {
       try {
         const token = await getAuthToken();
-
-        if (token) {
-          dispatch(setToken(token));
-        } else {
-          dispatch(clearToken());
-        }
+        dispatch(setAuthenticated(!!token));
       } catch (error) {
         console.error('Auth check error:', error);
-        dispatch(clearToken());
+        dispatch(clearAuth());
       } finally {
         dispatch(setLoading(false));
       }
     };
 
     checkAuth();
-
-    const handleFocus = async () => {
-      const token = await getAuthToken();
-      if (token) {
-        dispatch(setToken(token));
-      } else {
-        dispatch(clearToken());
-      }
-    };
-
-    window.addEventListener("focus", handleFocus);
-
-    return () => {
-      window.removeEventListener("focus", handleFocus);
-    };
   }, [dispatch]);
 
   const handleSelectClick = (org: (typeof organizations)[0]) => {
@@ -70,15 +50,8 @@ export function OrganizationSelection() {
     }
   };
 
-  const handleLogin = async () => {
-    try {
-      const token = await getAuthToken();
-      if (token) {
-        dispatch(setToken(token));
-      }
-    } catch (error) {
-      console.error('Login check error:', error);
-    }
+  const handleLogin = () => {
+    dispatch(setAuthenticated(true));
   };
 
   if (isLoading) {

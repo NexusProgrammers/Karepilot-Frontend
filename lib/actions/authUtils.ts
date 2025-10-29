@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 
 export async function requireAuth() {
   const token = await getAuthToken();
+  console.log(token,'token');
   if (!token) {
     redirect('/');
   }

@@ -8,10 +8,24 @@ export async function setAuthToken(token: string, rememberMe: boolean = false) {
   const maxAge = rememberMe ? 60 * 60 * 24 * 7 : undefined;
   const expires = rememberMe ? new Date(Date.now() + 60 * 60 * 24 * 7 * 1000) : undefined;
 
+  // Set cookie with proper settings for cross-origin support
+  const isProduction = process.env.NODE_ENV === "production";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 
+    (isProduction 
+      ? "https://karepilot-backend.vercel.app/api/v1"
+      : "http://localhost:4000/api/v1");
+  
+  // Check if frontend and backend are on different origins (cross-origin)
+  const isCrossOrigin = apiUrl && (
+    apiUrl.includes("vercel.app") || 
+    apiUrl.includes("https://") ||
+    (!apiUrl.includes("localhost") && !apiUrl.includes("127.0.0.1"))
+  );
+  
   cookieStore.set(TOKEN_KEY, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    httpOnly: false, // Set to false so client can read it if needed, but backend still prefers cookie
+    secure: isCrossOrigin ? true : false, // Required for sameSite: "none" (must be true for cross-origin)
+    sameSite: isCrossOrigin ? "none" : "lax", // "none" for cross-origin, "lax" for same-origin
     path: "/",
     ...(maxAge && { maxAge }),
     ...(expires && { expires }),
@@ -44,8 +58,13 @@ export async function loginAction(formData: FormData) {
   const rememberMe = formData.get("rememberMe") === "true";
 
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://karepilot-backend.vercel.app/api/v1";
-        const response = await fetch(`${apiUrl}/users/admin/login`, {
+    const isProduction = process.env.NODE_ENV === "production";
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 
+      (isProduction 
+        ? "https://karepilot-backend.vercel.app/api/v1"
+        : "http://localhost:4000/api/v1");
+        
+    const response = await fetch(`${apiUrl}/users/admin/login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

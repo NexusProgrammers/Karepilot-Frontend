@@ -1,25 +1,30 @@
 import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { RootState } from '../store';
-import { tokenManager } from '../utils/tokenManager';
+import { TOKEN_KEY } from '../utils/tokenManager';
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://karepilot-backend.vercel.app/api/v1';
+// Use production URL if in production, otherwise use local
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
+  (process.env.NODE_ENV === "production" 
+    ? "https://karepilot-backend.vercel.app/api/v1"
+    : "http://localhost:4000/api/v1");
+
+const getCookie = (name: string): string | null => {
+  if (typeof window === 'undefined') return null;
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+  return null;
+};
 
 export const baseQuery = fetchBaseQuery({
   baseUrl: API_BASE_URL,
-  credentials: 'include', // Include cookies in requests
-  prepareHeaders: (headers, { getState }) => {
+  credentials: 'include',
+  prepareHeaders: (headers) => {
     headers.set('Content-Type', 'application/json');
-    const state = getState() as RootState;
-    let token = state.auth.token;
-    
-    // Try to get token from state first, then from cookies
-    if (!token) {
-      const cookieToken = tokenManager.getToken();
-      token = cookieToken || null;
-    }
-    
-    if (token) {
-      headers.set('Authorization', `Bearer ${token}`);
+    if (typeof window !== 'undefined') {
+      const token = getCookie(TOKEN_KEY);
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
     }
     
     return headers;
