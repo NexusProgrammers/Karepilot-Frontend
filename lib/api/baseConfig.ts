@@ -2,7 +2,7 @@ import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../store';
 import { tokenManager } from '../utils/tokenManager';
 
-export const API_BASE_URL = 'https://karepilot-backend.vercel.app/api/v1';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://karepilot-backend.vercel.app/api/v1';
 
 export const baseQuery = fetchBaseQuery({
   baseUrl: API_BASE_URL,

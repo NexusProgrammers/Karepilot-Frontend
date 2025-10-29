@@ -3,7 +3,7 @@
 import { DashboardLayout } from "@/components/DashboardLayout";
 import NavigationTabs from "@/components/common/NavigationTabs";
 import { NotificationSettings } from "./components/NotificationSettings";
-import { settingsTabs, notificationSettings } from "@/lib/settings/data";
+import { settingsTabs } from "@/lib/settings/data";
 
 export default function NotificationsPage() {
   return (
@@ -32,7 +32,6 @@ export default function NotificationsPage() {
         <NotificationSettings
           title="Notification Settings"
           subtitle="Configure how you receive alerts and notifications"
-          settings={notificationSettings}
         />
       </div>
     </DashboardLayout>

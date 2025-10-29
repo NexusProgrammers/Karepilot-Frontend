@@ -53,3 +53,32 @@ export interface UpdatePreferencesRequest {
   autoRefresh?: boolean;
   refreshInterval?: number | string;
 }
+
+export interface NotificationSettings {
+  _id?: string;
+  userId: string;
+  emailNotifications: boolean;
+  pushNotifications: boolean;
+  smsAlerts: boolean;
+  securityAlerts: boolean;
+  emergencyAlerts: boolean;
+  weeklyReports: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  __v?: number;
+}
+
+export interface NotificationSettingsResponse {
+  success: boolean;
+  message: string;
+  data: NotificationSettings;
+}
+
+export interface UpdateNotificationSettingsRequest {
+  emailNotifications?: boolean;
+  pushNotifications?: boolean;
+  smsAlerts?: boolean;
+  securityAlerts?: boolean;
+  emergencyAlerts?: boolean;
+  weeklyReports?: boolean;
+}

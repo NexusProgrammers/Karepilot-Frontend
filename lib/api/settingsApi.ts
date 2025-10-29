@@ -1,5 +1,5 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { GeneralSettingsResponse, UpdateGeneralSettingsRequest, UpdatePreferencesRequest, UpdateProfileSettingsRequest } from '../types';
+import { GeneralSettingsResponse, UpdateGeneralSettingsRequest, UpdatePreferencesRequest, UpdateProfileSettingsRequest, NotificationSettingsResponse, UpdateNotificationSettingsRequest } from '../types';
 import { baseQuery } from './baseConfig';
 
 export const settingsApi = createApi({
@@ -35,6 +35,18 @@ export const settingsApi = createApi({
       }),
       invalidatesTags: ['Settings'],
     }),
+    getNotificationSettings: builder.query<NotificationSettingsResponse, void>({
+      query: () => '/users/admin/settings/notifications',
+      providesTags: ['Settings'],
+    }),
+    updateNotificationSettings: builder.mutation<NotificationSettingsResponse, UpdateNotificationSettingsRequest>({
+      query: (data) => ({
+        url: '/users/admin/settings/notifications',
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['Settings'],
+    }),
   }),
 });
 
@@ -42,5 +54,7 @@ export const {
   useGetGeneralSettingsQuery, 
   useUpdateGeneralSettingsMutation, 
   useUpdatePreferencesMutation,
-  useUpdateProfileSettingsMutation 
+  useUpdateProfileSettingsMutation,
+  useGetNotificationSettingsQuery,
+  useUpdateNotificationSettingsMutation
 } = settingsApi;

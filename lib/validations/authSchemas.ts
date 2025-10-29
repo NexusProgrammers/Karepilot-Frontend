@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import { LoginFormValues } from '../types';
-import { UserPreferencesFormValues } from '../types/validation';
+import { UserPreferencesFormValues, NotificationSettingsFormValues } from '../types/validation';
 import { ProfileFormData } from '../types/components';
 
 export const loginValidationSchema = Yup.object<LoginFormValues>({
@@ -34,4 +34,13 @@ export const profileSettingsValidationSchema = Yup.object<ProfileFormData>({
     .email('Please enter a valid email address')
     .required('Email is required'),
   profileImage: Yup.string().optional(),
+});
+
+export const notificationSettingsValidationSchema = Yup.object<NotificationSettingsFormValues>({
+  emailNotifications: Yup.boolean().required(),
+  pushNotifications: Yup.boolean().required(),
+  smsAlerts: Yup.boolean().required(),
+  securityAlerts: Yup.boolean().required(),
+  emergencyAlerts: Yup.boolean().required(),
+  weeklyReports: Yup.boolean().required(),
 });

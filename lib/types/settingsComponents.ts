@@ -46,6 +46,8 @@ export interface PasswordFormData {
 }
 
 export interface NotificationSettingsProps extends BaseSettingsProps {
-  settings: NotificationSetting[];
+  title: string;
+  subtitle: string;
+  className?: string;
 }
 

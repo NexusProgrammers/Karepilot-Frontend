@@ -1,6 +1,6 @@
 import { tokenManager } from '../utils/tokenManager';
 
-export const API_BASE_URL = 'https://karepilot-backend.vercel.app/api/v1';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://karepilot-backend.vercel.app/api/v1';
 
 export const getAuthHeaders = () => {
   const token = tokenManager.getToken();
