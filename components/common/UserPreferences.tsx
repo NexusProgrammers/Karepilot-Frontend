@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { CustomSelect } from "@/components/common/CustomSelect";
 import { ToggleSwitch } from "@/components/common/ToggleSwitch";
@@ -13,6 +13,7 @@ import { userPreferencesValidationSchema } from "@/lib/validations/authSchemas";
 import { UserPreferencesSkeleton } from "@/app/settings/components/UserPreferencesSkeleton";
 import { UserPreferencesProps } from "@/lib/types/components";
 import { UserPreferencesFormValues } from "@/lib/types/validation";
+import timezones from "timezones-list";
 
 export function UserPreferences({
   title,
@@ -95,10 +96,14 @@ export function UserPreferences({
 
   const handleThemeChange = (value: string, setFieldValue: (field: string, value: string | boolean) => void) => {
     setFieldValue("theme", value);
-      const themeValue = value.toLowerCase();
-      setTheme(themeValue);
-      toast.success(`Theme changed to ${value}`);
+    const themeValue = value.toLowerCase();
+    setTheme(themeValue);
+    toast.success(`Theme changed to ${value}`);
   };
+
+  const timezoneOptions = useMemo(() => {
+    return timezones.map((tz) => tz.label);
+  }, []);
 
   if (!mounted || isLoading) {
     return (
@@ -174,9 +179,9 @@ export function UserPreferences({
               {timezonePref.label} *
             </label>
             <CustomSelect
-              options={timezonePref.options}
-                  value={values.timezone}
-                  onChange={(value) => setFieldValue("timezone", value)}
+              options={timezoneOptions}
+              value={values.timezone}
+              onChange={(value) => setFieldValue("timezone", value)}
               placeholder={`Select ${timezonePref.label.toLowerCase()}`}
               label=""
             />
