@@ -1,11 +1,17 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CustomInput } from "@/components/common/CustomInput";
 import { ToggleSwitch } from "@/components/common/ToggleSwitch";
 import { Check } from "@/icons/Icons";
-import { SecuritySettingsProps, SecuritySettingsState } from "@/lib/types/components";
+import { SecuritySettingsProps } from "@/lib/types/components";
+import {
+  useGetSecuritySettingsQuery,
+  useUpdateSecuritySettingsMutation,
+} from "@/lib/api/settingsApi";
+import { SecuritySettingsSkeleton } from "@/app/settings/components";
+import { Formik, Form } from "formik";
+import toast from "react-hot-toast";
 
 export function SecuritySettings({
   title,
@@ -13,28 +19,67 @@ export function SecuritySettings({
   settings,
   className = "",
 }: SecuritySettingsProps) {
-  const [securitySettings, setSecuritySettings] = useState<SecuritySettingsState>(
-    settings.reduce(
-      (acc, setting) => ({ ...acc, [setting.name]: setting.value }),
-      {}
-    ) as SecuritySettingsState
-  );
+  const { data, isLoading } = useGetSecuritySettingsQuery();
+  const [updateSecurity, { isLoading: isUpdating }] =
+    useUpdateSecuritySettingsMutation();
 
-  const handleToggle = (name: string) => {
-    setSecuritySettings((prev) => {
-      return { ...prev, [name]: !prev[name] as boolean };
-    });
+  const initialValues = {
+    twoFactorAuth:
+      (data?.data.twoFactorEnabled as boolean | undefined) ??
+      ((settings.find((s) => s.name === "twoFactorAuth")?.value as boolean) ??
+        false),
+    sessionTimeout: String(
+      data?.data.sessionTimeout ??
+        (settings.find((s) => s.name === "sessionTimeout")?.value as string) ??
+        "30",
+    ),
+    maxLoginAttempts: String(
+      data?.data.maxLoginAttempts ??
+        (settings.find((s) => s.name === "maxLoginAttempts")?.value as string) ??
+        "5",
+    ),
+    passwordExpiry: String(
+      data?.data.passwordExpiry ??
+        (settings.find((s) => s.name === "passwordExpiry")?.value as string) ??
+        "90",
+    ),
+    auditLogs:
+      (data?.data.auditLogs as boolean | undefined) ??
+      ((settings.find((s) => s.name === "auditLogs")?.value as boolean) ??
+        true),
+  } as const;
+
+  const handleSubmit = async (values: typeof initialValues) => {
+    try {
+      const maxAttempts = parseInt(values.maxLoginAttempts, 10);
+      if (!Number.isFinite(maxAttempts) || maxAttempts > 10) {
+        toast.error("Max Login Attempts cannot exceed 10");
+        return;
+      }
+
+      await updateSecurity({
+        twoFactorEnabled: (values as any).twoFactorAuth as boolean,
+        sessionTimeout: parseInt(values.sessionTimeout, 10),
+        maxLoginAttempts: maxAttempts,
+        passwordExpiry: parseInt(values.passwordExpiry, 10),
+        auditLogs: values.auditLogs,
+      }).unwrap();
+      toast.success("Security settings updated successfully");
+    } catch (e: any) {
+      const msg = e?.data?.message || "Failed to update security settings";
+      toast.error(msg);
+    }
   };
 
-  const handleInputChange = (name: string, value: string) => {
-    setSecuritySettings((prev) => {
-      return { ...prev, [name]: value };
-    });
-  };
-
-  const handleSaveSettings = () => {
-    console.log("Saving security settings:", securitySettings);
-  };
+  if (isLoading || isUpdating) {
+    return (
+      <SecuritySettingsSkeleton
+        title={title}
+        subtitle={subtitle}
+        className={className}
+      />
+    );
+  }
 
   return (
     <div
@@ -45,47 +90,53 @@ export function SecuritySettings({
         <p className="text-sm text-muted-foreground">{subtitle}</p>
       </div>
 
-      <div className="space-y-6">
-        {settings.map((setting) => (
-          <div key={setting.id}>
-            {setting.type === "toggle" ? (
-              <div className="border border-border rounded-xl p-6">
-                <ToggleSwitch
-                  checked={
-                    securitySettings[
-                      setting.name as keyof typeof securitySettings
-                    ] as boolean
-                  }
-                  onChange={() => handleToggle(setting.name)}
-                  label={setting.label}
-                  description={setting.description || ""}
-                />
+      <Formik
+        initialValues={initialValues}
+        enableReinitialize
+        onSubmit={handleSubmit}
+      >
+        {({ values, setFieldValue }) => (
+          <Form className="space-y-6">
+            {settings.map((setting) => (
+              <div key={setting.id}>
+                {setting.type === "toggle" ? (
+                  <div className="border border-border rounded-xl p-6">
+                    <ToggleSwitch
+                      checked={(values as any)[setting.name] as boolean}
+                      onChange={(checked) =>
+                        setFieldValue(setting.name, checked)
+                      }
+                      label={setting.label}
+                      description={setting.description || ""}
+                    />
+                  </div>
+                ) : (
+                  (() => {
+                    const cleanedLabel = setting.label.replace(/\*\s*$/, "");
+                    return (
+                      <CustomInput
+                        label={cleanedLabel}
+                        value={(values as any)[setting.name] as string}
+                        onChange={(value) => setFieldValue(setting.name, value)}
+                        placeholder={`Enter ${cleanedLabel.toLowerCase()}`}
+                        required={setting.required}
+                      />
+                    );
+                  })()
+                )}
               </div>
-            ) : (
-              <CustomInput
-                label={setting.label}
-                value={
-                  securitySettings[
-                    setting.name as keyof typeof securitySettings
-                  ] as string
-                }
-                onChange={(value) => handleInputChange(setting.name, value)}
-                placeholder={`Enter ${setting.label.toLowerCase()}`}
-                type={setting.name.includes("password") ? "password" : "text"}
-                required={setting.required}
-              />
-            )}
-          </div>
-        ))}
+            ))}
 
-        <Button
-          onClick={handleSaveSettings}
-          className="bg-[#3D8C6C] hover:bg-[#3D8C6C] cursor-pointer text-white flex items-center gap-2"
-        >
-          <Check className="w-4 h-4" />
-          Save Security Settings
-        </Button>
-      </div>
+            <Button
+              type="submit"
+              className="bg-[#3D8C6C] hover:bg-[#3D8C6C] cursor-pointer text-white flex items-center gap-2"
+            >
+              <Check className="w-4 h-4" />
+              Save Security Settings
+            </Button>
+          </Form>
+        )}
+      </Formik>
     </div>
   );
 }

@@ -1,29 +1,42 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CustomInput } from "@/components/common/CustomInput";
 import { Check } from "@/icons/Icons";
-import { PasswordSettingsProps, PasswordFormData } from "@/lib/types/components";
+import { PasswordSettingsProps } from "@/lib/types/components";
+import { useChangePasswordMutation } from "@/lib/api/settingsApi";
+import { PasswordSettingsSkeleton } from "@/app/settings/components";
+import { Formik, Form } from "formik";
+import toast from "react-hot-toast";
 
 export function PasswordSettings({
   title,
   subtitle,
   className = "",
 }: PasswordSettingsProps) {
-  const [passwordData, setPasswordData] = useState<PasswordFormData>({
+  const [changePassword, { isLoading }] = useChangePasswordMutation();
+
+  const initialValues = {
     currentPassword: "",
     newPassword: "",
-    confirmPassword: "",
-  });
-
-  const handleInputChange = (field: string, value: string) => {
-    setPasswordData((prev) => ({ ...prev, [field]: value }));
+    confirmNewPassword: "",
   };
 
-  const handleUpdatePassword = () => {
-    console.log("Updating password:", passwordData);
+  const handleSubmit = async (values: typeof initialValues) => {
+    try {
+      await changePassword(values).unwrap();
+      toast.success("Password changed successfully");
+    } catch (e: any) {
+      const msg = e?.data?.message || "Failed to change password";
+      toast.error(msg);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <PasswordSettingsSkeleton title={title} subtitle={subtitle} className={className} />
+    );
+  }
 
   return (
     <div
@@ -34,47 +47,47 @@ export function PasswordSettings({
         <p className="text-sm text-muted-foreground">{subtitle}</p>
       </div>
 
-      <div className="space-y-12">
-        <CustomInput
-          label="Current Password"
-          value={passwordData.currentPassword}
-          onChange={(value) => handleInputChange("currentPassword", value)}
-          placeholder="Enter current password"
-          type="password"
-          required
-        />
+      <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+        {({ values, setFieldValue }) => (
+          <Form className="space-y-12">
+            <CustomInput
+              label="Current Password"
+              value={values.currentPassword}
+              onChange={(value) => setFieldValue("currentPassword", value)}
+              placeholder="Enter current password"
+              type="password"
+              required
+            />
 
-        <CustomInput
-          label="New Password"
-          value={passwordData.newPassword}
-          onChange={(value) => handleInputChange("newPassword", value)}
-          placeholder="Enter new password"
-          type="password"
-          required
-        />
+            <CustomInput
+              label="New Password"
+              value={values.newPassword}
+              onChange={(value) => setFieldValue("newPassword", value)}
+              placeholder="Enter new password"
+              type="password"
+              required
+            />
 
-        <CustomInput
-          label="Confirm New Password"
-          value={passwordData.confirmPassword}
-          onChange={(value) => handleInputChange("confirmPassword", value)}
-          placeholder="Confirm new password"
-          type="password"
-          required
-        />
-      </div>
+            <CustomInput
+              label="Confirm New Password"
+              value={values.confirmNewPassword}
+              onChange={(value) => setFieldValue("confirmNewPassword", value)}
+              placeholder="Confirm new password"
+              type="password"
+              required
+            />
 
-      <Button
-        disabled={
-          !passwordData.currentPassword ||
-          !passwordData.newPassword ||
-          !passwordData.confirmPassword
-        }
-        onClick={handleUpdatePassword}
-        className="bg-[#3D8C6C] hover:bg-[#3D8C6C] cursor-pointer text-white flex items-center gap-2 mt-12 md:mt-24 lg:mt-52"
-      >
-        <Check className="w-4 h-4" />
-        Update Password
-      </Button>
+            <Button
+              type="submit"
+              disabled={!values.currentPassword || !values.newPassword || !values.confirmNewPassword || isLoading}
+              className="bg-[#3D8C6C] hover:bg-[#3D8C6C] cursor-pointer text-white flex items-center gap-2 mt-12 md:mt-24 lg:mt-52 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Check className="w-4 h-4" />
+              {isLoading ? "Updating..." : "Update Password"}
+            </Button>
+          </Form>
+        )}
+      </Formik>
     </div>
   );
 }

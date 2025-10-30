@@ -1,7 +1,6 @@
 import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { TOKEN_KEY } from '../utils/tokenManager';
 
-// Use production URL if in production, otherwise use local
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
   (process.env.NODE_ENV === "production" 
     ? "https://karepilot-backend.vercel.app/api/v1"

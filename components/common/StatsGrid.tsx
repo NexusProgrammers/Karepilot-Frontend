@@ -1,7 +1,6 @@
 "use client";
 
 import Image, { StaticImageData } from "next/image";
-import { LucideIcon } from "@/icons/Icons";
 
 export type StatItem = {
   id: number | string;

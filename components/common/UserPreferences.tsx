@@ -156,7 +156,7 @@ export function UserPreferences({
               {themePref && (
                 <div>
                   <label className="text-sm font-medium text-foreground mb-2 block">
-                    {themePref.label} *
+                    {themePref.label} <span className="text-red-500">*</span>
                   </label>
                   <CustomSelect
                     options={themePref.options}
@@ -173,7 +173,7 @@ export function UserPreferences({
               {languagePref && (
                 <div>
                   <label className="text-sm font-medium text-foreground mb-2 block">
-                    {languagePref.label} *
+                    {languagePref.label} <span className="text-red-500">*</span>
                   </label>
                   <CustomSelect
                     options={languagePref.options}
@@ -189,7 +189,7 @@ export function UserPreferences({
             {timezonePref && (
               <div>
                 <label className="text-sm font-medium text-foreground mb-2 block">
-                  {timezonePref.label} *
+                  {timezonePref.label} <span className="text-red-500">*</span>
                 </label>
                 <CustomSelect
                   options={timezoneOptions}
@@ -205,7 +205,7 @@ export function UserPreferences({
               {dateFormatPref && (
                 <div>
                   <label className="text-sm font-medium text-foreground mb-2 block">
-                    {dateFormatPref.label} *
+                    {dateFormatPref.label} <span className="text-red-500">*</span>
                   </label>
                   <CustomSelect
                     options={dateFormatPref.options}
@@ -220,7 +220,7 @@ export function UserPreferences({
               {timeFormatPref && (
                 <div>
                   <label className="text-sm font-medium text-foreground mb-2 block">
-                    {timeFormatPref.label} *
+                    {timeFormatPref.label} <span className="text-red-500">*</span>
                   </label>
                   <CustomSelect
                     options={timeFormatPref.options}
@@ -259,7 +259,7 @@ export function UserPreferences({
             {refreshIntervalPref && (
               <div>
                 <label className="text-sm font-medium text-foreground mb-2 block">
-                  {refreshIntervalPref.label} *
+                  {refreshIntervalPref.label} <span className="text-red-500">*</span>
                 </label>
                 <CustomSelect
                   options={refreshIntervalPref.options}

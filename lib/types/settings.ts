@@ -82,3 +82,41 @@ export interface UpdateNotificationSettingsRequest {
   emergencyAlerts?: boolean;
   weeklyReports?: boolean;
 }
+
+export interface SecuritySettings {
+  _id?: string;
+  userId: string;
+  twoFactorEnabled: boolean;
+  sessionTimeout: number;
+  maxLoginAttempts: number;
+  passwordExpiry: number;
+  auditLogs: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  __v?: number;
+}
+
+export interface SecuritySettingsResponse {
+  success: boolean;
+  message: string;
+  data: SecuritySettings;
+}
+
+export interface UpdateSecuritySettingsRequest {
+  twoFactorEnabled?: boolean;
+  sessionTimeout?: number;
+  maxLoginAttempts?: number;
+  passwordExpiry?: number;
+  auditLogs?: boolean;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+}
+
+export interface ChangePasswordResponse {
+  success: boolean;
+  message: string;
+}
