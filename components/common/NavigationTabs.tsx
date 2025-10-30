@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { TabItem, NavigationTabsProps } from "@/lib/types/navigation";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export type { TabItem };
 
@@ -50,7 +51,7 @@ export default function NavigationTabs({
     return pathname.startsWith(tab.href);
   };
 
-  const baseClasses = `flex gap-1 mb-6 bg-muted rounded-full p-2 ${maxWidth}`;
+  const baseClasses = `${maxWidth}`;
   const responsiveClasses = responsive
     ? "sm:gap-3 p-1 sm:p-2 overflow-x-auto scrollbar-hide"
     : "";
@@ -59,26 +60,19 @@ export default function NavigationTabs({
     : "px-4 py-2 text-sm";
 
   return (
-    <div className={`${baseClasses} ${responsiveClasses} ${className}`}>
-      {tabs.map((tab) => {
-        const active = isActive(tab);
-
-        return (
-          <Link
-            key={tab.id}
-            href={tab.href}
-            className={`whitespace-nowrap transition cursor-pointer rounded-full ${
-              responsive ? "flex-shrink-0" : ""
-            } ${textClasses} ${
-              active
-                ? "bg-background text-foreground shadow-sm"
-                : "bg-muted text-muted-foreground hover:bg-accent"
-            }`}
-          >
-            {tab.label}
-          </Link>
-        );
-      })}
-    </div>
+    <Tabs className={` ${baseClasses} ${className}`}>
+      <TabsList className={`flex gap-1 mb-6 ${responsiveClasses}`}>
+        {tabs.map((tab) => {
+          const active = isActive(tab);
+          return (
+            <Link key={tab.id} href={tab.href} className={responsive ? "flex-shrink-0" : ""}>
+              <TabsTrigger active={active} className={`${textClasses}`}>
+                {tab.label}
+              </TabsTrigger>
+            </Link>
+          );
+        })}
+      </TabsList>
+    </Tabs>
   );
 }
