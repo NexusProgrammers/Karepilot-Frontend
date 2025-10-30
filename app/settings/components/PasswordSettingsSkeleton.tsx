@@ -1,4 +1,4 @@
-import { SkeletonComponentProps } from "@/lib/types/skeletonComponents";
+import { SkeletonComponentProps } from "@/lib/types/settings/skeletonComponents";
 
 export function PasswordSettingsSkeleton({
   title,

@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { UserPreferencesFormValues, NotificationSettingsFormValues } from '../types/validation';
+import { UserPreferencesFormValues, NotificationSettingsFormValues } from '../types/validations/validation';
 import { ProfileFormData } from '../types/components';
 
 export const userPreferencesValidationSchema = Yup.object<UserPreferencesFormValues>({

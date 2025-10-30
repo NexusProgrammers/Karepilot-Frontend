@@ -1,5 +1,5 @@
-import { SecuritySetting } from '../settings/types';
-import { UserPreference } from '../settings/types';
+import { SecuritySetting } from '../../settings/types';
+import { UserPreference } from '../../settings/types';
 
 export interface BaseSettingsProps {
   title: string;
