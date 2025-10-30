@@ -12,9 +12,9 @@ import {
 import { uploadFile } from "@/lib/api/uploadApi";
 import toast from "react-hot-toast";
 import { Formik, Form, Field } from "formik";
-import { profileSettingsValidationSchema } from "@/lib/validations/authSchemas";
 import { ProfileSettingsSkeleton } from "@/app/settings/components/ProfileSettingsSkeleton";
 import { ProfileSettingsProps, ProfileFormData } from "@/lib/types/components";
+import { profileSettingsValidationSchema } from "@/lib/validations";
 
 export function ProfileSettings({
   title,

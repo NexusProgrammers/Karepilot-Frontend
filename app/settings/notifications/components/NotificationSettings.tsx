@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { ToggleSwitch } from "@/components/common/ToggleSwitch";
 import { Check } from "@/icons/Icons";
 import { Formik, Form, Field } from "formik";
-import { notificationSettingsValidationSchema } from "@/lib/validations/authSchemas";
 import {
   useGetNotificationSettingsQuery,
   useUpdateNotificationSettingsMutation,
@@ -13,6 +12,7 @@ import toast from "react-hot-toast";
 import { NotificationSettingsSkeleton } from "@/app/settings/components/NotificationSettingsSkeleton";
 import { NotificationSettingsProps } from "@/lib/types/components";
 import { NotificationSettingsFormValues } from "@/lib/types/validation";
+import { notificationSettingsValidationSchema } from "@/lib/validations";
 
 const notificationOptions = [
   {
@@ -82,7 +82,9 @@ export function NotificationSettings({
       const result = await updateNotificationSettings(values).unwrap();
 
       if (result.success) {
-        toast.success(result.message || "Notification settings saved successfully!");
+        toast.success(
+          result.message || "Notification settings saved successfully!"
+        );
       }
     } catch (error: unknown) {
       console.error("Error updating notification settings:", error);
@@ -90,7 +92,9 @@ export function NotificationSettings({
       if (apiError?.data?.message) {
         toast.error(apiError.data.message);
       } else {
-        toast.error("Failed to update notification settings. Please try again.");
+        toast.error(
+          "Failed to update notification settings. Please try again."
+        );
       }
     }
   };
@@ -131,7 +135,11 @@ export function NotificationSettings({
                   <Field name={option.field}>
                     {() => (
                       <ToggleSwitch
-                        checked={values[option.field as keyof NotificationSettingsFormValues] as boolean}
+                        checked={
+                          values[
+                            option.field as keyof NotificationSettingsFormValues
+                          ] as boolean
+                        }
                         onChange={(checked) =>
                           setFieldValue(option.field, checked)
                         }
