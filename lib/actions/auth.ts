@@ -8,14 +8,12 @@ export async function setAuthToken(token: string, rememberMe: boolean = false) {
   const maxAge = rememberMe ? 60 * 60 * 24 * 7 : undefined;
   const expires = rememberMe ? new Date(Date.now() + 60 * 60 * 24 * 7 * 1000) : undefined;
 
-  // Set cookie with proper settings for cross-origin support
   const isProduction = process.env.NODE_ENV === "production";
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 
     (isProduction 
       ? "https://karepilot-backend.vercel.app/api/v1"
       : "http://localhost:4000/api/v1");
   
-  // Check if frontend and backend are on different origins (cross-origin)
   const isCrossOrigin = apiUrl && (
     apiUrl.includes("vercel.app") || 
     apiUrl.includes("https://") ||
@@ -23,9 +21,9 @@ export async function setAuthToken(token: string, rememberMe: boolean = false) {
   );
   
   cookieStore.set(TOKEN_KEY, token, {
-    httpOnly: false, // Set to false so client can read it if needed, but backend still prefers cookie
-    secure: isCrossOrigin ? true : false, // Required for sameSite: "none" (must be true for cross-origin)
-    sameSite: isCrossOrigin ? "none" : "lax", // "none" for cross-origin, "lax" for same-origin
+    httpOnly: false, 
+    secure: isCrossOrigin ? true : false, 
+    sameSite: isCrossOrigin ? "none" : "lax",
     path: "/",
     ...(maxAge && { maxAge }),
     ...(expires && { expires }),

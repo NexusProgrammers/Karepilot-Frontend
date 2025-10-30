@@ -7,6 +7,8 @@ import { PasswordSettingsProps } from "@/lib/types/components";
 import { useChangePasswordMutation } from "@/lib/api/settingsApi";
 import { PasswordSettingsSkeleton } from "@/app/settings/components";
 import { Formik, Form } from "formik";
+import { Eye, EyeOff } from "@/icons/Icons";
+import { useState } from "react";
 import toast from "react-hot-toast";
 
 export function PasswordSettings({
@@ -15,6 +17,9 @@ export function PasswordSettings({
   className = "",
 }: PasswordSettingsProps) {
   const [changePassword, { isLoading }] = useChangePasswordMutation();
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const initialValues = {
     currentPassword: "",
@@ -55,8 +60,10 @@ export function PasswordSettings({
               value={values.currentPassword}
               onChange={(value) => setFieldValue("currentPassword", value)}
               placeholder="Enter current password"
-              type="password"
+              type={showCurrent ? "text" : "password"}
               required
+              rightIcon={showCurrent ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              onRightIconClick={() => setShowCurrent((s) => !s)}
             />
 
             <CustomInput
@@ -64,8 +71,10 @@ export function PasswordSettings({
               value={values.newPassword}
               onChange={(value) => setFieldValue("newPassword", value)}
               placeholder="Enter new password"
-              type="password"
+              type={showNew ? "text" : "password"}
               required
+              rightIcon={showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              onRightIconClick={() => setShowNew((s) => !s)}
             />
 
             <CustomInput
@@ -73,8 +82,10 @@ export function PasswordSettings({
               value={values.confirmNewPassword}
               onChange={(value) => setFieldValue("confirmNewPassword", value)}
               placeholder="Confirm new password"
-              type="password"
+              type={showConfirm ? "text" : "password"}
               required
+              rightIcon={showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              onRightIconClick={() => setShowConfirm((s) => !s)}
             />
 
             <Button
