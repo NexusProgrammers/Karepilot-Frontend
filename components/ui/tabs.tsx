@@ -2,7 +2,9 @@
 
 import * as React from "react";
 
-export interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {}
+export interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+}
 
 export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
   ({ className = "", ...props }, ref) => (
@@ -11,7 +13,9 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
 );
 Tabs.displayName = "Tabs";
 
-export interface TabsListProps extends React.HTMLAttributes<HTMLDivElement> {}
+export interface TabsListProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+}
 
 export const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
   ({ className = "", ...props }, ref) => (
