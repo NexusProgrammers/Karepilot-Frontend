@@ -12,8 +12,8 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Karepilot - Alerts & Geofencing",
-  description: "Monitor alerts and manage geofence zones for your organization",
+  title: "Karepilot",
+  description: "Karepilot",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },

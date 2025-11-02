@@ -6,4 +6,4 @@ export * from "./RoleCard";
 export * from "./DepartmentsList";
 export * from "./DepartmentCard";
 export * from "./CreateUserModal";
-export * from "./CreateDepartmentModal";
+export * from "./DepartmentModal";

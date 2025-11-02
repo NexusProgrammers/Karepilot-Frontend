@@ -6,15 +6,15 @@ import SearchAndFilters from "@/components/common/SearchAndFilters";
 import StatsGridWithIcons from "@/components/common/StatsGridWithIcons";
 import NavigationTabs from "@/components/common/NavigationTabs";
 import {
-  usersData,
+  filterOptions,
+  rolesData,
   statsData,
   tabs,
-  filterOptions,
 } from "@/lib/users-and-roles/data";
-import { CreateUserModal, DepartmentModal, UsersAndRolesHeader, UsersList } from "./components";
+import { CreateUserModal, DepartmentModal, RolesList, UsersAndRolesHeader } from "../../components";
 
 
-export default function UsersAndRolesPage() {
+export default function RolesAndPermissions() {
   const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
   const [isCreateDepartmentModalOpen, setIsCreateDepartmentModalOpen] =
     useState(false);
@@ -42,12 +42,12 @@ export default function UsersAndRolesPage() {
         />
 
         <SearchAndFilters
-          searchPlaceholder="Search user..."
+          searchPlaceholder="Search roles..."
           filters={filterOptions}
         />
 
         <div className="mt-6">
-          <UsersList users={usersData} />
+          <RolesList roles={rolesData} />
         </div>
 
         <CreateUserModal
