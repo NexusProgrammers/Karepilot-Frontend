@@ -4,11 +4,13 @@ export const fetchWithAuth = async (
   url: string,
   options: RequestInit = {}
 ): Promise<Response> => {
+  const isFormData = options.body instanceof FormData;
+  
   return fetch(`${API_BASE_URL}${url}`, {
     ...options,
     credentials: 'include', 
     headers: {
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...options.headers,
     },
   });
