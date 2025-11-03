@@ -49,7 +49,7 @@ export function UserCard({ user }: UserCardProps) {
       <div className="hidden lg:flex items-start justify-between">
         <div className="flex items-start gap-4">
           <Avatar className="w-12 h-12">
-            <AvatarImage src={user.profileImage} alt={fullName} />
+            <AvatarImage src={user.profileImage} alt={fullName} className="object-cover" />
             <AvatarFallback className="bg-muted text-muted-foreground">
               {initials}
             </AvatarFallback>
@@ -119,7 +119,7 @@ export function UserCard({ user }: UserCardProps) {
       <div className="lg:hidden space-y-4">
         <div className="flex items-start gap-3">
           <Avatar className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0">
-            <AvatarImage src={user.profileImage} alt={fullName} />
+            <AvatarImage src={user.profileImage} alt={fullName} className="object-cover" />
             <AvatarFallback className="bg-muted text-muted-foreground text-xs sm:text-sm">
               {initials}
             </AvatarFallback>
