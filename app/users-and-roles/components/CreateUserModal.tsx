@@ -15,7 +15,8 @@ interface CreateUserModalProps {
 
 export function CreateUserModal({ isOpen, onClose }: CreateUserModalProps) {
   const [formData, setFormData] = useState({
-    fullName: "",
+    firstName: "",
+    lastName: "",
     email: "",
     role: "",
     department: "",
@@ -24,13 +25,15 @@ export function CreateUserModal({ isOpen, onClose }: CreateUserModalProps) {
     shift: "",
   });
 
-  const [permissions, setPermissions] = useState<Record<string, boolean>>(() => {
-    const initialPermissions: Record<string, boolean> = {};
-    permissionsData.forEach((permission) => {
-      initialPermissions[permission.id] = permission.checked;
-    });
-    return initialPermissions;
-  });
+  const [permissions, setPermissions] = useState<Record<string, boolean>>(
+    () => {
+      const initialPermissions: Record<string, boolean> = {};
+      permissionsData.forEach((permission) => {
+        initialPermissions[permission.id] = permission.checked;
+      });
+      return initialPermissions;
+    }
+  );
 
   const roles = [
     "Admin",
@@ -108,17 +111,26 @@ export function CreateUserModal({ isOpen, onClose }: CreateUserModalProps) {
             </p>
 
             <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <CustomInput
-                  value={formData.fullName}
+                  value={formData.firstName}
                   onChange={(value) =>
-                    setFormData({ ...formData, fullName: value })
+                    setFormData({ ...formData, firstName: value })
                   }
                   placeholder="e.g. Dr. Sarah Chen"
-                  label="Full Name"
+                  label="First Name"
                   required
                 />
 
+                <CustomInput
+                  value={formData.lastName}
+                  onChange={(value) =>
+                    setFormData({ ...formData, lastName: value })
+                  }
+                  placeholder="e.g. Dr. Sarah Chen"
+                  label="Last Name"
+                  required
+                />
                 <CustomInput
                   value={formData.email}
                   onChange={(value) =>
