@@ -7,17 +7,39 @@ import StatsGridWithIcons from "@/components/common/StatsGridWithIcons";
 import NavigationTabs from "@/components/common/NavigationTabs";
 import {
   filterOptions,
-  rolesData,
   statsData,
   tabs,
 } from "@/lib/users-and-roles/data";
 import { CreateUserModal, DepartmentModal, RolesList, UsersAndRolesHeader } from "../../components";
+import { useGetAllRolesQuery } from "@/lib/api/rolesApi";
 
 
 export default function RolesAndPermissions() {
   const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
   const [isCreateDepartmentModalOpen, setIsCreateDepartmentModalOpen] =
     useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const { data: rolesData, isLoading, error } = useGetAllRolesQuery();
+
+  // Filter roles based on search query
+  const filteredRoles = rolesData?.data?.filter((role) =>
+    role.role.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
+
+  // Calculate stats from API data
+  const calculatedStatsData = [
+    {
+      ...statsData[0],
+      value: rolesData?.data?.length || 0,
+    },
+    {
+      ...statsData[1],
+      value: rolesData?.data?.filter((r) => r.isActive).length || 0,
+    },
+    statsData[2],
+    statsData[3],
+  ];
 
   return (
     <DashboardLayout
@@ -33,7 +55,7 @@ export default function RolesAndPermissions() {
           onCreateDepartmentClick={() => setIsCreateDepartmentModalOpen(true)}
         />
 
-        <StatsGridWithIcons stats={statsData} />
+        <StatsGridWithIcons stats={calculatedStatsData} />
 
         <NavigationTabs
           tabs={tabs}
@@ -44,10 +66,15 @@ export default function RolesAndPermissions() {
         <SearchAndFilters
           searchPlaceholder="Search roles..."
           filters={filterOptions}
+          onSearchChange={(query) => setSearchQuery(query)}
         />
 
         <div className="mt-6">
-          <RolesList roles={rolesData} />
+          <RolesList
+            roles={filteredRoles}
+            isLoading={isLoading}
+            error={error}
+          />
         </div>
 
         <CreateUserModal

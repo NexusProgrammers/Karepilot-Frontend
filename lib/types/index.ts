@@ -8,3 +8,4 @@ export * from './navigation';
 export * from './performance';
 export * from './validations/validation';
 export * from './departments';
+export * from './roles';
