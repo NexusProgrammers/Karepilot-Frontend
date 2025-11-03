@@ -77,14 +77,14 @@ export function UserCard({ user }: UserCardProps) {
         </div>
 
         <div className="flex items-start gap-6 md:gap-20">
-          <div className="text-left min-w-[120px]">
-            <p className="text-sm text-muted-foreground">Last Active</p>
-            <p className="text-sm font-medium text-card-foreground">
+          <div className="text-left w-[140px] flex-shrink-0">
+            <p className="text-sm text-muted-foreground mb-1">Last Active</p>
+            <p className="text-sm font-medium text-card-foreground mb-2">
               {user.lastActive}
             </p>
-            <div className="flex items-center justify-start gap-1 mt-1">
-              <MapPin className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">
+            <div className="flex items-center justify-start gap-1">
+              <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+              <span className="text-sm text-muted-foreground truncate">
                 {user.currentLocation || "No location"}
               </span>
             </div>
