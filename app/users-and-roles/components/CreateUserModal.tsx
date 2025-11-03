@@ -1,61 +1,138 @@
 "use client";
 
-import { useState } from "react";
 import { X, UserPlus } from "@/icons/Icons";
 import { Button } from "@/components/ui/button";
 import { CustomInput } from "@/components/common/CustomInput";
 import { CustomSelect } from "@/components/common/CustomSelect";
-import { permissionsData } from "@/lib/users-and-roles/data";
-import { CustomCheckbox } from "@/components/common/CustomCheckbox";
+import { Formik, Form, Field } from "formik";
+import {
+  useCreateUserMutation,
+  useUpdateUserMutation,
+  useGetUserByIdQuery,
+} from "@/lib/api/usersApi";
+import { useGetAllDepartmentsQuery } from "@/lib/api/departmentsApi";
+import toast from "react-hot-toast";
+import {
+  createUserSchema,
+  updateUserSchema,
+  CreateUserFormValues,
+  UpdateUserFormValues,
+} from "@/lib/validations";
 
 interface CreateUserModalProps {
   isOpen: boolean;
   onClose: () => void;
+  userId?: string | null;
 }
 
-export function CreateUserModal({ isOpen, onClose }: CreateUserModalProps) {
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    role: "",
-    department: "",
-    phoneNumber: "",
-    badgeNumber: "",
-    shift: "",
-  });
+const roles = [
+  "Admin",
+  "Manager",
+  "Technician",
+  "Staff",
+  "Security",
+  "Viewer",
+];
 
-  const [permissions, setPermissions] = useState<Record<string, boolean>>(
-    () => {
-      const initialPermissions: Record<string, boolean> = {};
-      permissionsData.forEach((permission) => {
-        initialPermissions[permission.id] = permission.checked;
-      });
-      return initialPermissions;
+const shifts = ["Day Shift", "Night Shift", "Evening Shift", "24/7"];
+
+export function CreateUserModal({ isOpen, onClose, userId }: CreateUserModalProps) {
+  const isEditMode = !!userId;
+
+  const { data: userData, isLoading: isLoadingUser } = useGetUserByIdQuery(
+    userId!,
+    {
+      skip: !isEditMode || !userId,
     }
   );
 
-  const roles = [
-    "Admin",
-    "Manager",
-    "Technician",
-    "Staff",
-    "Security",
-    "Viewer",
-  ];
-  const departments = [
-    "ICU",
-    "Emergency",
-    "Pharmacy",
-    "Security",
-    "Administration",
-    "Maintenance",
-  ];
-  const shifts = ["Day Shift", "Night Shift", "Evening Shift", "24/7"];
+  const { data: departmentsData } = useGetAllDepartmentsQuery({
+    page: 1,
+    limit: 100,
+  });
 
-  const handleSubmit = () => {
-    console.log("Creating user:", { ...formData, permissions });
-    onClose();
+  const [createUser, { isLoading: isCreating }] = useCreateUserMutation();
+  const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
+
+  const departments = departmentsData?.data?.departments || [];
+  
+  const getDepartmentName = (id: string) => {
+    const dept = departments.find((d) => d.id === id);
+    return dept?.name || id;
+  };
+
+  const getInitialValues = (): CreateUserFormValues | UpdateUserFormValues => {
+    if (isEditMode && userData?.data?.user) {
+      const user = userData.data.user;
+      return {
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+        password: "",
+        role: user.role || "",
+        department: user.department?._id || "",
+        phoneNumber: user.phoneNumber || "",
+        badgeNumber: user.badgeNumber || "",
+        shift: user.shift || "",
+        currentLocation: user.currentLocation || "",
+      };
+    }
+    return {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      role: "Viewer",
+      department: "",
+      phoneNumber: "",
+      badgeNumber: "",
+      shift: "",
+      currentLocation: "",
+    };
+  };
+
+  const handleSubmit = async (
+    values: CreateUserFormValues | UpdateUserFormValues
+  ) => {
+    try {
+      const submitData = { ...values };
+      
+      if (isEditMode && !submitData.password) {
+        delete submitData.password;
+      }
+
+      if (submitData.role === "Admin") {
+        submitData.department = null;
+      }
+
+      Object.keys(submitData).forEach((key) => {
+        if (submitData[key as keyof typeof submitData] === "") {
+          delete submitData[key as keyof typeof submitData];
+        }
+      });
+
+      if (isEditMode && userId) {
+        await updateUser({
+          id: userId,
+          data: submitData as UpdateUserFormValues,
+        }).unwrap();
+        toast.success("User updated successfully");
+      } else {
+        await createUser(submitData as CreateUserFormValues).unwrap();
+        toast.success("User created successfully");
+      }
+      onClose();
+    } catch (error: any) {
+      console.error(
+        `Error ${isEditMode ? "updating" : "creating"} user:`,
+        error
+      );
+      const errorMessage =
+        error?.data?.message ||
+        error?.message ||
+        `Failed to ${isEditMode ? "update" : "create"} user`;
+      toast.error(errorMessage);
+    }
   };
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -64,14 +141,11 @@ export function CreateUserModal({ isOpen, onClose }: CreateUserModalProps) {
     }
   };
 
-  const handlePermissionChange = (permissionId: string) => {
-    setPermissions((prev) => ({
-      ...prev,
-      [permissionId]: !prev[permissionId],
-    }));
-  };
-
   if (!isOpen) return null;
+
+  const validationSchema = isEditMode ? updateUserSchema : createUserSchema;
+  const isLoading = isCreating || isUpdating;
+  const isLoadingData = isEditMode && isLoadingUser;
 
   return (
     <div
@@ -83,10 +157,12 @@ export function CreateUserModal({ isOpen, onClose }: CreateUserModalProps) {
           <div className="flex items-start justify-between mb-2">
             <div>
               <h2 className="text-xl font-semibold text-card-foreground">
-                Create New User
+                {isEditMode ? "Edit User" : "Create New User"}
               </h2>
               <p className="text-sm text-muted-foreground mt-1">
-                Add a new staff member to your organization
+                {isEditMode
+                  ? "Update user information"
+                  : "Add a new staff member to your organization"}
               </p>
             </div>
             <Button
@@ -100,141 +176,312 @@ export function CreateUserModal({ isOpen, onClose }: CreateUserModalProps) {
           </div>
         </div>
 
-        <div className="px-6 py-6 overflow-y-auto flex-1">
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold text-card-foreground mb-2">
-              User Details
-            </h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Provide information about the new user and their access
-              permissions.
-            </p>
-
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <CustomInput
-                  value={formData.firstName}
-                  onChange={(value) =>
-                    setFormData({ ...formData, firstName: value })
-                  }
-                  placeholder="e.g. Dr. Sarah Chen"
-                  label="First Name"
-                  required
-                />
-
-                <CustomInput
-                  value={formData.lastName}
-                  onChange={(value) =>
-                    setFormData({ ...formData, lastName: value })
-                  }
-                  placeholder="e.g. Dr. Sarah Chen"
-                  label="Last Name"
-                  required
-                />
-                <CustomInput
-                  value={formData.email}
-                  onChange={(value) =>
-                    setFormData({ ...formData, email: value })
-                  }
-                  placeholder="e.g. mail@example.com"
-                  label="Email Address"
-                  required
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <CustomSelect
-                  value={formData.role}
-                  onChange={(value) =>
-                    setFormData({ ...formData, role: value })
-                  }
-                  options={roles}
-                  placeholder="Select role"
-                  label="Role"
-                  required
-                />
-
-                <CustomSelect
-                  value={formData.department}
-                  onChange={(value) =>
-                    setFormData({ ...formData, department: value })
-                  }
-                  options={departments}
-                  placeholder="Select department"
-                  label="Department"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <CustomInput
-                  value={formData.phoneNumber}
-                  onChange={(value) =>
-                    setFormData({ ...formData, phoneNumber: value })
-                  }
-                  placeholder="e.g. +1 (555) 123-4567"
-                  label="Phone Number"
-                  required
-                />
-
-                <CustomInput
-                  value={formData.badgeNumber}
-                  onChange={(value) =>
-                    setFormData({ ...formData, badgeNumber: value })
-                  }
-                  placeholder="e.g. MD10012"
-                  label="Badge Number"
-                  required
-                />
-
-                <CustomSelect
-                  value={formData.shift}
-                  onChange={(value) =>
-                    setFormData({ ...formData, shift: value })
-                  }
-                  options={shifts}
-                  placeholder="Select Shift"
-                  label="Shift"
-                  required
-                />
-              </div>
-            </div>
+        {isLoadingData ? (
+          <div className="px-6 py-6 flex items-center justify-center">
+            <div className="text-muted-foreground">Loading...</div>
           </div>
-
-          <div>
-            <h3 className="text-lg font-semibold text-card-foreground mb-4">
-              Permissions
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {permissionsData.map((permission) => (
-                <CustomCheckbox
-                  key={permission.id}
-                  id={permission.id}
-                  checked={permissions[permission.id]}
-                  onChange={() => handlePermissionChange(permission.id)}
-                  label={permission.label}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-border bg-muted/50">
-          <Button
-            onClick={onClose}
-            variant="outline"
-            className="px-5 py-2.5 cursor-pointer text-sm font-medium text-muted-foreground bg-transparent border border-border rounded-lg hover:bg-accent transition-colors flex items-center gap-2"
+        ) : (
+          <Formik
+            initialValues={getInitialValues()}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+            enableReinitialize={isEditMode}
           >
-            <X className="w-4 h-4" />
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            className="px-5 flex gap-2 py-2.5 text-sm cursor-pointer font-medium text-white bg-[#3D8C6C] rounded-lg transition-colors hover:bg-[#3D8C6C]/90"
-          >
-            <UserPlus className="w-4 h-4" />
-            Create User
-          </Button>
-        </div>
+            {({ setFieldValue, values }) => (
+              <Form className="flex flex-col flex-1">
+                <div className="px-6 py-6 overflow-y-auto flex-1">
+                  <div className="mb-8">
+                    <h3 className="text-lg font-semibold text-card-foreground mb-2">
+                      User Details
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Provide information about the new user and their access
+                      permissions.
+                    </p>
+
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <Field name="firstName">
+                          {({ field, meta }: any) => (
+                            <div>
+                              <CustomInput
+                                value={field.value}
+                                onChange={(value) =>
+                                  setFieldValue("firstName", value)
+                                }
+                                placeholder="e.g. John"
+                                label="First Name"
+                                required
+                                error={meta.error}
+                                touched={meta.touched}
+                              />
+                              {meta.touched && meta.error && (
+                                <div className="text-red-500 text-sm mt-1 font-medium">
+                                  {meta.error}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </Field>
+
+                        <Field name="lastName">
+                          {({ field, meta }: any) => (
+                            <div>
+                              <CustomInput
+                                value={field.value}
+                                onChange={(value) =>
+                                  setFieldValue("lastName", value)
+                                }
+                                placeholder="e.g. Doe"
+                                label="Last Name"
+                                required
+                                error={meta.error}
+                                touched={meta.touched}
+                              />
+                              {meta.touched && meta.error && (
+                                <div className="text-red-500 text-sm mt-1 font-medium">
+                                  {meta.error}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </Field>
+
+                        <Field name="email">
+                          {({ field, meta }: any) => (
+                            <div>
+                              <CustomInput
+                                value={field.value}
+                                onChange={(value) =>
+                                  setFieldValue("email", value)
+                                }
+                                placeholder="e.g. john@example.com"
+                                label="Email Address"
+                                required
+                                error={meta.error}
+                                touched={meta.touched}
+                              />
+                              {meta.touched && meta.error && (
+                                <div className="text-red-500 text-sm mt-1 font-medium">
+                                  {meta.error}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </Field>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Field name="password">
+                          {({ field, meta }: any) => (
+                            <div>
+                              <CustomInput
+                                type="password"
+                                value={field.value}
+                                onChange={(value) =>
+                                  setFieldValue("password", value)
+                                }
+                                placeholder={
+                                  isEditMode
+                                    ? "Leave empty to keep current"
+                                    : "Enter password"
+                                }
+                                label={isEditMode ? "Password (Optional)" : "Password"}
+                                required={!isEditMode}
+                                error={meta.error}
+                                touched={meta.touched}
+                              />
+                              {meta.touched && meta.error && (
+                                <div className="text-red-500 text-sm mt-1 font-medium">
+                                  {meta.error}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </Field>
+
+                        <Field name="role">
+                          {({ field, meta }: any) => (
+                            <div>
+                              <CustomSelect
+                                value={field.value}
+                                onChange={(value) => {
+                                  setFieldValue("role", value);
+                                  if (value === "Admin") {
+                                    setFieldValue("department", "");
+                                  }
+                                }}
+                                options={roles}
+                                placeholder="Select role"
+                                label="Role"
+                                required
+                                error={meta.error}
+                                touched={meta.touched}
+                              />
+                              {meta.touched && meta.error && (
+                                <div className="text-red-500 text-sm mt-1 font-medium">
+                                  {meta.error}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </Field>
+                      </div>
+
+                      <Field name="department">
+                        {({ field, meta }: any) => (
+                          <div>
+                            <CustomSelect
+                              value={field.value ? getDepartmentName(field.value) : ""}
+                              onChange={(value) => {
+                                const dept = departments.find((d) => d.name === value);
+                                setFieldValue("department", dept?.id || "");
+                              }}
+                              options={departments.map((d) => d.name)}
+                              placeholder="Select department"
+                              label="Department"
+                              required={values.role !== "Admin"}
+                              disabled={values.role === "Admin"}
+                              error={meta.error}
+                              touched={meta.touched}
+                            />
+                            {values.role === "Admin" && (
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Admin role cannot be assigned to a department
+                              </p>
+                            )}
+                            {meta.touched && meta.error && (
+                              <div className="text-red-500 text-sm mt-1 font-medium">
+                                {meta.error}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </Field>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <Field name="phoneNumber">
+                          {({ field, meta }: any) => (
+                            <div>
+                              <CustomInput
+                                value={field.value}
+                                onChange={(value) =>
+                                  setFieldValue("phoneNumber", value)
+                                }
+                                placeholder="e.g. +1 (555) 123-4567"
+                                label="Phone Number"
+                                error={meta.error}
+                                touched={meta.touched}
+                              />
+                              {meta.touched && meta.error && (
+                                <div className="text-red-500 text-sm mt-1 font-medium">
+                                  {meta.error}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </Field>
+
+                        <Field name="badgeNumber">
+                          {({ field, meta }: any) => (
+                            <div>
+                              <CustomInput
+                                value={field.value}
+                                onChange={(value) =>
+                                  setFieldValue("badgeNumber", value)
+                                }
+                                placeholder="e.g. EMP-001"
+                                label="Badge Number"
+                                error={meta.error}
+                                touched={meta.touched}
+                              />
+                              {meta.touched && meta.error && (
+                                <div className="text-red-500 text-sm mt-1 font-medium">
+                                  {meta.error}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </Field>
+
+                        <Field name="shift">
+                          {({ field, meta }: any) => (
+                            <div>
+                              <CustomSelect
+                                value={field.value}
+                                onChange={(value) =>
+                                  setFieldValue("shift", value)
+                                }
+                                options={shifts}
+                                placeholder="Select Shift"
+                                label="Shift"
+                                error={meta.error}
+                                touched={meta.touched}
+                              />
+                              {meta.touched && meta.error && (
+                                <div className="text-red-500 text-sm mt-1 font-medium">
+                                  {meta.error}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </Field>
+                      </div>
+
+                      <Field name="currentLocation">
+                        {({ field, meta }: any) => (
+                          <div>
+                            <CustomInput
+                              value={field.value}
+                              onChange={(value) =>
+                                setFieldValue("currentLocation", value)
+                              }
+                              placeholder="e.g. ICU Level 3"
+                              label="Current Location"
+                              error={meta.error}
+                              touched={meta.touched}
+                            />
+                            {meta.touched && meta.error && (
+                              <div className="text-red-500 text-sm mt-1 font-medium">
+                                {meta.error}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </Field>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-border bg-muted/50">
+                  <Button
+                    type="button"
+                    onClick={onClose}
+                    variant="outline"
+                    className="px-5 py-2.5 cursor-pointer text-sm font-medium text-muted-foreground bg-transparent border border-border rounded-lg hover:bg-accent transition-colors flex items-center gap-2"
+                  >
+                    <X className="w-4 h-4" />
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={isLoading}
+                    className="px-5 flex gap-2 py-2.5 text-sm cursor-pointer font-medium text-white bg-[#3D8C6C] rounded-lg transition-colors hover:bg-[#3D8C6C]/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <UserPlus className="w-4 h-4" />
+                    {isLoading
+                      ? isEditMode
+                        ? "Updating..."
+                        : "Creating..."
+                      : isEditMode
+                      ? "Update User"
+                      : "Create User"}
+                  </Button>
+                </div>
+              </Form>
+            )}
+          </Formik>
+        )}
       </div>
     </div>
   );

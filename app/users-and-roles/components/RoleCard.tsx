@@ -6,7 +6,6 @@ interface RoleCardProps {
   role: Role;
 }
 
-// Helper function to convert permission keys to readable labels
 const getPermissionLabel = (key: string): string => {
   const labels: Record<string, string> = {
     viewUsers: "View Users",
@@ -35,7 +34,6 @@ const getPermissionLabel = (key: string): string => {
 };
 
 export function RoleCard({ role }: RoleCardProps) {
-  // Get all active permissions
   const activePermissions = Object.entries(role.permissions)
     .filter(([_, value]) => value === true)
     .map(([key]) => getPermissionLabel(key));

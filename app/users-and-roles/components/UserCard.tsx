@@ -1,4 +1,6 @@
-import { User } from "@/lib/users-and-roles/types";
+"use client";
+
+import { User } from "@/lib/types/users";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { MapPin } from "@/icons/Icons";
@@ -20,6 +22,8 @@ export function UserCard({ user }: UserCardProps) {
         return "bg-yellow-100 text-yellow-800 dark:bg-yellow-950/20 dark:text-yellow-300";
       case "security":
         return "bg-orange-100 text-orange-800 dark:bg-orange-950/20 dark:text-orange-300";
+      case "viewer":
+        return "bg-gray-100 text-gray-800 dark:bg-gray-950/20 dark:text-gray-300";
       case "active":
         return "bg-green-100 text-green-800 dark:bg-green-950/20 dark:text-green-300";
       case "pending":
@@ -31,28 +35,34 @@ export function UserCard({ user }: UserCardProps) {
     }
   };
 
+  const fullName = `${user.firstName} ${user.lastName}`;
+  const initials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+  
+  const tags = [
+    user.role,
+    user.isActive ? "Active" : "Inactive",
+    user.department?.name || "No Department",
+  ].filter(Boolean);
+
   return (
     <div className="bg-card border border-border rounded-xl p-4 sm:p-6">
       <div className="hidden lg:flex items-start justify-between">
         <div className="flex items-start gap-4">
           <Avatar className="w-12 h-12">
-            <AvatarImage src={user.avatar} alt={user.name} />
+            <AvatarImage src={user.profileImage} alt={fullName} />
             <AvatarFallback className="bg-muted text-muted-foreground">
-              {user.name
-                .split(" ")
-                .map((n) => n[0])
-                .join("")}
+              {initials}
             </AvatarFallback>
           </Avatar>
 
           <div className="flex-1">
             <h3 className="text-base font-semibold text-card-foreground mb-1">
-              {user.name}
+              {fullName}
             </h3>
             <p className="text-sm text-muted-foreground mb-2">{user.email}</p>
 
             <div className="flex flex-wrap gap-2">
-              {user.tags.map((tag, index) => (
+              {tags.map((tag, index) => (
                 <span
                   key={index}
                   className={`px-3 py-1 text-xs font-medium rounded-full ${getTagColor(
@@ -75,7 +85,7 @@ export function UserCard({ user }: UserCardProps) {
             <div className="flex items-center justify-start gap-1 mt-1">
               <MapPin className="w-4 h-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">
-                {user.location}
+                {user.currentLocation || "No location"}
               </span>
             </div>
           </div>
@@ -109,25 +119,22 @@ export function UserCard({ user }: UserCardProps) {
       <div className="lg:hidden space-y-4">
         <div className="flex items-start gap-3">
           <Avatar className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0">
-            <AvatarImage src={user.avatar} alt={user.name} />
+            <AvatarImage src={user.profileImage} alt={fullName} />
             <AvatarFallback className="bg-muted text-muted-foreground text-xs sm:text-sm">
-              {user.name
-                .split(" ")
-                .map((n) => n[0])
-                .join("")}
+              {initials}
             </AvatarFallback>
           </Avatar>
 
           <div className="flex-1 min-w-0">
             <h3 className="text-sm sm:text-base font-semibold text-card-foreground mb-1 truncate">
-              {user.name}
+              {fullName}
             </h3>
             <p className="text-xs sm:text-sm text-muted-foreground mb-2 truncate">
               {user.email}
             </p>
 
             <div className="flex flex-wrap gap-1 sm:gap-2">
-              {user.tags.map((tag, index) => (
+              {tags.map((tag, index) => (
                 <span
                   key={index}
                   className={`px-2 sm:px-3 py-1 text-xs font-medium rounded-full ${getTagColor(
@@ -150,7 +157,7 @@ export function UserCard({ user }: UserCardProps) {
             <div className="flex items-center gap-1 mt-1">
               <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground" />
               <span className="text-xs sm:text-sm text-muted-foreground">
-                {user.location}
+                {user.currentLocation || "No location"}
               </span>
             </div>
           </div>
