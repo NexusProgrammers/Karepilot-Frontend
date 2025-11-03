@@ -4,13 +4,14 @@ import { useState } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import SearchAndFilters from "@/components/common/SearchAndFilters";
 import StatsGridWithIcons from "@/components/common/StatsGridWithIcons";
+import StatsGridSkeleton from "@/components/common/StatsGridSkeleton";
 import NavigationTabs from "@/components/common/NavigationTabs";
 import {
   statsData,
   tabs,
   filterOptions,
 } from "@/lib/users-and-roles/data";
-import { useGetAllUsersQuery } from "@/lib/api/usersApi";
+import { useGetAllUsersQuery, useGetUsersStatsQuery } from "@/lib/api/usersApi";
 import { UsersAndRolesHeader } from "./UsersAndRolesHeader";
 import { UsersList } from "./UsersList";
 import { CreateUserModal } from "./CreateUserModal";
@@ -26,6 +27,12 @@ export default function UsersAndRoles() {
   const [departmentFilter, setDepartmentFilter] = useState<string | undefined>(undefined);
   const [isActiveFilter, setIsActiveFilter] = useState<boolean | undefined>(undefined);
 
+  // Helper function to capitalize role name (first letter uppercase, rest lowercase)
+  const capitalizeRole = (role: string): string => {
+    if (!role || role === "all") return role;
+    return role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+  };
+
   const { data: usersData, isLoading, error } = useGetAllUsersQuery({
     search: searchQuery || undefined,
     role: roleFilter,
@@ -35,19 +42,26 @@ export default function UsersAndRoles() {
     limit: 100,
   });
 
+  const { data: statsDataResponse, isLoading: isLoadingStats } = useGetUsersStatsQuery();
+
+  console.log(statsDataResponse, "statsDataResponse");
+
   const calculatedStatsData = [
     {
       ...statsData[0],
-      value: usersData?.data?.pagination?.total || 0,
+      value: statsDataResponse?.data?.totalUsers || 0,
     },
     {
       ...statsData[1],
-      value: usersData?.data?.users?.filter((u) => u.isActive).length || 0,
+      value: statsDataResponse?.data?.activeUsers || 0,
     },
-    statsData[2],
+    {
+      ...statsData[2],
+      value: statsDataResponse?.data?.totalDepartments || 0,
+    },  
     {
       ...statsData[3],
-      value: usersData?.data?.users?.filter((u) => u.lastActive !== "Never").length || 0,
+      value: statsDataResponse?.data?.onlineNow || 0,
     },
   ];
 
@@ -65,7 +79,11 @@ export default function UsersAndRoles() {
           onCreateDepartmentClick={() => setIsCreateDepartmentModalOpen(true)}
         />
 
-        <StatsGridWithIcons stats={calculatedStatsData} />
+        {isLoadingStats ? (
+          <StatsGridSkeleton />
+        ) : (
+          <StatsGridWithIcons stats={calculatedStatsData} />
+        )}
 
         <NavigationTabs
           tabs={tabs}
@@ -79,7 +97,8 @@ export default function UsersAndRoles() {
           onSearchChange={(query) => setSearchQuery(query)}
           onFilterChange={(label, value) => {
             if (label === "All Roles") {
-              setRoleFilter(value === "all" ? undefined : value);
+              // Convert lowercase role to capitalized format (Admin, Manager, etc.)
+              setRoleFilter(value === "all" ? undefined : capitalizeRole(value));
             } else if (label === "All Departments") {
               setDepartmentFilter(value === "all" ? undefined : value);
             } else if (label === "All Status") {

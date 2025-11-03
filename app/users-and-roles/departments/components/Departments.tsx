@@ -4,6 +4,7 @@ import { useState } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import SearchAndFilters from "@/components/common/SearchAndFilters";
 import StatsGridWithIcons from "@/components/common/StatsGridWithIcons";
+import StatsGridSkeleton from "@/components/common/StatsGridSkeleton";
 import NavigationTabs from "@/components/common/NavigationTabs";
 import {
   filterOptions,
@@ -19,6 +20,7 @@ import {
 import {
   useGetAllDepartmentsQuery,
 } from "@/lib/api/departmentsApi";
+import { useGetUsersStatsQuery } from "@/lib/api/usersApi";
 
 export default function Departments() {
   const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
@@ -33,20 +35,25 @@ export default function Departments() {
     limit: 100,
   });
 
+  const { data: statsDataResponse, isLoading: isLoadingStats } = useGetUsersStatsQuery();
+
   const calculatedStatsData = [
     {
       ...statsData[0],
-      value: departmentsData?.data?.pagination?.total || 0,
+      value: statsDataResponse?.data?.totalUsers || 0,
     },
     {
       ...statsData[1],
-      value: departmentsData?.data?.departments?.filter((d) => d.isActive).length || 0,
+      value: statsDataResponse?.data?.activeUsers || 0,
     },
     {
       ...statsData[2],
-      value: departmentsData?.data?.pagination?.total || 0,
+      value: statsDataResponse?.data?.totalDepartments || 0,
     },
-    statsData[3],
+    {
+      ...statsData[3],
+      value: statsDataResponse?.data?.onlineNow || 0,
+    },
   ];
 
   return (
@@ -63,7 +70,11 @@ export default function Departments() {
           onCreateDepartmentClick={() => setIsCreateDepartmentModalOpen(true)}
         />
 
-        <StatsGridWithIcons stats={calculatedStatsData} />
+        {isLoadingStats ? (
+          <StatsGridSkeleton />
+        ) : (
+          <StatsGridWithIcons stats={calculatedStatsData} />
+        )}
 
         <NavigationTabs
           tabs={tabs}

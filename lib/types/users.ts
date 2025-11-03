@@ -84,5 +84,17 @@ export interface UserQuery {
   role?: string;
   department?: string;
   isActive?: boolean;
+  status?: string;
+}
+
+export interface UsersStatsResponse {
+  success: boolean;
+  message: string;
+  data: {
+    totalUsers: number;
+    activeUsers: number;
+    totalDepartments: number;
+    onlineNow: number;
+  };
 }
 

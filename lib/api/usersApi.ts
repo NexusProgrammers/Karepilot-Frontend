@@ -5,6 +5,7 @@ import {
   CreateUserRequest,
   UpdateUserRequest,
   UserQuery,
+  UsersStatsResponse,
 } from "../types/users";
 import { baseQuery } from "./baseConfig";
 
@@ -53,6 +54,10 @@ export const usersApi = createApi({
       }),
       invalidatesTags: ["Users"],
     }),
+    getUsersStats: builder.query<UsersStatsResponse, void>({
+      query: () => "/users/admin/user-management/users/stats",
+      providesTags: ["Users"],
+    }),
   }),
 });
 
@@ -62,5 +67,6 @@ export const {
   useCreateUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
+  useGetUsersStatsQuery,
 } = usersApi;
 

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import SearchAndFilters from "@/components/common/SearchAndFilters";
 import StatsGridWithIcons from "@/components/common/StatsGridWithIcons";
+import StatsGridSkeleton from "@/components/common/StatsGridSkeleton";
 import NavigationTabs from "@/components/common/NavigationTabs";
 import {
   filterOptions,
@@ -12,6 +13,7 @@ import {
 } from "@/lib/users-and-roles/data";
 import { CreateUserModal, DepartmentModal, RolesList, UsersAndRolesHeader } from "../../components";
 import { useGetAllRolesQuery } from "@/lib/api/rolesApi";
+import { useGetUsersStatsQuery } from "@/lib/api/usersApi";
 
 
 export default function RolesAndPermissions() {
@@ -21,6 +23,7 @@ export default function RolesAndPermissions() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: rolesData, isLoading, error } = useGetAllRolesQuery();
+  const { data: statsDataResponse, isLoading: isLoadingStats } = useGetUsersStatsQuery();
 
   const filteredRoles = rolesData?.data?.filter((role) =>
     role.role.toLowerCase().includes(searchQuery.toLowerCase())
@@ -29,14 +32,20 @@ export default function RolesAndPermissions() {
   const calculatedStatsData = [
     {
       ...statsData[0],
-      value: rolesData?.data?.length || 0,
+      value: statsDataResponse?.data?.totalUsers || 0,
     },
     {
       ...statsData[1],
-      value: rolesData?.data?.filter((r) => r.isActive).length || 0,
+      value: statsDataResponse?.data?.activeUsers || 0,
     },
-    statsData[2],
-    statsData[3],
+    {
+      ...statsData[2],
+      value: statsDataResponse?.data?.totalDepartments || 0,
+    },
+    {
+      ...statsData[3],
+      value: statsDataResponse?.data?.onlineNow || 0,
+    },
   ];
 
   return (
@@ -53,7 +62,11 @@ export default function RolesAndPermissions() {
           onCreateDepartmentClick={() => setIsCreateDepartmentModalOpen(true)}
         />
 
-        <StatsGridWithIcons stats={calculatedStatsData} />
+        {isLoadingStats ? (
+          <StatsGridSkeleton />
+        ) : (
+          <StatsGridWithIcons stats={calculatedStatsData} />
+        )}
 
         <NavigationTabs
           tabs={tabs}
