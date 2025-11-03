@@ -22,12 +22,10 @@ export default function RolesAndPermissions() {
 
   const { data: rolesData, isLoading, error } = useGetAllRolesQuery();
 
-  // Filter roles based on search query
   const filteredRoles = rolesData?.data?.filter((role) =>
     role.role.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
 
-  // Calculate stats from API data
   const calculatedStatsData = [
     {
       ...statsData[0],

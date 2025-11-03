@@ -1,4 +1,3 @@
-"use client";
 
 import { DashboardLayout } from "@/components/DashboardLayout";
 import NavigationTabs from "@/components/common/NavigationTabs";

@@ -1,4 +1,3 @@
-
 import { DashboardLayout } from "@/components/DashboardLayout";
 import NavigationTabs from "@/components/common/NavigationTabs";
 import { ProfileSettings } from "@/components/common/ProfileSettings";
@@ -18,7 +17,8 @@ export default function SettingsPage() {
         <div>
           <h1 className="text-2xl font-bold text-foreground mb-2">Settings</h1>
           <p className="text-muted-foreground">
-            Configure system preferences and manage your account for your organization
+            Configure system preferences and manage your account for your
+            organization
           </p>
         </div>
 
