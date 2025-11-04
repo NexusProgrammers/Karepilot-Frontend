@@ -22,15 +22,17 @@ import {
 } from "@/lib/api/departmentsApi";
 import { useGetUsersStatsQuery } from "@/lib/api/usersApi";
 
+const departmentsFilterOptions = filterOptions.filter(
+  (filter) => filter.label === "All Departments"
+);
+
 export default function Departments() {
   const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
   const [isCreateDepartmentModalOpen, setIsCreateDepartmentModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isActiveFilter, setIsActiveFilter] = useState<boolean | undefined>(undefined);
 
   const { data: departmentsData, isLoading, error } = useGetAllDepartmentsQuery({
     search: searchQuery || undefined,
-    isActive: isActiveFilter,
     page: 1,
     limit: 100,
   });
@@ -84,13 +86,8 @@ export default function Departments() {
 
         <SearchAndFilters
           searchPlaceholder="Search departments..."
-          filters={filterOptions}
+          filters={departmentsFilterOptions}
           onSearchChange={(query) => setSearchQuery(query)}
-          onFilterChange={(label, value) => {
-            if (label === "All Status") {
-              setIsActiveFilter(value === "active" ? true : value === "inactive" ? false : undefined);
-            }
-          }}
         />
 
         <div className="mt-6">

@@ -17,26 +17,20 @@ import { UsersList } from "./UsersList";
 import { CreateUserModal } from "./CreateUserModal";
 import { DepartmentModal } from "./DepartmentModal";
 
+const usersFilterOptions = filterOptions.filter(
+  (filter) => filter.label === "All Status"
+);
+
 
 export default function UsersAndRoles() {
   const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
   const [isCreateDepartmentModalOpen, setIsCreateDepartmentModalOpen] =
     useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [roleFilter, setRoleFilter] = useState<string | undefined>(undefined);
-  const [departmentFilter, setDepartmentFilter] = useState<string | undefined>(undefined);
   const [isActiveFilter, setIsActiveFilter] = useState<boolean | undefined>(undefined);
-
-  // Helper function to capitalize role name (first letter uppercase, rest lowercase)
-  const capitalizeRole = (role: string): string => {
-    if (!role || role === "all") return role;
-    return role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
-  };
 
   const { data: usersData, isLoading, error } = useGetAllUsersQuery({
     search: searchQuery || undefined,
-    role: roleFilter,
-    department: departmentFilter,
     isActive: isActiveFilter,
     page: 1,
     limit: 100,
@@ -93,15 +87,10 @@ export default function UsersAndRoles() {
 
         <SearchAndFilters
           searchPlaceholder="Search user..."
-          filters={filterOptions}
+          filters={usersFilterOptions}
           onSearchChange={(query) => setSearchQuery(query)}
           onFilterChange={(label, value) => {
-            if (label === "All Roles") {
-              // Convert lowercase role to capitalized format (Admin, Manager, etc.)
-              setRoleFilter(value === "all" ? undefined : capitalizeRole(value));
-            } else if (label === "All Departments") {
-              setDepartmentFilter(value === "all" ? undefined : value);
-            } else if (label === "All Status") {
+            if (label === "All Status") {
               setIsActiveFilter(value === "active" ? true : value === "inactive" ? false : undefined);
             }
           }}

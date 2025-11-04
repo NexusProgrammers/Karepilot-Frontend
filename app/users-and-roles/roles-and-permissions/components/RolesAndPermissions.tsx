@@ -15,6 +15,10 @@ import { CreateUserModal, DepartmentModal, RolesList, UsersAndRolesHeader } from
 import { useGetAllRolesQuery } from "@/lib/api/rolesApi";
 import { useGetUsersStatsQuery } from "@/lib/api/usersApi";
 
+const rolesFilterOptions = filterOptions.filter(
+  (filter) => filter.label === "All Roles"
+);
+
 
 export default function RolesAndPermissions() {
   const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
@@ -76,7 +80,7 @@ export default function RolesAndPermissions() {
 
         <SearchAndFilters
           searchPlaceholder="Search roles..."
-          filters={filterOptions}
+          filters={rolesFilterOptions}
           onSearchChange={(query) => setSearchQuery(query)}
         />
 
