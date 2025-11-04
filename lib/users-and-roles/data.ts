@@ -245,7 +245,6 @@ export const filterOptions = [
     options: [
       { label: "All Status", value: "all" },
       { label: "Active", value: "active" },
-      { label: "Pending", value: "pending" },
       { label: "Inactive", value: "inactive" },
     ],
     defaultValue: "all",
