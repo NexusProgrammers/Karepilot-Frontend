@@ -19,8 +19,11 @@ import {
 } from "../../components";
 import {
   useGetAllDepartmentsQuery,
+  useDeleteDepartmentMutation,
 } from "@/lib/api/departmentsApi";
 import { useGetUsersStatsQuery } from "@/lib/api/usersApi";
+import { DeleteConfirmationDialog } from "@/components/common/DeleteConfirmationDialog";
+import toast from "react-hot-toast";
 
 const departmentsFilterOptions = filterOptions.filter(
   (filter) => filter.label === "All Departments"
@@ -30,6 +33,13 @@ export default function Departments() {
   const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
   const [isCreateDepartmentModalOpen, setIsCreateDepartmentModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deleteDepartmentId, setDeleteDepartmentId] = useState<string | null>(null);
+  const [deleteDepartmentName, setDeleteDepartmentName] = useState<string>("");
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState<string | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  
+  const [deleteDepartment, { isLoading: isDeletingDepartment }] = useDeleteDepartmentMutation();
 
   const { data: departmentsData, isLoading, error } = useGetAllDepartmentsQuery({
     search: searchQuery || undefined,
@@ -95,6 +105,15 @@ export default function Departments() {
             departments={departmentsData?.data?.departments || []}
             isLoading={isLoading}
             error={error}
+            onEdit={(departmentId) => {
+              setSelectedDepartmentId(departmentId);
+              setIsEditModalOpen(true);
+            }}
+            onDelete={(departmentId, departmentName) => {
+              setDeleteDepartmentId(departmentId);
+              setDeleteDepartmentName(departmentName);
+              setIsDeleteDialogOpen(true);
+            }}
           />
         </div>
 
@@ -104,8 +123,32 @@ export default function Departments() {
         />
 
         <DepartmentModal
-          isOpen={isCreateDepartmentModalOpen}
-          onClose={() => setIsCreateDepartmentModalOpen(false)}
+          isOpen={isCreateDepartmentModalOpen || isEditModalOpen}
+          onClose={() => {
+            setIsCreateDepartmentModalOpen(false);
+            setIsEditModalOpen(false);
+            setSelectedDepartmentId(null);
+          }}
+          departmentId={selectedDepartmentId}
+        />
+
+        <DeleteConfirmationDialog
+          isOpen={isDeleteDialogOpen}
+          onClose={() => {
+            setIsDeleteDialogOpen(false);
+            setDeleteDepartmentId(null);
+            setDeleteDepartmentName("");
+          }}
+          onConfirm={async () => {
+            if (!deleteDepartmentId) return;
+            await deleteDepartment(deleteDepartmentId).unwrap();
+            toast.success("Department deleted successfully");
+          }}
+          title="Delete Department"
+          description="Are you sure you want to delete this department? This action cannot be undone."
+          itemName={deleteDepartmentName}
+          itemType="department"
+          isLoading={isDeletingDepartment}
         />
       </div>
     </DashboardLayout>

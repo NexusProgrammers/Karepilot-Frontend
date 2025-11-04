@@ -6,6 +6,7 @@ import {
   UpdateUserRequest,
   UserQuery,
   UsersStatsResponse,
+  DeleteUserResponse,
 } from "../types/users";
 import { baseQuery } from "./baseConfig";
 
@@ -47,7 +48,7 @@ export const usersApi = createApi({
         "Users",
       ],
     }),
-    deleteUser: builder.mutation<{ success: boolean; message: string }, string>({
+    deleteUser: builder.mutation<DeleteUserResponse, string>({
       query: (id) => ({
         url: `/users/admin/user-management/users/${id}`,
         method: "DELETE",

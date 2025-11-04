@@ -16,6 +16,9 @@ import { UsersAndRolesHeader } from "./UsersAndRolesHeader";
 import { UsersList } from "./UsersList";
 import { CreateUserModal } from "./CreateUserModal";
 import { DepartmentModal } from "./DepartmentModal";
+import { DeleteConfirmationDialog } from "@/components/common/DeleteConfirmationDialog";
+import { useDeleteUserMutation } from "@/lib/api/usersApi";
+import toast from "react-hot-toast";
 
 const usersFilterOptions = filterOptions.filter(
   (filter) => filter.label === "All Status"
@@ -28,6 +31,13 @@ export default function UsersAndRoles() {
     useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isActiveFilter, setIsActiveFilter] = useState<boolean | undefined>(undefined);
+  const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("create");
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
+  const [deleteUserName, setDeleteUserName] = useState<string>("");
+  
+  const [deleteUser, { isLoading: isDeletingUser }] = useDeleteUserMutation();
 
   const { data: usersData, isLoading, error } = useGetAllUsersQuery({
     search: searchQuery || undefined,
@@ -37,8 +47,6 @@ export default function UsersAndRoles() {
   });
 
   const { data: statsDataResponse, isLoading: isLoadingStats } = useGetUsersStatsQuery();
-
-  console.log(statsDataResponse, "statsDataResponse");
 
   const calculatedStatsData = [
     {
@@ -69,7 +77,11 @@ export default function UsersAndRoles() {
     >
       <div className="space-y-6">
         <UsersAndRolesHeader
-          onCreateUserClick={() => setIsCreateUserModalOpen(true)}
+          onCreateUserClick={() => {
+            setSelectedUserId(null);
+            setModalMode("create");
+            setIsCreateUserModalOpen(true);
+          }}
           onCreateDepartmentClick={() => setIsCreateDepartmentModalOpen(true)}
         />
 
@@ -101,12 +113,52 @@ export default function UsersAndRoles() {
             users={usersData?.data?.users || []}
             isLoading={isLoading}
             error={error}
+            onView={(userId) => {
+              setSelectedUserId(userId);
+              setModalMode("view");
+              setIsCreateUserModalOpen(true);
+            }}
+            onEdit={(userId) => {
+              setSelectedUserId(userId);
+              setModalMode("edit");
+              setIsCreateUserModalOpen(true);
+            }}
+            onDelete={(userId, userName) => {
+              setDeleteUserId(userId);
+              setDeleteUserName(userName);
+              setIsDeleteDialogOpen(true);
+            }}
           />
         </div>
 
         <CreateUserModal
           isOpen={isCreateUserModalOpen}
-          onClose={() => setIsCreateUserModalOpen(false)}
+          onClose={() => {
+            setIsCreateUserModalOpen(false);
+            setSelectedUserId(null);
+            setModalMode("create");
+          }}
+          userId={selectedUserId}
+          mode={modalMode}
+        />
+
+        <DeleteConfirmationDialog
+          isOpen={isDeleteDialogOpen}
+          onClose={() => {
+            setIsDeleteDialogOpen(false);
+            setDeleteUserId(null);
+            setDeleteUserName("");
+          }}
+          onConfirm={async () => {
+            if (!deleteUserId) return;
+            await deleteUser(deleteUserId).unwrap();
+            toast.success("User deleted successfully");
+          }}
+          title="Delete User"
+          description="Are you sure you want to delete this user? This action cannot be undone."
+          itemName={deleteUserName}
+          itemType="user"
+          isLoading={isDeletingUser}
         />
 
         <DepartmentModal

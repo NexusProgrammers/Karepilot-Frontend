@@ -7,9 +7,12 @@ import { MapPin } from "@/icons/Icons";
 
 interface UserCardProps {
   user: User;
+  onView?: (userId: string) => void;
+  onEdit?: (userId: string) => void;
+  onDelete?: (userId: string, userName: string) => void;
 }
 
-export function UserCard({ user }: UserCardProps) {
+export function UserCard({ user, onView, onEdit, onDelete }: UserCardProps) {
   const getTagColor = (tag: string) => {
     switch (tag.toLowerCase()) {
       case "admin":
@@ -91,27 +94,46 @@ export function UserCard({ user }: UserCardProps) {
           </div>
 
           <div className="flex items-start gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="px-4 py-2 text-sm font-medium text-card-foreground bg-card border border-border rounded-lg hover:bg-muted transition-colors"
-            >
-              View
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="px-4 py-2 text-sm font-medium text-card-foreground bg-card border border-border rounded-lg hover:bg-muted transition-colors"
-            >
-              Edit
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors rounded-lg"
-            >
-              <MapPin className="w-4 h-4" />
-            </Button>
+            {user.isActive ? (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onView?.(user.id)}
+                  className="px-4 py-2 cursor-pointer text-sm font-medium text-card-foreground bg-card border border-border rounded-lg hover:bg-muted transition-colors"
+                >
+                  View
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onEdit?.(user.id)}
+                  className="px-4 py-2 cursor-pointer text-sm font-medium text-card-foreground bg-card border border-border rounded-lg hover:bg-muted transition-colors"
+                >
+                  Edit
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onDelete?.(user.id, `${user.firstName} ${user.lastName}`)}
+                  className="px-4 py-2 cursor-pointer text-sm font-medium text-card-foreground bg-card border border-border rounded-lg hover:bg-muted transition-colors"
+                >
+                  Delete
+                </Button>
+              </>
+            ) : (
+              <>
+                <div className="px-4 py-2 invisible">
+                  <span className="text-sm">View</span>
+                </div>
+                <div className="px-4 py-2 invisible">
+                  <span className="text-sm">Edit</span>
+                </div>
+                <div className="px-4 py-2 invisible">
+                  <span className="text-sm">Delete</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -163,27 +185,46 @@ export function UserCard({ user }: UserCardProps) {
           </div>
 
           <div className="flex items-center gap-1 sm:gap-2 ml-4">
-            <Button
-              variant="outline"
-              size="sm"
-              className="px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium text-card-foreground bg-card border border-border rounded-lg hover:bg-muted transition-colors"
-            >
-              View
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium text-card-foreground bg-card border border-border rounded-lg hover:bg-muted transition-colors"
-            >
-              Edit
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="p-1 sm:p-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors rounded-lg"
-            >
-              <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
-            </Button>
+            {user.isActive ? (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onView?.(user.id)}
+                  className="px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium text-card-foreground bg-card border border-border rounded-lg hover:bg-muted transition-colors"
+                >
+                  View
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onEdit?.(user.id)}
+                  className="px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium text-card-foreground bg-card border border-border rounded-lg hover:bg-muted transition-colors"
+                >
+                  Edit
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onDelete?.(user.id, `${user.firstName} ${user.lastName}`)}
+                  className="px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium text-card-foreground bg-card border border-border rounded-lg hover:bg-muted transition-colors"
+                >
+                  Delete
+                </Button>
+              </>
+            ) : (
+              <>
+                <div className="px-2 sm:px-4 py-1 sm:py-2 invisible">
+                  <span className="text-xs sm:text-sm">View</span>
+                </div>
+                <div className="px-2 sm:px-4 py-1 sm:py-2 invisible">
+                  <span className="text-xs sm:text-sm">Edit</span>
+                </div>
+                <div className="px-2 sm:px-4 py-1 sm:py-2 invisible">
+                  <span className="text-xs sm:text-sm">Delete</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -19,10 +19,13 @@ import {
   UpdateUserFormValues,
 } from "@/lib/validations";
 
+type ModalMode = "create" | "edit" | "view";
+
 interface CreateUserModalProps {
   isOpen: boolean;
   onClose: () => void;
   userId?: string | null;
+  mode?: ModalMode;
 }
 
 const roles = [
@@ -36,13 +39,14 @@ const roles = [
 
 const shifts = ["Day Shift", "Night Shift", "Evening Shift", "24/7"];
 
-export function CreateUserModal({ isOpen, onClose, userId }: CreateUserModalProps) {
-  const isEditMode = !!userId;
+export function CreateUserModal({ isOpen, onClose, userId, mode = "create" }: CreateUserModalProps) {
+  const isEditMode = mode === "edit" && !!userId;
+  const isViewMode = mode === "view" && !!userId;
 
   const { data: userData, isLoading: isLoadingUser } = useGetUserByIdQuery(
     userId!,
     {
-      skip: !isEditMode || !userId,
+      skip: (!isEditMode && !isViewMode) || !userId,
     }
   );
 
@@ -57,12 +61,18 @@ export function CreateUserModal({ isOpen, onClose, userId }: CreateUserModalProp
   const departments = departmentsData?.data?.departments || [];
   
   const getDepartmentName = (id: string) => {
-    const dept = departments.find((d) => d.id === id);
-    return dept?.name || id;
+    if (!id) return "";
+    const dept = departments.find((d) => d.id === id || (d as any)._id === id);
+    return dept?.name || "";
+  };
+
+  const getDepartmentIdFromName = (name: string) => {
+    const dept = departments.find((d) => d.name === name);
+    return dept?.id || "";
   };
 
   const getInitialValues = (): CreateUserFormValues | UpdateUserFormValues => {
-    if (isEditMode && userData?.data?.user) {
+    if ((isEditMode || isViewMode) && userData?.data?.user) {
       const user = userData.data.user;
       return {
         firstName: user.firstName || "",
@@ -157,10 +167,16 @@ export function CreateUserModal({ isOpen, onClose, userId }: CreateUserModalProp
           <div className="flex items-start justify-between mb-2">
             <div>
               <h2 className="text-xl font-semibold text-card-foreground">
-                {isEditMode ? "Edit User" : "Create New User"}
+                {isViewMode
+                  ? "View User"
+                  : isEditMode
+                  ? "Edit User"
+                  : "Create New User"}
               </h2>
               <p className="text-sm text-muted-foreground mt-1">
-                {isEditMode
+                {isViewMode
+                  ? "View user information"
+                  : isEditMode
                   ? "Update user information"
                   : "Add a new staff member to your organization"}
               </p>
@@ -183,9 +199,9 @@ export function CreateUserModal({ isOpen, onClose, userId }: CreateUserModalProp
         ) : (
           <Formik
             initialValues={getInitialValues()}
-            validationSchema={validationSchema}
+            validationSchema={isViewMode ? undefined : validationSchema}
             onSubmit={handleSubmit}
-            enableReinitialize={isEditMode}
+            enableReinitialize={isEditMode || isViewMode}
           >
             {({ setFieldValue, values }) => (
               <Form className="flex flex-col flex-1">
@@ -212,6 +228,7 @@ export function CreateUserModal({ isOpen, onClose, userId }: CreateUserModalProp
                                 placeholder="e.g. John"
                                 label="First Name"
                                 required
+                                disabled={isViewMode}
                                 error={meta.error}
                                 touched={meta.touched}
                               />
@@ -235,6 +252,7 @@ export function CreateUserModal({ isOpen, onClose, userId }: CreateUserModalProp
                                 placeholder="e.g. Doe"
                                 label="Last Name"
                                 required
+                                disabled={isViewMode}
                                 error={meta.error}
                                 touched={meta.touched}
                               />
@@ -258,6 +276,7 @@ export function CreateUserModal({ isOpen, onClose, userId }: CreateUserModalProp
                                 placeholder="e.g. john@example.com"
                                 label="Email Address"
                                 required
+                                disabled={isViewMode}
                                 error={meta.error}
                                 touched={meta.touched}
                               />
@@ -275,22 +294,24 @@ export function CreateUserModal({ isOpen, onClose, userId }: CreateUserModalProp
                         <Field name="password">
                           {({ field, meta }: any) => (
                             <div>
-                              <CustomInput
-                                type="password"
-                                value={field.value}
-                                onChange={(value) =>
-                                  setFieldValue("password", value)
-                                }
-                                placeholder={
-                                  isEditMode
-                                    ? "Leave empty to keep current"
-                                    : "Enter password"
-                                }
-                                label={isEditMode ? "Password (Optional)" : "Password"}
-                                required={!isEditMode}
-                                error={meta.error}
-                                touched={meta.touched}
-                              />
+                              {!isViewMode && (
+                                <CustomInput
+                                  type="password"
+                                  value={field.value}
+                                  onChange={(value) =>
+                                    setFieldValue("password", value)
+                                  }
+                                  placeholder={
+                                    isEditMode
+                                      ? "Leave empty to keep current"
+                                      : "Enter password"
+                                  }
+                                  label={isEditMode ? "Password (Optional)" : "Password"}
+                                  required={!isEditMode}
+                                  error={meta.error}
+                                  touched={meta.touched}
+                                />
+                              )}
                               {meta.touched && meta.error && (
                                 <div className="text-red-500 text-sm mt-1 font-medium">
                                   {meta.error}
@@ -315,6 +336,7 @@ export function CreateUserModal({ isOpen, onClose, userId }: CreateUserModalProp
                                 placeholder="Select role"
                                 label="Role"
                                 required
+                                disabled={isViewMode}
                                 error={meta.error}
                                 touched={meta.touched}
                               />
@@ -334,14 +356,14 @@ export function CreateUserModal({ isOpen, onClose, userId }: CreateUserModalProp
                             <CustomSelect
                               value={field.value ? getDepartmentName(field.value) : ""}
                               onChange={(value) => {
-                                const dept = departments.find((d) => d.name === value);
-                                setFieldValue("department", dept?.id || "");
+                                const deptId = getDepartmentIdFromName(value);
+                                setFieldValue("department", deptId);
                               }}
                               options={departments.map((d) => d.name)}
                               placeholder="Select department"
                               label="Department"
                               required={values.role !== "Admin"}
-                              disabled={values.role === "Admin"}
+                              disabled={isViewMode || values.role === "Admin"}
                               error={meta.error}
                               touched={meta.touched}
                             />
@@ -370,6 +392,7 @@ export function CreateUserModal({ isOpen, onClose, userId }: CreateUserModalProp
                                 }
                                 placeholder="e.g. +1 (555) 123-4567"
                                 label="Phone Number"
+                                disabled={isViewMode}
                                 error={meta.error}
                                 touched={meta.touched}
                               />
@@ -392,6 +415,7 @@ export function CreateUserModal({ isOpen, onClose, userId }: CreateUserModalProp
                                 }
                                 placeholder="e.g. EMP-001"
                                 label="Badge Number"
+                                disabled={isViewMode}
                                 error={meta.error}
                                 touched={meta.touched}
                               />
@@ -415,6 +439,7 @@ export function CreateUserModal({ isOpen, onClose, userId }: CreateUserModalProp
                                 options={shifts}
                                 placeholder="Select Shift"
                                 label="Shift"
+                                disabled={isViewMode}
                                 error={meta.error}
                                 touched={meta.touched}
                               />
@@ -438,6 +463,7 @@ export function CreateUserModal({ isOpen, onClose, userId }: CreateUserModalProp
                               }
                               placeholder="e.g. ICU Level 3"
                               label="Current Location"
+                              disabled={isViewMode}
                               error={meta.error}
                               touched={meta.touched}
                             />
@@ -453,31 +479,46 @@ export function CreateUserModal({ isOpen, onClose, userId }: CreateUserModalProp
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-border bg-muted/50">
-                  <Button
-                    type="button"
-                    onClick={onClose}
-                    variant="outline"
-                    className="px-5 py-2.5 cursor-pointer text-sm font-medium text-muted-foreground bg-transparent border border-border rounded-lg hover:bg-accent transition-colors flex items-center gap-2"
-                  >
-                    <X className="w-4 h-4" />
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={isLoading}
-                    className="px-5 flex gap-2 py-2.5 text-sm cursor-pointer font-medium text-white bg-[#3D8C6C] rounded-lg transition-colors hover:bg-[#3D8C6C]/90 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <UserPlus className="w-4 h-4" />
-                    {isLoading
-                      ? isEditMode
-                        ? "Updating..."
-                        : "Creating..."
-                      : isEditMode
-                      ? "Update User"
-                      : "Create User"}
-                  </Button>
-                </div>
+                {!isViewMode && (
+                  <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-border bg-muted/50">
+                    <Button
+                      type="button"
+                      onClick={onClose}
+                      variant="outline"
+                      className="px-5 py-2.5 cursor-pointer text-sm font-medium text-muted-foreground bg-transparent border border-border rounded-lg hover:bg-accent transition-colors flex items-center gap-2"
+                    >
+                      <X className="w-4 h-4" />
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={isLoading}
+                      className="px-5 flex gap-2 py-2.5 text-sm cursor-pointer font-medium text-white bg-[#3D8C6C] rounded-lg transition-colors hover:bg-[#3D8C6C]/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <UserPlus className="w-4 h-4" />
+                      {isLoading
+                        ? isEditMode
+                          ? "Updating..."
+                          : "Creating..."
+                        : isEditMode
+                        ? "Update User"
+                        : "Create User"}
+                    </Button>
+                  </div>
+                )}
+                {isViewMode && (
+                  <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-border bg-muted/50">
+                    <Button
+                      type="button"
+                      onClick={onClose}
+                      variant="outline"
+                      className="px-5 py-2.5 cursor-pointer text-sm font-medium text-muted-foreground bg-transparent border border-border rounded-lg hover:bg-accent transition-colors flex items-center gap-2"
+                    >
+                      <X className="w-4 h-4" />
+                      Close
+                    </Button>
+                  </div>
+                )}
               </Form>
             )}
           </Formik>

@@ -7,9 +7,12 @@ interface UsersListProps {
   users: User[];
   isLoading?: boolean;
   error?: any;
+  onView?: (userId: string) => void;
+  onEdit?: (userId: string) => void;
+  onDelete?: (userId: string, userName: string) => void;
 }
 
-export function UsersList({ users, isLoading, error }: UsersListProps) {
+export function UsersList({ users, isLoading, error, onView, onEdit, onDelete }: UsersListProps) {
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -65,7 +68,7 @@ export function UsersList({ users, isLoading, error }: UsersListProps) {
   return (
     <div className="space-y-4">
       {users.map((user) => (
-        <UserCard key={user.id} user={user} />
+        <UserCard key={user.id} user={user} onView={onView} onEdit={onEdit} onDelete={onDelete} />
       ))}
     </div>
   );

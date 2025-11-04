@@ -9,6 +9,7 @@ interface CustomInputProps {
   onRightIconClick?: () => void;
   error?: string;
   touched?: boolean;
+  disabled?: boolean;
 }
 
 export function CustomInput({
@@ -22,6 +23,7 @@ export function CustomInput({
   onRightIconClick,
   error,
   touched,
+  disabled = false,
 }: CustomInputProps) {
   const hasError = touched && error;
   
@@ -36,11 +38,12 @@ export function CustomInput({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
+          disabled={disabled}
           className={`w-full px-0 py-2.5 bg-transparent border-0 border-b text-sm text-foreground placeholder:text-muted-foreground focus:outline-none transition-colors ${
             hasError 
               ? 'border-red-500 focus:border-red-500' 
               : 'border-border focus:border-foreground'
-          } ${rightIcon ? 'pr-8' : ''}`}
+          } ${rightIcon ? 'pr-8' : ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
         />
         {rightIcon && (
           <button

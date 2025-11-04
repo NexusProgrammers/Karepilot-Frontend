@@ -98,3 +98,18 @@ export interface UsersStatsResponse {
   };
 }
 
+export interface DeleteUserResponse {
+  success: boolean;
+  message: string;
+  data: {
+    user: {
+      id: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      role: string;
+      isActive: boolean;
+    };
+  };
+}
+

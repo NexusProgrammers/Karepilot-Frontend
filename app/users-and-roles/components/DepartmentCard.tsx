@@ -5,33 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Building2, Edit, Trash2 } from "@/icons/Icons";
 import { useState } from "react";
 import { DepartmentModal } from "./DepartmentModal";
-import {
-  useDeleteDepartmentMutation,
-} from "@/lib/api/departmentsApi";
-import toast from "react-hot-toast";
 
 interface DepartmentCardProps {
   department: Department;
+  onEdit?: (departmentId: string) => void;
+  onDelete?: (departmentId: string, departmentName: string) => void;
 }
 
-export function DepartmentCard({ department }: DepartmentCardProps) {
+export function DepartmentCard({ department, onEdit, onDelete }: DepartmentCardProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [deleteDepartment, { isLoading: isDeleting }] = useDeleteDepartmentMutation();
-
-  const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this department?")) {
-      return;
-    }
-
-      try {
-      await deleteDepartment(department.id).unwrap();
-      toast.success("Department deleted successfully");
-    } catch (error: any) {
-      console.error("Error deleting department:", error);
-      const errorMessage = error?.data?.message || error?.message || "Failed to delete department";
-      toast.error(errorMessage);
-    }
-  };
 
   return (
     <>
@@ -54,7 +36,13 @@ export function DepartmentCard({ department }: DepartmentCardProps) {
 
         <div className="flex items-center gap-2">
           <Button
-            onClick={() => setIsEditModalOpen(true)}
+            onClick={() => {
+              if (onEdit) {
+                onEdit(department.id);
+              } else {
+                setIsEditModalOpen(true);
+              }
+            }}
             variant="outline"
             size="sm"
             className="flex-1 px-4 py-2 text-sm font-medium text-card-foreground bg-card border border-border rounded-lg hover:bg-muted transition-colors cursor-pointer"
@@ -62,15 +50,16 @@ export function DepartmentCard({ department }: DepartmentCardProps) {
             <Edit className="w-4 h-4 mr-2" />
             Edit
           </Button>
-          <Button
-            onClick={handleDelete}
-            disabled={isDeleting}
-            variant="outline"
-            size="sm"
-            className="p-2 text-muted-foreground hover:text-red-500 hover:bg-muted transition-colors rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
+          {onDelete && (
+            <Button
+              onClick={() => onDelete(department.id, department.name)}
+              variant="outline"
+              size="sm"
+              className="p-2 text-muted-foreground hover:text-red-500 hover:bg-muted transition-colors rounded-lg cursor-pointer"
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          )}
         </div>
       </div>
 

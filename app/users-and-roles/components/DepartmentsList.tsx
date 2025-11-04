@@ -7,9 +7,11 @@ interface DepartmentsListProps {
   departments: Department[];
   isLoading?: boolean;
   error?: any;
+  onEdit?: (departmentId: string) => void;
+  onDelete?: (departmentId: string, departmentName: string) => void;
 }
 
-export function DepartmentsList({ departments, isLoading, error }: DepartmentsListProps) {
+export function DepartmentsList({ departments, isLoading, error, onEdit, onDelete }: DepartmentsListProps) {
 
   if (isLoading) {
     return (
@@ -47,7 +49,12 @@ export function DepartmentsList({ departments, isLoading, error }: DepartmentsLi
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {departments.map((department) => (
-        <DepartmentCard key={department.id} department={department} />
+        <DepartmentCard 
+          key={department.id} 
+          department={department}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
       ))}
     </div>
   );
