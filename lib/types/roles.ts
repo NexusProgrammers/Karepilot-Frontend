@@ -50,3 +50,9 @@ export interface UpdateRoleRequest {
   isActive?: boolean;
 }
 
+export interface RoleQuery {
+  search?: string;
+  role?: string;
+  isActive?: boolean;
+}
+

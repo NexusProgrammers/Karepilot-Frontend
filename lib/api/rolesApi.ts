@@ -3,6 +3,7 @@ import {
   RolesListResponse,
   RoleResponse,
   UpdateRoleRequest,
+  RoleQuery,
 } from "../types/roles";
 import { baseQuery } from "./baseConfig";
 
@@ -11,9 +12,10 @@ export const rolesApi = createApi({
   baseQuery,
   tagTypes: ["Roles"],
   endpoints: (builder) => ({
-    getAllRoles: builder.query<RolesListResponse, void>({
-      query: () => ({
+    getAllRoles: builder.query<RolesListResponse, RoleQuery>({
+      query: (params) => ({
         url: "/users/admin/user-management/roles-permissions",
+        params,
       }),
       providesTags: ["Roles"],
     }),

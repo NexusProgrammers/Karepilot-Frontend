@@ -25,13 +25,19 @@ export default function RolesAndPermissions() {
   const [isCreateDepartmentModalOpen, setIsCreateDepartmentModalOpen] =
     useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [roleFilter, setRoleFilter] = useState<string | undefined>(undefined);
 
-  const { data: rolesData, isLoading, error } = useGetAllRolesQuery();
+  const getRoleFilterValue = (value: string | undefined): string | undefined => {
+    if (!value || value === "all") return undefined;
+    return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+  };
+
+  const { data: rolesData, isLoading, error } = useGetAllRolesQuery({
+    search: searchQuery || undefined,
+    role: getRoleFilterValue(roleFilter),
+    isActive: true,
+  });
   const { data: statsDataResponse, isLoading: isLoadingStats } = useGetUsersStatsQuery();
-
-  const filteredRoles = rolesData?.data?.filter((role) =>
-    role.role.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
 
   const calculatedStatsData = [
     {
@@ -82,11 +88,16 @@ export default function RolesAndPermissions() {
           searchPlaceholder="Search roles..."
           filters={rolesFilterOptions}
           onSearchChange={(query) => setSearchQuery(query)}
+          onFilterChange={(label, value) => {
+            if (label === "All Roles") {
+              setRoleFilter(value === "all" ? undefined : value);
+            }
+          }}
         />
 
         <div className="mt-6">
           <RolesList
-            roles={filteredRoles}
+            roles={rolesData?.data || []}
             isLoading={isLoading}
             error={error}
           />
