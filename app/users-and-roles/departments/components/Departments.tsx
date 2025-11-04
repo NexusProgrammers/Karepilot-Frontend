@@ -33,6 +33,7 @@ export default function Departments() {
   const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
   const [isCreateDepartmentModalOpen, setIsCreateDepartmentModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [departmentFilter, setDepartmentFilter] = useState<string | undefined>(undefined);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deleteDepartmentId, setDeleteDepartmentId] = useState<string | null>(null);
   const [deleteDepartmentName, setDeleteDepartmentName] = useState<string>("");
@@ -41,8 +42,22 @@ export default function Departments() {
   
   const [deleteDepartment, { isLoading: isDeletingDepartment }] = useDeleteDepartmentMutation();
 
+  const getDepartmentFilterValue = (value: string | undefined): string | undefined => {
+    if (!value || value === "all") return undefined;
+    const nameMap: Record<string, string> = {
+      icu: "ICU",
+      emergency: "Emergency",
+      pharmacy: "Pharmacy",
+      security: "Security",
+      administration: "Administration",
+      maintenance: "Maintenance",
+    };
+    return nameMap[value.toLowerCase()] || value;
+  };
+
   const { data: departmentsData, isLoading, error } = useGetAllDepartmentsQuery({
     search: searchQuery || undefined,
+    name: getDepartmentFilterValue(departmentFilter),
     page: 1,
     limit: 100,
   });
@@ -98,6 +113,11 @@ export default function Departments() {
           searchPlaceholder="Search departments..."
           filters={departmentsFilterOptions}
           onSearchChange={(query) => setSearchQuery(query)}
+          onFilterChange={(label, value) => {
+            if (label === "All Departments") {
+              setDepartmentFilter(value === "all" ? undefined : value);
+            }
+          }}
         />
 
         <div className="mt-6">
