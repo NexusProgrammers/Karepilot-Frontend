@@ -49,7 +49,7 @@ export function VenueTemplateCard({
           {poiCategories.map((category, index) => (
             <span
               key={index}
-              className="px-2 py-1 bg-muted text-shadow-muted-foreground text-xs rounded-full"
+              className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded-full"
             >
               {category}
             </span>

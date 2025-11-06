@@ -5,6 +5,7 @@ import { settingsApi } from '../api/settingsApi';
 import { departmentsApi } from '../api/departmentsApi';
 import { rolesApi } from '../api/rolesApi';
 import { usersApi } from '../api/usersApi';
+import { venueTemplatesApi } from '../api/venueTemplatesApi';
 
 export const store = configureStore({
   reducer: {
@@ -14,13 +15,21 @@ export const store = configureStore({
     [departmentsApi.reducerPath]: departmentsApi.reducer,
     [rolesApi.reducerPath]: rolesApi.reducer,
     [usersApi.reducerPath]: usersApi.reducer,
+    [venueTemplatesApi.reducerPath]: venueTemplatesApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
       },
-    }).concat(authApi.middleware, settingsApi.middleware, departmentsApi.middleware, rolesApi.middleware, usersApi.middleware),
+    }).concat(
+      authApi.middleware,
+      settingsApi.middleware,
+      departmentsApi.middleware,
+      rolesApi.middleware,
+      usersApi.middleware,
+      venueTemplatesApi.middleware
+    ),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
