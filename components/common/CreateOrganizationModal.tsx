@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CustomInput } from "./CustomInput";
 import { CustomSelect } from "./CustomSelect";
 import { VenueTemplateSelector } from "./VenueTemplateSelector";
 import { Button } from "@/components/ui/button";
 import { X, Building2 } from "@/icons/Icons";
+import { Country, City } from "country-state-city";
 
 interface CreateOrganizationModalProps {
   isOpen: boolean;
@@ -27,13 +28,28 @@ export function CreateOrganizationModal({
     fullAddress: "",
   });
 
-  const countries = [
-    "United States",
-    "Canada",
-    "United Kingdom",
-    "Germany",
-    "France",
-  ];
+  const [cityOptions, setCityOptions] = useState<string[]>([]);
+
+  const countries = useMemo(() => {
+    const allCountries = Country.getAllCountries();
+    return allCountries
+      .map((country) => ({
+        name: country.name,
+        code: country.isoCode,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, []);
+
+  const countryMap = useMemo(() => {
+    const map = new Map<string, string>();
+    countries.forEach((country) => map.set(country.name, country.code));
+    return map;
+  }, [countries]);
+
+  const countryOptions = useMemo(
+    () => countries.map((country) => country.name),
+    [countries],
+  );
 
   const timezones = [
     "Eastern Time (UTC-5)",
@@ -42,6 +58,40 @@ export function CreateOrganizationModal({
     "Central Time (UTC-6)",
     "Eastern European Time (UTC+2)",
   ];
+
+  useEffect(() => {
+    const countryCode = countryMap.get(formData.country);
+
+    if (!countryCode) {
+      setCityOptions([]);
+      setFormData((prev) => {
+        if (!prev.city) {
+          return prev;
+        }
+        return { ...prev, city: "" };
+      });
+      return;
+    }
+
+    const cities = Array.from(
+      new Set(
+        (City.getCitiesOfCountry(countryCode) ?? []).map((city) =>
+          city.name.trim(),
+        ),
+      ),
+    ).sort((a, b) => a.localeCompare(b));
+
+    setCityOptions(cities);
+    setFormData((prev) => {
+      if (!prev.city || !cities.includes(prev.city)) {
+        if (!prev.city) {
+          return prev;
+        }
+        return { ...prev, city: "" };
+      }
+      return prev;
+    });
+  }, [formData.country, countryMap]);
 
   const handleSubmit = () => {
     onClose();
@@ -129,7 +179,7 @@ export function CreateOrganizationModal({
                   onChange={(value) =>
                     setFormData({ ...formData, country: value })
                   }
-                  options={countries}
+                  options={countryOptions}
                   placeholder="Select Country"
                   label="Country"
                   required
@@ -137,14 +187,20 @@ export function CreateOrganizationModal({
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <CustomInput
+                <CustomSelect
                   value={formData.city}
                   onChange={(value) =>
                     setFormData({ ...formData, city: value })
                   }
-                  placeholder="e.g. New York"
+                  options={cityOptions}
+                  placeholder={
+                    cityOptions.length > 0
+                      ? "Select City"
+                      : "Select a country first"
+                  }
                   label="City"
                   required
+                  disabled={cityOptions.length === 0}
                 />
                 <CustomSelect
                   value={formData.timezone}
