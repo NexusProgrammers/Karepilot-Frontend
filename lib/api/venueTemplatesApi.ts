@@ -5,7 +5,7 @@ import {
   CreateVenueTemplateRequest,
   UpdateVenueTemplateRequest,
   VenueTemplateQuery,
-} from "../types/venueTemplates";
+} from "../types/organization/venueTemplates";
 import { baseQuery } from "./baseConfig";
 
 export const venueTemplatesApi = createApi({

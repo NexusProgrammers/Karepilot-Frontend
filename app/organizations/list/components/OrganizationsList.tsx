@@ -3,7 +3,7 @@
 import { useMemo, useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
-import { Organization } from "@/lib/types/organization";
+import { Organization } from "@/lib/types/organization/organization";
 import {
   useGetOrganizationsQuery,
   useUpdateOrganizationMutation,
@@ -13,7 +13,7 @@ import SearchAndFilter from "./SearchAndFilter";
 import OrganizationCard from "./OrganizationCard";
 import { DeleteConfirmationDialog } from "@/components/common/DeleteConfirmationDialog";
 import { Button } from "@/components/ui/button";
-import { DeleteDialogState, OrganizationsListProps } from "@/lib/types";
+import { DeleteDialogState, OrganizationsListProps } from "@/lib/types/exports";
 
 const FILTER_TO_TYPE: Record<string, string | undefined> = {
   all: undefined,

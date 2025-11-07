@@ -9,7 +9,7 @@ import {
 } from "@/icons/Assets";
 import { mailIcon, phoneIcon, clockIcon, deleteIcon } from "@/icons/Svg";
 import { Button } from "@/components/ui/button";
-import { OrganizationCardProps } from "@/lib/types";
+import { OrganizationCardProps } from "@/lib/types/exports";
 
 const getTypeIcon = (type?: string) => {
   switch ((type || "").toLowerCase()) {

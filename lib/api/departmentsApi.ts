@@ -5,7 +5,7 @@ import {
   CreateDepartmentRequest,
   UpdateDepartmentRequest,
   DepartmentQuery,
-} from "../types/departments";
+} from "../types/organization/departments";
 import { baseQuery } from "./baseConfig";
 
 export const departmentsApi = createApi({

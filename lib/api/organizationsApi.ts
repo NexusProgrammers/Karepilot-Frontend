@@ -6,7 +6,7 @@ import {
   OrganizationResponse,
   OrganizationsListResponse,
   UpdateOrganizationRequest,
-} from "../types/organization";
+} from "../types/organization/organization";
 import { baseQuery } from "./baseConfig";
 
 export const organizationsApi = createApi({

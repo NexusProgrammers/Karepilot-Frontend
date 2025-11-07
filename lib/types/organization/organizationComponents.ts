@@ -1,5 +1,5 @@
 import { Organization } from "./organization";
-import { VenueTypeItem } from "../organization/types";
+import { VenueTypeItem } from "../../organization/types";
 
 export type VenueTypeCardProps = {
   venue: VenueTypeItem;

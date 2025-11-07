@@ -7,7 +7,7 @@ import {
   UserQuery,
   UsersStatsResponse,
   DeleteUserResponse,
-} from "../types/users";
+} from "../types/users-and-roles/users";
 import { baseQuery } from "./baseConfig";
 
 export const usersApi = createApi({

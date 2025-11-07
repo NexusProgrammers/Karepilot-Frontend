@@ -1,6 +1,6 @@
 "use client";
 
-import { QueryErrorStateProps } from "@/lib/types";
+import { QueryErrorStateProps } from "@/lib/types/exports";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, RefreshCw } from "@/icons/Icons";
 import { cn } from "@/lib/utils";

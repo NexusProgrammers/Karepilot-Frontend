@@ -1,6 +1,6 @@
 "use client";
 
-import { Role } from "@/lib/types/roles";
+import { Role } from "@/lib/types/users-and-roles/roles";
 import { RoleCard } from "./RoleCard";
 import { QueryErrorState } from "@/components/common/QueryErrorState";
 

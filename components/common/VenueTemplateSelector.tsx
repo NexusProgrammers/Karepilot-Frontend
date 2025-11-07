@@ -8,7 +8,7 @@ import {
   MapPinIcon,
   Building2,
 } from "@/icons/Icons";
-import { VenueTemplate } from "@/lib/types/venueTemplates";
+import { VenueTemplate } from "@/lib/types/organization/venueTemplates";
 
 interface VenueTemplateSelectorProps {
   templates: VenueTemplate[];

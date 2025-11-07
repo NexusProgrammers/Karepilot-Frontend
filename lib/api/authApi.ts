@@ -1,5 +1,5 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { LoginRequest, LoginResponse } from '../types';
+import { LoginRequest, LoginResponse } from '../types/exports';
 import { baseQuery } from './baseConfig';
 
 export const authApi = createApi({

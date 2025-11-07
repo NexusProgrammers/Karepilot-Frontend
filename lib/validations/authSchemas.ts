@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { LoginFormValues } from '../types';
+import { LoginFormValues } from '../types/exports';
 
 
 export const loginValidationSchema = Yup.object<LoginFormValues>({

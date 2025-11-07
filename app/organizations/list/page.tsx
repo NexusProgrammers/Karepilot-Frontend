@@ -7,7 +7,7 @@ import { OrganizationNav } from "../components/OrganizationNav";
 import OrganizationsList from "./components/OrganizationsList";
 import { OrganizationHeader } from "@/components/common/OrganizationHeader";
 import { CreateOrganizationModal } from "@/components/common/CreateOrganizationModal";
-import { Organization } from "@/lib/types/organization";
+import { Organization } from "@/lib/types/organization/organization";
 import { OrganizationFormMode } from "@/lib/validations";
 
 interface ModalState {

@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "@/lib/types/users";
+import { User } from "@/lib/types/users-and-roles/users";
 import { UserCard } from "./UserCard";
 import { QueryErrorState } from "@/components/common/QueryErrorState";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "@/lib/types/users";
+import { User } from "@/lib/types/users-and-roles/users";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { MapPin } from "@/icons/Icons";

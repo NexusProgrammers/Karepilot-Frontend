@@ -5,5 +5,5 @@ export * from './performance';
 export * from './auth';
 export * from './api';
 export * from './common/common';
-export * from './organization';
+export * from './organization/organization';
 

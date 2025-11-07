@@ -1,6 +1,6 @@
 "use client";
 
-import { PerformanceStatItem, PerformanceStatisticsProps } from "@/lib/types/performance";
+import { PerformanceStatItem, PerformanceStatisticsProps } from "@/lib/types/common/performance";
 
 export type { PerformanceStatItem, PerformanceStatisticsProps };
 

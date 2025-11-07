@@ -1,6 +1,6 @@
 "use client";
 
-import { Role } from "@/lib/types/roles";
+import { Role } from "@/lib/types/users-and-roles/roles";
 
 interface RoleCardProps {
   role: Role;

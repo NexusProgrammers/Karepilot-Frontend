@@ -10,7 +10,7 @@ import {
   UpdateSecuritySettingsRequest,
   ChangePasswordRequest,
   ChangePasswordResponse,
-} from "../types";
+} from "../types/exports";
 import { baseQuery } from "./baseConfig";
 
 export const settingsApi = createApi({

@@ -11,9 +11,9 @@ import {
 } from "@/lib/api/settingsApi";
 import toast from "react-hot-toast";
 import { NotificationSettingsSkeleton } from "@/app/settings/components/NotificationSettingsSkeleton";
-import { NotificationSettingsProps } from "@/lib/types/components";
 import { NotificationSettingsFormValues } from "@/lib/types/validations/validation";
 import { notificationSettingsValidationSchema } from "@/lib/validations";
+import { NotificationSettingsProps } from "@/lib/types/settings/settingsComponents";
 
 const notificationOptions = [
   {

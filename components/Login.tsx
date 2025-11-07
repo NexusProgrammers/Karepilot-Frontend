@@ -9,7 +9,7 @@ import { setAuthenticated, setLoading } from "@/lib/store/slices/authSlice";
 import { useLoginMutation } from "@/lib/api/authApi";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { loginValidationSchema } from "@/lib/validations/authSchemas";
-import { LoginFormValues, ApiError } from "@/lib/types";
+import { LoginFormValues, ApiError } from "@/lib/types/exports";
 import toast from "react-hot-toast";
 import { setAuthToken } from "@/lib/actions";
 import { LoginSkeleton } from "@/components/LoginSkeleton";

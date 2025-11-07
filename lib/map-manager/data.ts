@@ -1,4 +1,4 @@
-import { TabItem } from "@/lib/types/navigation";
+import { TabItem } from "@/lib/types/common/navigation";
 import { MapPin, CheckCircle, Edit3, Building2 } from "@/icons/Icons";
 import { StatItemWithIcon } from "@/components/common/StatsGridWithIcons";
 

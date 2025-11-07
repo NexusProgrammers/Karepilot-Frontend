@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { TabItem, NavigationTabsProps } from "@/lib/types/navigation";
+import { TabItem, NavigationTabsProps } from "@/lib/types/common/navigation";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export type { TabItem };

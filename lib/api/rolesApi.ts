@@ -4,7 +4,7 @@ import {
   RoleResponse,
   UpdateRoleRequest,
   RoleQuery,
-} from "../types/roles";
+} from "../types/users-and-roles/roles";
 import { baseQuery } from "./baseConfig";
 
 export const rolesApi = createApi({

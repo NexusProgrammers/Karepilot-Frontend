@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { venueTypeFilters } from "@/lib/organization/data";
 import { searchIcon } from "@/icons/Svg";
 import { Button } from "@/components/ui/button";
-import { SearchAndFilterProps } from "@/lib/types";
+import { SearchAndFilterProps } from "@/lib/types/exports";
 
 export default function SearchAndFilter({
   onSearchChange,

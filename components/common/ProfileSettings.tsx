@@ -13,8 +13,8 @@ import { uploadFile } from "@/lib/api/uploadApi";
 import toast from "react-hot-toast";
 import { Formik, Form, Field } from "formik";
 import { ProfileSettingsSkeleton } from "@/app/settings/components/ProfileSettingsSkeleton";
-import { ProfileSettingsProps, ProfileFormData } from "@/lib/types/components";
 import { profileSettingsValidationSchema } from "@/lib/validations";
+import { ProfileFormData, ProfileSettingsProps } from "@/lib/types/settings/settingsComponents";
 
 export function ProfileSettings({
   title,

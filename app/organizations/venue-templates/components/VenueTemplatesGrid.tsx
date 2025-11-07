@@ -9,7 +9,7 @@ import {
   ShoppingBagIcon,
   MapPinIcon,
 } from "@/icons/Icons";
-import { VenueTemplate } from "@/lib/types/venueTemplates";
+import { VenueTemplate } from "@/lib/types/organization/venueTemplates";
 import { useMemo } from "react";
 
 const getTemplateIcon = (templateName: string) => {
