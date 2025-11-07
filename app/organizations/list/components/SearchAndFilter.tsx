@@ -4,14 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { venueTypeFilters } from "@/lib/organization/data";
 import { searchIcon } from "@/icons/Svg";
 import { Button } from "@/components/ui/button";
-
-type SearchAndFilterProps = {
-  onSearchChange: (searchTerm: string) => void;
-  onFilterChange: (filterValue: string) => void;
-  selectedFilter: string;
-  searchValue: string;
-  isLoading?: boolean;
-};
+import { SearchAndFilterProps } from "@/lib/types";
 
 export default function SearchAndFilter({
   onSearchChange,

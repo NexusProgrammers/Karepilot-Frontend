@@ -1,6 +1,5 @@
 "use client";
 
-import { Organization } from "@/lib/types/organization";
 import Image from "next/image";
 import {
   DashboardIcon,
@@ -10,16 +9,7 @@ import {
 } from "@/icons/Assets";
 import { mailIcon, phoneIcon, clockIcon, deleteIcon } from "@/icons/Svg";
 import { Button } from "@/components/ui/button";
-
-type OrganizationCardProps = {
-  organization: Organization;
-  onView: (organization: Organization) => void;
-  onEdit: (organization: Organization) => void;
-  onDelete: (organization: Organization) => void;
-  onToggleStatus: (organization: Organization, nextStatus: boolean) => void;
-  isStatusUpdating?: boolean;
-  isDeleting?: boolean;
-};
+import { OrganizationCardProps } from "@/lib/types";
 
 const getTypeIcon = (type?: string) => {
   switch ((type || "").toLowerCase()) {

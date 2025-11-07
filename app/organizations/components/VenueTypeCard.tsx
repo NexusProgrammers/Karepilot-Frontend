@@ -1,19 +1,7 @@
 "use client";
 
-import Image, { StaticImageData } from "next/image";
-
-export type VenueTypeItem = {
-  id: number | string;
-  title: string;
-  count: string | number;
-  description: string;
-  icon: StaticImageData | string;
-  iconColor: string;
-};
-
-type VenueTypeCardProps = {
-  venue: VenueTypeItem;
-};
+import Image from "next/image";
+import { VenueTypeCardProps } from "@/lib/types";
 
 export default function VenueTypeCard({ venue }: VenueTypeCardProps) {
   return (

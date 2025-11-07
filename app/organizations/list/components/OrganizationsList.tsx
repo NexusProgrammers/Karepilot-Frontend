@@ -13,12 +13,7 @@ import SearchAndFilter from "./SearchAndFilter";
 import OrganizationCard from "./OrganizationCard";
 import { DeleteConfirmationDialog } from "@/components/common/DeleteConfirmationDialog";
 import { Button } from "@/components/ui/button";
-
-type OrganizationsListProps = {
-  onView: (organization: Organization) => void;
-  onEdit: (organization: Organization) => void;
-  onCreate?: () => void;
-};
+import { DeleteDialogState, OrganizationsListProps } from "@/lib/types";
 
 const FILTER_TO_TYPE: Record<string, string | undefined> = {
   all: undefined,
@@ -49,10 +44,7 @@ export default function OrganizationsList({
   const [currentPage, setCurrentPage] = useState(1);
   const [statusUpdatingId, setStatusUpdatingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [deleteDialogState, setDeleteDialogState] = useState<{
-    isOpen: boolean;
-    organization: Organization | null;
-  }>({
+  const [deleteDialogState, setDeleteDialogState] = useState<DeleteDialogState>({
     isOpen: false,
     organization: null,
   });

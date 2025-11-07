@@ -1,10 +1,7 @@
 "use client";
 
-import VenueTypeCard, { VenueTypeItem } from "./VenueTypeCard";
-
-type VenueTypeDistributionProps = {
-  venues: VenueTypeItem[];
-};
+import VenueTypeCard from "./VenueTypeCard";
+import { VenueTypeDistributionProps } from "@/lib/types";
 
 export default function VenueTypeDistribution({ venues }: VenueTypeDistributionProps) {
   return (
