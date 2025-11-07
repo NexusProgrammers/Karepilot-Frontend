@@ -33,3 +33,13 @@ export interface FormFieldProps {
   required?: boolean;
   disabled?: boolean;
 }
+
+export interface QueryErrorStateProps {
+  error?: unknown;
+  title?: string;
+  description?: string;
+  supportText?: string;
+  onRetry?: () => void;
+  retryLabel?: string;
+  className?: string;
+}

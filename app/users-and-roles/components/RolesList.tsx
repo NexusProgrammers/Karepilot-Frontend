@@ -2,14 +2,16 @@
 
 import { Role } from "@/lib/types/roles";
 import { RoleCard } from "./RoleCard";
+import { QueryErrorState } from "@/components/common/QueryErrorState";
 
 interface RolesListProps {
   roles: Role[];
   isLoading?: boolean;
   error?: any;
+  onRetry?: () => void;
 }
 
-export function RolesList({ roles, isLoading, error }: RolesListProps) {
+export function RolesList({ roles, isLoading, error, onRetry }: RolesListProps) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -34,9 +36,13 @@ export function RolesList({ roles, isLoading, error }: RolesListProps) {
 
   if (error) {
     return (
-      <div className="text-center py-12">
-        <p className="text-red-500">Failed to load roles</p>
-      </div>
+      <QueryErrorState
+        error={error}
+        title="Failed to load roles"
+        description={error?.data?.message}
+        onRetry={onRetry}
+        className="py-8"
+      />
     );
   }
 

@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { CustomInput } from "@/components/common/CustomInput";
 import { ToggleSwitch } from "@/components/common/ToggleSwitch";
+import { QueryErrorState } from "@/components/common/QueryErrorState";
 import { Check } from "@/icons/Icons";
 import { SecuritySettingsProps } from "@/lib/types/components";
 import {
@@ -19,7 +20,8 @@ export function SecuritySettings({
   settings,
   className = "",
 }: SecuritySettingsProps) {
-  const { data, isLoading } = useGetSecuritySettingsQuery();
+  const { data, isLoading, isError, error, refetch } =
+    useGetSecuritySettingsQuery();
   const [updateSecurity, { isLoading: isUpdating }] =
     useUpdateSecuritySettingsMutation();
 
@@ -78,6 +80,24 @@ export function SecuritySettings({
         subtitle={subtitle}
         className={className}
       />
+    );
+  }
+
+  if (isError) {
+    return (
+      <div
+        className={`bg-background border border-border rounded-xl p-6 ${className}`}
+      >
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-foreground mb-1">{title}</h3>
+          <p className="text-sm text-muted-foreground">{subtitle}</p>
+        </div>
+        <QueryErrorState
+          error={error}
+          title="Unable to load security settings"
+          onRetry={refetch}
+        />
+      </div>
     );
   }
 

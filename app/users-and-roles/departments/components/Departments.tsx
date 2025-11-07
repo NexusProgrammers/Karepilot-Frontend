@@ -55,7 +55,12 @@ export default function Departments() {
     return nameMap[value.toLowerCase()] || value;
   };
 
-  const { data: departmentsData, isLoading, error } = useGetAllDepartmentsQuery({
+  const {
+    data: departmentsData,
+    isLoading,
+    error,
+    refetch: refetchDepartments,
+  } = useGetAllDepartmentsQuery({
     search: searchQuery || undefined,
     name: getDepartmentFilterValue(departmentFilter),
     page: 1,
@@ -125,6 +130,7 @@ export default function Departments() {
             departments={departmentsData?.data?.departments || []}
             isLoading={isLoading}
             error={error}
+            onRetry={refetchDepartments}
             onEdit={(departmentId) => {
               setSelectedDepartmentId(departmentId);
               setIsEditModalOpen(true);

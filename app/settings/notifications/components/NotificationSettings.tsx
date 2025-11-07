@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ToggleSwitch } from "@/components/common/ToggleSwitch";
+import { QueryErrorState } from "@/components/common/QueryErrorState";
 import { Check } from "@/icons/Icons";
 import { Formik, Form, Field } from "formik";
 import {
@@ -52,7 +53,13 @@ export function NotificationSettings({
   subtitle,
   className = "",
 }: NotificationSettingsProps) {
-  const { data: settingsData, isLoading } = useGetNotificationSettingsQuery();
+  const {
+    data: settingsData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useGetNotificationSettingsQuery();
   const [updateNotificationSettings, { isLoading: isUpdating }] =
     useUpdateNotificationSettingsMutation();
 
@@ -106,6 +113,24 @@ export function NotificationSettings({
         subtitle={subtitle}
         className={className}
       />
+    );
+  }
+
+  if (isError) {
+    return (
+      <div
+        className={`bg-background border border-border rounded-xl p-6 ${className}`}
+      >
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-foreground mb-1">{title}</h3>
+          <p className="text-sm text-muted-foreground">{subtitle}</p>
+        </div>
+        <QueryErrorState
+          error={error}
+          title="Unable to load notification settings"
+          onRetry={refetch}
+        />
+      </div>
     );
   }
 

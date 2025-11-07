@@ -32,7 +32,12 @@ export default function RolesAndPermissions() {
     return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
   };
 
-  const { data: rolesData, isLoading, error } = useGetAllRolesQuery({
+  const {
+    data: rolesData,
+    isLoading,
+    error,
+    refetch: refetchRoles,
+  } = useGetAllRolesQuery({
     search: searchQuery || undefined,
     role: getRoleFilterValue(roleFilter),
     isActive: true,
@@ -100,6 +105,7 @@ export default function RolesAndPermissions() {
             roles={rolesData?.data || []}
             isLoading={isLoading}
             error={error}
+            onRetry={refetchRoles}
           />
         </div>
 

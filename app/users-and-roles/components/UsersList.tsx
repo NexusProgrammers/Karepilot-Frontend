@@ -2,6 +2,7 @@
 
 import { User } from "@/lib/types/users";
 import { UserCard } from "./UserCard";
+import { QueryErrorState } from "@/components/common/QueryErrorState";
 
 interface UsersListProps {
   users: User[];
@@ -10,9 +11,18 @@ interface UsersListProps {
   onView?: (userId: string) => void;
   onEdit?: (userId: string) => void;
   onDelete?: (userId: string, userName: string) => void;
+  onRetry?: () => void;
 }
 
-export function UsersList({ users, isLoading, error, onView, onEdit, onDelete }: UsersListProps) {
+export function UsersList({
+  users,
+  isLoading,
+  error,
+  onView,
+  onEdit,
+  onDelete,
+  onRetry,
+}: UsersListProps) {
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -48,12 +58,13 @@ export function UsersList({ users, isLoading, error, onView, onEdit, onDelete }:
 
   if (error) {
     return (
-      <div className="text-center py-12">
-        <p className="text-red-500">Failed to load users</p>
-        <p className="text-sm text-muted-foreground mt-2">
-          {error?.data?.message || "Please try again later"}
-        </p>
-      </div>
+      <QueryErrorState
+        error={error}
+        title="Failed to load users"
+        description={error?.data?.message}
+        onRetry={onRetry}
+        className="py-8"
+      />
     );
   }
 

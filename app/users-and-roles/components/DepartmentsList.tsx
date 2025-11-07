@@ -2,6 +2,7 @@
 
 import { Department } from "@/lib/types/departments";
 import { DepartmentCard } from "./DepartmentCard";
+import { QueryErrorState } from "@/components/common/QueryErrorState";
 
 interface DepartmentsListProps {
   departments: Department[];
@@ -9,9 +10,17 @@ interface DepartmentsListProps {
   error?: any;
   onEdit?: (departmentId: string) => void;
   onDelete?: (departmentId: string, departmentName: string) => void;
+  onRetry?: () => void;
 }
 
-export function DepartmentsList({ departments, isLoading, error, onEdit, onDelete }: DepartmentsListProps) {
+export function DepartmentsList({
+  departments,
+  isLoading,
+  error,
+  onEdit,
+  onDelete,
+  onRetry,
+}: DepartmentsListProps) {
 
   if (isLoading) {
     return (
@@ -32,9 +41,13 @@ export function DepartmentsList({ departments, isLoading, error, onEdit, onDelet
 
   if (error) {
     return (
-      <div className="text-center py-12">
-        <p className="text-red-500">Failed to load departments</p>
-      </div>
+      <QueryErrorState
+        error={error}
+        title="Failed to load departments"
+        description={error?.data?.message}
+        onRetry={onRetry}
+        className="py-8"
+      />
     );
   }
 

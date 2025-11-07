@@ -39,7 +39,12 @@ export default function UsersAndRoles() {
   
   const [deleteUser, { isLoading: isDeletingUser }] = useDeleteUserMutation();
 
-  const { data: usersData, isLoading, error } = useGetAllUsersQuery({
+  const {
+    data: usersData,
+    isLoading,
+    error,
+    refetch: refetchUsers,
+  } = useGetAllUsersQuery({
     search: searchQuery || undefined,
     isActive: isActiveFilter,
     page: 1,
@@ -113,6 +118,7 @@ export default function UsersAndRoles() {
             users={usersData?.data?.users || []}
             isLoading={isLoading}
             error={error}
+            onRetry={refetchUsers}
             onView={(userId) => {
               setSelectedUserId(userId);
               setModalMode("view");
