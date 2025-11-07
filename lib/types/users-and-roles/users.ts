@@ -1,4 +1,4 @@
-export interface Department {
+export interface UserDepartment {
   _id: string;
   name: string;
   description?: string;
@@ -14,7 +14,7 @@ export interface User {
   lastName: string;
   email: string;
   role: string;
-  department: Department | null;
+  department: UserDepartment | null;
   phoneNumber?: string;
   badgeNumber?: string;
   shift?: string;

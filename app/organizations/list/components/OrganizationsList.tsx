@@ -13,7 +13,10 @@ import SearchAndFilter from "./SearchAndFilter";
 import OrganizationCard from "./OrganizationCard";
 import { DeleteConfirmationDialog } from "@/components/common/DeleteConfirmationDialog";
 import { Button } from "@/components/ui/button";
-import { DeleteDialogState, OrganizationsListProps } from "@/lib/types/exports";
+import {
+  DeleteDialogState,
+  OrganizationsListProps,
+} from "@/lib/types/organization/organizationComponents";
 
 const FILTER_TO_TYPE: Record<string, string | undefined> = {
   all: undefined,

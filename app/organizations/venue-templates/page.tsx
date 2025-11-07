@@ -6,7 +6,7 @@ import { VenueTemplatesGrid } from "./components/VenueTemplatesGrid";
 export default function page() {
   return (
     <DashboardLayout pageTitle="Organizations">
-      <OrganizationHeader />
+      <OrganizationHeader showButton={false} />
       <OrganizationNav />
       <VenueTemplatesGrid />
     </DashboardLayout>

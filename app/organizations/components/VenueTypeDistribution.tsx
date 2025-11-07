@@ -1,7 +1,7 @@
 "use client";
 
 import VenueTypeCard from "./VenueTypeCard";
-import { VenueTypeDistributionProps } from "@/lib/types/exports";
+import { VenueTypeDistributionProps } from "@/lib/types/organization/organizationComponents";
 
 export default function VenueTypeDistribution({ venues }: VenueTypeDistributionProps) {
   return (

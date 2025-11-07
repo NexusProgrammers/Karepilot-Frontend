@@ -116,6 +116,9 @@ export function CreateOrganizationModal({
     defaultInitialValues.country,
   );
 
+  const createdByInfo = organizationData?.data?.organization?.createdBy;
+  const updatedByInfo = organizationData?.data?.organization?.updatedBy;
+
   const initialValues = useMemo(() => {
     if ((isEditMode || isViewMode) && organizationData?.data?.organization) {
       const org = organizationData.data.organization;
@@ -515,6 +518,33 @@ export function CreateOrganizationModal({
                     </div>
                   </div>
                 </div>
+
+                {(createdByInfo || updatedByInfo) && (
+                  <div className="border border-border rounded-xl p-4 bg-muted/30 space-y-2 text-xs text-muted-foreground">
+                    {createdByInfo && (
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-foreground text-sm">
+                          Created by:
+                        </span>
+                        <span>
+                          {createdByInfo.firstName} {createdByInfo.lastName} (
+                          {createdByInfo.email})
+                        </span>
+                      </div>
+                    )}
+                    {updatedByInfo && (
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-foreground text-sm">
+                          Last updated by:
+                        </span>
+                        <span>
+                          {updatedByInfo.firstName} {updatedByInfo.lastName} (
+                          {updatedByInfo.email})
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-border bg-muted/50">
                   <Button

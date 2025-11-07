@@ -9,6 +9,7 @@ export interface OrganizationVenueTemplateRef {
 
 export interface OrganizationUserRef {
   _id: string;
+  id?: string;
   firstName: string;
   lastName: string;
   email: string;

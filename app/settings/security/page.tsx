@@ -1,4 +1,3 @@
-
 import { DashboardLayout } from "@/components/DashboardLayout";
 import NavigationTabs from "@/components/common/NavigationTabs";
 import { SecuritySettings } from "./components/SecuritySettings";

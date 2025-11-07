@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { VenueTypeCardProps } from "@/lib/types/exports";
+import { VenueTypeCardProps } from "@/lib/types/organization/organizationComponents";
 
 export default function VenueTypeCard({ venue }: VenueTypeCardProps) {
   return (

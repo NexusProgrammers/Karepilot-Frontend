@@ -9,7 +9,8 @@ import {
 } from "@/icons/Assets";
 import { mailIcon, phoneIcon, clockIcon, deleteIcon } from "@/icons/Svg";
 import { Button } from "@/components/ui/button";
-import { OrganizationCardProps } from "@/lib/types/exports";
+import { User as UserIcon } from "@/icons/Icons";
+import { OrganizationCardProps } from "@/lib/types/organization/organizationComponents";
 
 const getTypeIcon = (type?: string) => {
   switch ((type || "").toLowerCase()) {
@@ -139,6 +140,15 @@ export default function OrganizationCard({
           {clockIcon({}) as React.ReactNode}
           <span>Timezone: {organization.timezone || "Not specified"}</span>
         </div>
+        {organization.createdBy && (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <UserIcon className="h-3.5 w-3.5" />
+            <span>
+              Created by {organization.createdBy.firstName}{" "}
+              {organization.createdBy.lastName}
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">

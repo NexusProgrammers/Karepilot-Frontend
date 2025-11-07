@@ -1,14 +1,9 @@
-"use client";
-
-import { useState } from "react";
-
 import { DashboardLayout } from "@/components/DashboardLayout";
 import StatsGrid from "@/components/common/StatsGrid";
 import RecentActivity from "@/components/common/RecentActivity";
 import { OrganizationNav } from "./components/OrganizationNav";
 import VenueTypeDistribution from "./components/VenueTypeDistribution";
 import { OrganizationHeader } from "@/components/common/OrganizationHeader";
-import { CreateOrganizationModal } from "@/components/common/CreateOrganizationModal";
 import {
   organizationActivities,
   overviewStats,
@@ -16,11 +11,9 @@ import {
 } from "@/lib/organization/data";
 
 export default function OrganizationsOverviewPage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   return (
     <DashboardLayout pageTitle="Organizations">
-      <OrganizationHeader onButtonClick={() => setIsModalOpen(true)} />
+      <OrganizationHeader showButton={false} />
       <OrganizationNav />
       <StatsGrid stats={overviewStats} />
       <VenueTypeDistribution venues={venueTypes} />
@@ -30,10 +23,6 @@ export default function OrganizationsOverviewPage() {
         buttonText="View Analytics"
         activities={organizationActivities}
         maxItems={4}
-      />
-      <CreateOrganizationModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
       />
     </DashboardLayout>
   );
