@@ -6,6 +6,7 @@ import { departmentsApi } from '../api/departmentsApi';
 import { rolesApi } from '../api/rolesApi';
 import { usersApi } from '../api/usersApi';
 import { venueTemplatesApi } from '../api/venueTemplatesApi';
+import { organizationsApi } from '../api/organizationsApi';
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     [rolesApi.reducerPath]: rolesApi.reducer,
     [usersApi.reducerPath]: usersApi.reducer,
     [venueTemplatesApi.reducerPath]: venueTemplatesApi.reducer,
+    [organizationsApi.reducerPath]: organizationsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -28,7 +30,8 @@ export const store = configureStore({
       departmentsApi.middleware,
       rolesApi.middleware,
       usersApi.middleware,
-      venueTemplatesApi.middleware
+      venueTemplatesApi.middleware,
+      organizationsApi.middleware
     ),
 });
 

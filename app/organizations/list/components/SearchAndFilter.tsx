@@ -9,15 +9,25 @@ type SearchAndFilterProps = {
   onSearchChange: (searchTerm: string) => void;
   onFilterChange: (filterValue: string) => void;
   selectedFilter: string;
+  searchValue: string;
+  isLoading?: boolean;
 };
 
 export default function SearchAndFilter({
   onSearchChange,
   onFilterChange,
   selectedFilter,
+  searchValue,
+  isLoading = false,
 }: SearchAndFilterProps) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isLoading) {
+      setIsFilterOpen(false);
+    }
+  }, [isLoading]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -53,15 +63,20 @@ export default function SearchAndFilter({
           type="text"
           placeholder="Search organizations"
           className="block w-full pl-10 pr-3 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3D8C6C] focus:border-transparent bg-transparent text-foreground placeholder:text-muted-foreground"
+          value={searchValue}
           onChange={(e) => onSearchChange(e.target.value)}
+          disabled={isLoading}
         />
       </div>
 
       <div className="relative" ref={filterRef}>
         <Button
-          onClick={() => setIsFilterOpen(!isFilterOpen)}
+          onClick={() => !isLoading && setIsFilterOpen(!isFilterOpen)}
           variant="ghost"
-          className="flex items-center gap-2 px-4 py-3 rounded-lg bg-muted transition-colors min-w-[180px] cursor-pointer"
+          disabled={isLoading}
+          className={`flex items-center gap-2 px-4 py-3 rounded-lg bg-muted transition-colors min-w-[180px] ${
+            isLoading ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
+          }`}
         >
           <span className="text-sm font-medium text-muted-foreground">
             {getSelectedFilterName()}

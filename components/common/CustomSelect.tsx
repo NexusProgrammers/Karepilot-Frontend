@@ -7,7 +7,7 @@ import { ChevronDown, LucideIcon } from "@/icons/Icons";
 interface CustomSelectProps {
   value: string;
   onChange: (value: string) => void;
-  options: string[] | { name: string; icon: LucideIcon }[];
+  options: string[] | { name: string; icon?: LucideIcon; value?: string }[];
   placeholder: string;
   label: string;
   required?: boolean;
@@ -47,6 +47,27 @@ export function CustomSelect({
   }, []);
 
   const hasError = touched && error;
+
+  const normalizedOptions = (options as Array<
+    string | { name: string; icon?: LucideIcon; value?: string }
+  >).map((option) => {
+    if (typeof option === "string") {
+      return {
+        name: option,
+        value: option,
+        IconComponent: null as LucideIcon | null,
+      };
+    }
+
+    return {
+      name: option.name,
+      value: option.value ?? option.name,
+      IconComponent: option.icon ?? null,
+    };
+  });
+
+  const selectedOption = normalizedOptions.find((option) => option.value === value);
+  const displayValue = selectedOption ? selectedOption.name : value;
   
   return (
     <div>
@@ -77,7 +98,7 @@ export function CustomSelect({
             <span
               className={value ? "text-foreground" : "text-muted-foreground"}
             >
-              {value || placeholder}
+              {value ? displayValue : placeholder}
             </span>
           </div>
           <ChevronDown
@@ -92,26 +113,21 @@ export function CustomSelect({
             <div className="px-4 py-2 text-xs font-medium text-muted-foreground">
               {placeholder}
             </div>
-            {options.map((option) => {
-              const optionName =
-                typeof option === "string" ? option : option.name;
-              const IconComponent =
-                typeof option === "string" ? null : option.icon;
-
+            {normalizedOptions.map((option) => {
               return (
                 <Button
-                  key={optionName}
+                  key={option.value}
                   type="button"
                   onClick={() => {
-                    onChange(optionName);
+                    onChange(option.value);
                     setIsOpen(false);
                   }}
                   variant="ghost"
                   className="w-full px-4 py-2.5 text-left text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer justify-start"
                 >
                   <div className="flex items-center gap-2">
-                    {IconComponent && <IconComponent className="w-4 h-4" />}
-                    <span>{optionName}</span>
+                    {option.IconComponent && <option.IconComponent className="w-4 h-4" />}
+                    <span>{option.name}</span>
                   </div>
                 </Button>
               );
