@@ -7,6 +7,7 @@ import {
   OrganizationsListResponse,
   UpdateOrganizationRequest,
 } from "../types/organization/organization";
+import { OrganizationOverviewResponse } from "../types/organization/overview";
 import { baseQuery } from "./baseConfig";
 
 export const organizationsApi = createApi({
@@ -73,6 +74,12 @@ export const organizationsApi = createApi({
       }),
       invalidatesTags: ["Organizations"],
     }),
+    getOrganizationsOverview: builder.query<OrganizationOverviewResponse, void>({
+      query: () => ({
+        url: "/users/admin/organization/overview",
+      }),
+      providesTags: ["Organizations"],
+    }),
   }),
 });
 
@@ -83,6 +90,7 @@ export const {
   useUpdateOrganizationMutation,
   useDeleteOrganizationMutation,
   useDeleteOrganizationPermanentlyMutation,
+  useGetOrganizationsOverviewQuery,
 } = organizationsApi;
 
 

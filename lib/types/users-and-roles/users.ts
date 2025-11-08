@@ -113,3 +113,5 @@ export interface DeleteUserResponse {
   };
 }
 
+export type Department = UserDepartment;
+
