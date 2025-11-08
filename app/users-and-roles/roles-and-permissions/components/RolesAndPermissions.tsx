@@ -75,6 +75,8 @@ export default function RolesAndPermissions() {
         <UsersAndRolesHeader
           onCreateUserClick={() => setIsCreateUserModalOpen(true)}
           onCreateDepartmentClick={() => setIsCreateDepartmentModalOpen(true)}
+          showUserButton={false}
+          showDepartmentButton={false}
         />
 
         {isLoadingStats ? (

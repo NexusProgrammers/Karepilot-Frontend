@@ -100,6 +100,7 @@ export default function Departments() {
         <UsersAndRolesHeader
           onCreateUserClick={() => setIsCreateUserModalOpen(true)}
           onCreateDepartmentClick={() => setIsCreateDepartmentModalOpen(true)}
+          showUserButton={false}
         />
 
         {isLoadingStats ? (

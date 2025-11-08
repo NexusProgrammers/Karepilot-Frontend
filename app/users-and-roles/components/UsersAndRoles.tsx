@@ -88,6 +88,7 @@ export default function UsersAndRoles() {
             setIsCreateUserModalOpen(true);
           }}
           onCreateDepartmentClick={() => setIsCreateDepartmentModalOpen(true)}
+          showDepartmentButton={false}
         />
 
         {isLoadingStats ? (
