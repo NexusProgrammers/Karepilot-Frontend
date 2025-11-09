@@ -1,6 +1,6 @@
 "use client";
 
-import type { Department } from "@/lib/types/users-and-roles";
+import type { Department } from "@/lib/types/users-and-roles/departments";
 import { DepartmentCard } from "./DepartmentCard";
 import { QueryErrorState } from "@/components/common/QueryErrorState";
 

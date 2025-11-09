@@ -1,6 +1,6 @@
 "use client";
 
-import type { Department } from "@/lib/types/users-and-roles";
+import type { Department } from "@/lib/types/users-and-roles/departments";
 import { Button } from "@/components/ui/button";
 import { Building2, Edit, Trash2 } from "@/icons/Icons";
 
