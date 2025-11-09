@@ -3,13 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { CustomInput } from "@/components/common/CustomInput";
 import { Check } from "@/icons/Icons";
-import { PasswordSettingsProps } from "@/lib/types/components";
 import { useChangePasswordMutation } from "@/lib/api/settingsApi";
 import { PasswordSettingsSkeleton } from "@/app/settings/components";
 import { Formik, Form } from "formik";
 import { Eye, EyeOff } from "@/icons/Icons";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { PasswordSettingsProps } from "@/lib/types/settings/settingsComponents";
 
 export function PasswordSettings({
   title,
