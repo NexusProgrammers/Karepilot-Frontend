@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import { UserPreferencesFormValues, NotificationSettingsFormValues } from '../types/validations/validation';
-import { ProfileFormData } from '../types/components';
+import { ProfileFormData } from '../types/exports';
 
 export const userPreferencesValidationSchema = Yup.object<UserPreferencesFormValues>({
     theme: Yup.string().required('Theme is required'),
