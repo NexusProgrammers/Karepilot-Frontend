@@ -13,10 +13,10 @@ import { useTheme } from "next-themes";
 import toast from "react-hot-toast";
 import { Formik, Form, Field } from "formik";
 import { UserPreferencesSkeleton } from "@/app/settings/components/UserPreferencesSkeleton";
-import { UserPreferencesProps } from "@/lib/types/components";
 import { UserPreferencesFormValues } from "@/lib/types/validations/validation";
 import timezones from "timezones-list";
 import { userPreferencesValidationSchema } from "@/lib/validations";
+import { UserPreferencesProps } from "@/lib/types/settings/settingsComponents";
 
 export function UserPreferences({
   title,
