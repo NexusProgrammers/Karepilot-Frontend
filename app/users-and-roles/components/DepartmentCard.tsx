@@ -1,8 +1,9 @@
 "use client";
 
-import type { Department } from "@/lib/types/users-and-roles/departments";
+
 import { Button } from "@/components/ui/button";
 import { Building2, Edit, Trash2 } from "@/icons/Icons";
+import { Department } from "@/lib/types/organization";
 
 interface DepartmentCardProps {
   department: Department;
