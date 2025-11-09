@@ -14,5 +14,4 @@ export * from '../organization/organization';
 export * from '../organization/organizationComponents';
 export * from '../organization/venueTemplates';
 export * from '../organization/overview';
-export * from '../users-and-roles/users';
 export * from '../users-and-roles/roles';
