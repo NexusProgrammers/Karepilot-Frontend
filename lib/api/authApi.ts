@@ -1,6 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { LoginRequest, LoginResponse } from '../types/exports';
 import { baseQuery } from './baseConfig';
+import { LoginRequest, LoginResponse } from '../types/authentication/api';
 
 export const authApi = createApi({
   reducerPath: 'authApi',
