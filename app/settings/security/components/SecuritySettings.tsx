@@ -5,7 +5,6 @@ import { CustomInput } from "@/components/common/CustomInput";
 import { ToggleSwitch } from "@/components/common/ToggleSwitch";
 import { QueryErrorState } from "@/components/common/QueryErrorState";
 import { Check } from "@/icons/Icons";
-import { SecuritySettingsProps } from "@/lib/types/components";
 import {
   useGetSecuritySettingsQuery,
   useUpdateSecuritySettingsMutation,
@@ -13,6 +12,7 @@ import {
 import { SecuritySettingsSkeleton } from "@/app/settings/components";
 import { Formik, Form } from "formik";
 import toast from "react-hot-toast";
+import { SecuritySettingsProps } from "@/lib/types/settings/settingsComponents";
 
 export function SecuritySettings({
   title,
