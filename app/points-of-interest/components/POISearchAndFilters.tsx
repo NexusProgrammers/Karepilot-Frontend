@@ -4,10 +4,10 @@ import SearchAndFilters from "@/components/common/SearchAndFilters";
 
 type POISearchAndFiltersProps = {
   search: string;
-  status: "all" | "Active" | "Inactive";
+  status: "all" | "Active" | "Inactive" | "Maintenance";
   building: string;
   onSearchChange: (query: string) => void;
-  onStatusChange: (value: "all" | "Active" | "Inactive") => void;
+  onStatusChange: (value: "all" | "Active" | "Inactive" | "Maintenance") => void;
   onBuildingChange: (value: string) => void;
 };
 
@@ -21,7 +21,7 @@ export default function POISearchAndFilters({
 }: POISearchAndFiltersProps) {
   const handleFilterChange = (filterLabel: string, value: string) => {
     if (filterLabel === "Status") {
-      onStatusChange(value as "all" | "Active" | "Inactive");
+      onStatusChange(value as "all" | "Active" | "Inactive" | "Maintenance");
     } else if (filterLabel === "Building") {
       onBuildingChange(value);
     }
@@ -37,6 +37,7 @@ export default function POISearchAndFilters({
             { label: "All Status", value: "all" },
             { label: "Active", value: "Active" },
             { label: "Inactive", value: "Inactive" },
+            { label: "Maintenance", value: "Maintenance" },
           ],
           defaultValue: "all",
         },

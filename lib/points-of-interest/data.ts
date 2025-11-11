@@ -1,41 +1,36 @@
-import {
-  MapPin,
-  CheckCircle,
-  Grid3x3,
-  Accessibility,
-} from "@/icons/Icons";
+import { MapPin, CheckCircle, Grid3x3, Accessibility } from "@/icons/Icons";
 
-import { POIStats } from "./types";
+import type { POIStatsConfig } from "./types";
 
-export const poiStats: POIStats[] = [
+export const poiStatsConfig: POIStatsConfig[] = [
   {
-    id: 1,
+    id: "total-pois",
     title: "Total POIs",
-    value: "4",
+    key: "total",
     icon: MapPin,
     iconBg: "bg-blue-100",
     iconColor: "text-blue-600",
   },
   {
-    id: 2,
+    id: "active-pois",
     title: "Active",
-    value: "6",
+    key: "active",
     icon: CheckCircle,
     iconBg: "bg-green-100",
     iconColor: "text-green-600",
   },
   {
-    id: 3,
+    id: "categories-pois",
     title: "Categories",
-    value: "1",
+    key: "categories",
     icon: Grid3x3,
     iconBg: "bg-yellow-100",
     iconColor: "text-yellow-600",
   },
   {
-    id: 4,
+    id: "accessible-pois",
     title: "Accessible",
-    value: "4",
+    key: "accessible",
     icon: Accessibility,
     iconBg: "bg-blue-100",
     iconColor: "text-blue-600",

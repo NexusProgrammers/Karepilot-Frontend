@@ -10,7 +10,7 @@ import POIGrid from "./components/POIGrid";
 import { PointOfInterestModal } from "@/app/dashboard/[id]/components/CreatePOIModal";
 import type { PointsOfInterestQuery } from "@/lib/types/points-of-interest/api";
 
-type StatusFilter = "all" | "Active" | "Inactive";
+type StatusFilter = "all" | "Active" | "Inactive" | "Maintenance";
 
 export default function PointsOfInterestPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -59,7 +59,7 @@ export default function PointsOfInterestPage() {
     >
       <div className="space-y-6">
         <POIHeader onCreatePOI={() => setIsModalOpen(true)} />
-        <POIStats />
+        <POIStats queryParams={queryParams} />
         <POITabs />
         <POISearchAndFilters
           search={search}

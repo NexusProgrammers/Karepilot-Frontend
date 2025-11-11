@@ -4,10 +4,12 @@ import { PointOfInterest as PointOfInterestApi } from "../types/points-of-intere
 export type POI = PointOfInterestApi;
 export type PointOfInterest = PointOfInterestApi;
 
-export interface POIStats {
-  id: number;
+export type PointOfInterestStatKey = "total" | "active" | "categories" | "accessible";
+
+export interface POIStatsConfig {
+  id: string;
   title: string;
-  value: string | number;
+  key: PointOfInterestStatKey;
   icon: LucideIcon;
   iconBg: string;
   iconColor: string;

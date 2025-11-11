@@ -68,6 +68,7 @@ export interface PointsOfInterestListResponse {
   data: {
     pointsOfInterest: PointOfInterest[];
     pagination: PointsOfInterestPagination;
+    stats: PointOfInterestStats;
   };
 }
 
@@ -84,11 +85,18 @@ export interface PointsOfInterestQuery {
   limit?: number;
   search?: string;
   category?: string;
-  status?: string;
+  status?: string | string[];
   building?: string;
   floor?: string;
   organizationId?: string;
   isActive?: boolean;
+}
+
+export interface PointOfInterestStats {
+  total: number;
+  active: number;
+  categories: number;
+  accessible: number;
 }
 
 export interface CreatePointOfInterestRequest {
