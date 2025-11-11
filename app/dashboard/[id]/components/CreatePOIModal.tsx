@@ -5,7 +5,8 @@ import { ToggleSwitch } from "@/components/common/ToggleSwitch";
 import { CreatePIOIcon } from "@/icons/Svg";
 import { buildings, facilities, floors } from "@/lib/dashboard/data";
 import { MapPin, X } from "@/icons/Icons";
-import { useState } from "react";
+import dynamic from "next/dynamic";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 
 interface CreatePOIModalProps {
@@ -14,6 +15,16 @@ interface CreatePOIModalProps {
 }
 
 export function CreatePOIModal({ isOpen, onClose }: CreatePOIModalProps) {
+  const GoogleMap = useMemo(
+    () =>
+      dynamic(
+        () =>
+          import("@/components/maps").then((mod) => mod.InteractivePoiMap),
+        { ssr: false },
+      ),
+    [],
+  );
+
   const [poiName, setPoiName] = useState("");
   const [facility, setFacility] = useState("");
   const [building, setBuilding] = useState("");
@@ -28,8 +39,7 @@ export function CreatePOIModal({ isOpen, onClose }: CreatePOIModalProps) {
   const [hearingLoop, setHearingLoop] = useState(false);
   const [visualAidSupport, setVisualAidSupport] = useState(false);
   const [roomNumberAlt, setRoomNumberAlt] = useState("");
-  const [xCoordinate, setXCoordinate] = useState("");
-  const [yCoordinate, setYCoordinate] = useState("");
+  const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
 
   const handleSubmit = () => {
     console.log({
@@ -47,8 +57,7 @@ export function CreatePOIModal({ isOpen, onClose }: CreatePOIModalProps) {
       hearingLoop,
       visualAidSupport,
       roomNumberAlt,
-      xCoordinate,
-      yCoordinate,
+      coordinates,
     });
   };
 
@@ -212,7 +221,7 @@ export function CreatePOIModal({ isOpen, onClose }: CreatePOIModalProps) {
             </div>
 
             <div className="pt-4 border-t border-border">
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <CustomInput
                   value={roomNumberAlt}
                   onChange={setRoomNumberAlt}
@@ -220,32 +229,51 @@ export function CreatePOIModal({ isOpen, onClose }: CreatePOIModalProps) {
                   label="Room Number"
                   required
                 />
-
-                <CustomInput
-                  value={xCoordinate}
-                  onChange={setXCoordinate}
-                  placeholder="X: 0"
-                  label="Coordinates"
-                />
-
-                <CustomInput
-                  value={yCoordinate}
-                  onChange={setYCoordinate}
-                  placeholder="Y: 0"
-                  label="(Click on map to Set POI location)"
-                />
+                <div className="grid grid-cols-2 gap-3">
+                  <CustomInput
+                    value={coordinates?.lat ? coordinates.lat.toFixed(6) : ""}
+                    onChange={() => undefined}
+                    placeholder="Latitude"
+                    label="Latitude"
+                    disabled
+                  />
+                  <CustomInput
+                    value={coordinates?.lng ? coordinates.lng.toFixed(6) : ""}
+                    onChange={() => undefined}
+                    placeholder="Longitude"
+                    label="Longitude"
+                    disabled
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="pt-2">
-              <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
-                <MapPin className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm font-medium text-muted-foreground mb-1">
-                  Click on the map to set POI location
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Coordinates will be set automatically by tapping a spot
-                </p>
+            <div className="pt-2 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-semibold text-card-foreground">
+                    Location on Map
+                  </h4>
+                  <p className="text-xs text-muted-foreground">
+                    Click on the map to set the precise POI coordinates
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-auto px-3 py-2 cursor-pointer"
+                  onClick={() => setCoordinates(null)}
+                >
+                  Reset
+                </Button>
+              </div>
+              <div className="border border-border rounded-xl overflow-hidden">
+                <GoogleMap
+                  height={320}
+                  marker={coordinates}
+                  onMarkerChange={setCoordinates}
+                />
               </div>
             </div>
           </div>
