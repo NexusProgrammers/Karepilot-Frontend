@@ -118,13 +118,15 @@ export default function POICard({ poi }: POICardProps) {
         >
           Edit
         </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-10 h-10 cursor-pointer flex items-center justify-center text-card-foreground bg-card border border-border rounded-2xl hover:bg-muted transition-colors"
-        >
-          <Settings className="w-4 h-4" />
-        </Button>
+        <Link href={`/points-of-interest/${poi.id}`}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-10 h-10 cursor-pointer flex items-center justify-center text-card-foreground bg-card border border-border rounded-2xl hover:bg-muted transition-colors"
+          >
+            <Settings className="w-4 h-4" />
+          </Button>
+        </Link>
       </div>
 
       <PointOfInterestModal

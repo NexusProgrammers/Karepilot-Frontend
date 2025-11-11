@@ -5,3 +5,4 @@ export { AccessibilityFeaturesCard } from "./AccessibilityFeaturesCard";
 export { QuickActionsCard } from "./QuickActionsCard";
 export { StatusMetadataCard } from "./StatusMetadataCard";
 export { LocationPreviewCard } from "./LocationPreviewCard";
+export { POIDetailSkeleton } from "./POIDetailSkeleton";

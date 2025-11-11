@@ -1,7 +1,8 @@
-import { useState, useMemo, useEffect } from "react";
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { Formik, Form } from "formik";
-
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { ToggleSwitch } from "@/components/common/ToggleSwitch";
@@ -16,12 +17,13 @@ import {
 import { useGetOrganizationsQuery } from "@/lib/api/organizationsApi";
 import { PointOfInterest } from "@/lib/points-of-interest/types";
 import { buildings, facilities, floors } from "@/lib/dashboard/data";
-import { loginValidationSchema } from "@/lib/validations";
+import { pointOfInterestValidationSchema } from "@/lib/validations";
 
 interface PointOfInterestModalProps {
   isOpen: boolean;
   onClose: () => void;
   pointOfInterest?: PointOfInterest | null;
+  organizationId?: string;
   onSuccess?: () => void;
 }
 
@@ -29,13 +31,14 @@ const statusOptions = ["Active", "Inactive", "Maintenance"];
 
 const GoogleMap = dynamic(
   () => import("@/components/maps").then((mod) => mod.InteractivePoiMap),
-  { ssr: false }
+  { ssr: false },
 );
 
 export function PointOfInterestModal({
   isOpen,
   onClose,
   pointOfInterest,
+  organizationId,
   onSuccess,
 }: PointOfInterestModalProps) {
   const isEditMode = Boolean(pointOfInterest);
@@ -45,7 +48,8 @@ export function PointOfInterestModal({
   const [updatePointOfInterest, { isLoading: isUpdating }] =
     useUpdatePointOfInterestMutation();
 
-  const { data: organizationsData } = useGetOrganizationsQuery({ limit: 100 });
+  const { data: organizationsData, isLoading: isOrganizationsLoading } =
+    useGetOrganizationsQuery({ limit: 100 });
 
   const organizationOptions = useMemo(
     () =>
@@ -53,12 +57,13 @@ export function PointOfInterestModal({
         name: org.name,
         value: org.id,
       })) ?? [],
-    [organizationsData]
+    [organizationsData],
   );
 
   const initialValues = useMemo(
     () => ({
-      organizationId: pointOfInterest?.organization?.id ?? "",
+      organizationId:
+        pointOfInterest?.organization?.id ?? organizationId ?? "",
       name: pointOfInterest?.name ?? "",
       category: pointOfInterest?.category ?? "",
       categoryType: pointOfInterest?.categoryType ?? "",
@@ -87,11 +92,11 @@ export function PointOfInterestModal({
         "",
       isActive: pointOfInterest?.isActive ?? true,
     }),
-    [pointOfInterest]
+    [pointOfInterest, organizationId],
   );
 
   const [marker, setMarker] = useState<{ lat: number; lng: number } | null>(
-    null
+    null,
   );
 
   useEffect(() => {
@@ -128,12 +133,21 @@ export function PointOfInterestModal({
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={loginValidationSchema}
+      validationSchema={pointOfInterestValidationSchema}
       enableReinitialize
       onSubmit={async (values, { setSubmitting, resetForm }) => {
         try {
+          const effectiveOrganizationId =
+            values.organizationId || organizationId || "";
+
+          if (!effectiveOrganizationId) {
+            toast.error("Organization is required.");
+            setSubmitting(false);
+            return;
+          }
+
           const payload = {
-            organizationId: values.organizationId,
+            organizationId: effectiveOrganizationId,
             name: values.name,
             category: values.category,
             categoryType: values.categoryType || undefined,
@@ -198,7 +212,7 @@ export function PointOfInterestModal({
           console.error("POI mutation error:", err);
           toast.error(
             err?.data?.message ||
-              "Failed to save point of interest. Please try again."
+              "Failed to save point of interest. Please try again.",
           );
         } finally {
           setSubmitting(false);
@@ -252,11 +266,16 @@ export function PointOfInterestModal({
                   value={values.organizationId}
                   onChange={(value) => setFieldValue("organizationId", value)}
                   options={organizationOptions}
-                  placeholder="Select organization"
+                  placeholder={
+                    isOrganizationsLoading
+                      ? "Loading organizations..."
+                      : "Select organization"
+                  }
                   label="Organization"
                   required
                   error={errors.organizationId}
                   touched={touched.organizationId}
+                  disabled={Boolean(organizationId) || isOrganizationsLoading}
                 />
                 <CustomInput
                   value={values.name}
@@ -520,3 +539,4 @@ export function PointOfInterestModal({
 }
 
 export { PointOfInterestModal as CreatePOIModal };
+
