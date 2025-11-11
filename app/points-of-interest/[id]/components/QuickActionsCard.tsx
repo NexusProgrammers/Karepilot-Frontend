@@ -25,7 +25,7 @@ export function QuickActionsCard({
         <Button
           onClick={onEditClick}
           variant="ghost"
-          className="w-full justify-start gap-3 px-4 py-3 text-left text-card-foreground hover:bg-accent"
+          className="w-full justify-start gap-3 px-4 py-3 text-left text-card-foreground hover:bg-accent cursor-pointer"
         >
           <Edit3 className="w-4 h-4 text-muted-foreground" />
           Edit POI
@@ -33,7 +33,7 @@ export function QuickActionsCard({
         <Button
           onClick={onViewOnMapClick}
           variant="ghost"
-          className="w-full justify-start gap-3 px-4 py-3 text-left text-card-foreground hover:bg-accent"
+          className="w-full justify-start gap-3 px-4 py-3 text-left text-card-foreground hover:bg-accent cursor-pointer"
         >
           <MapPin className="w-4 h-4 text-muted-foreground" />
           View on Map
@@ -41,7 +41,7 @@ export function QuickActionsCard({
         <Button
           onClick={onGetDirectionsClick}
           variant="ghost"
-          className="w-full justify-start gap-3 px-4 py-3 text-left text-card-foreground hover:bg-accent"
+          className="w-full justify-start gap-3 px-4 py-3 text-left text-card-foreground hover:bg-accent cursor-pointer"
         >
           <Compass className="w-4 h-4 text-muted-foreground" />
           Get Directions
@@ -50,7 +50,7 @@ export function QuickActionsCard({
         <Button
           onClick={onDeleteClick}
           variant="ghost"
-          className="w-full justify-start gap-3 px-4 py-3 text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
+          className="w-full justify-start gap-3 px-4 py-3 text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 cursor-pointer"
         >
           <Trash2 className="w-4 h-4 text-red-600" />
           Delete POI

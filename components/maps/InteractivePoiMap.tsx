@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useState, useCallback, useRef } from "react";
-import type { KeyboardEvent } from "react";
+import type { KeyboardEvent, ChangeEvent } from "react";
+import { loadGoogleMaps } from "@/lib/maps/googleMapsLoader";
 
-type GoogleMapsType = any;
-
+type GoogleMaps = Awaited<ReturnType<typeof loadGoogleMaps>>;
+type AdvancedMarkerElement = google.maps.marker.AdvancedMarkerElement;
+type LegacyMarker = google.maps.Marker;
+type AnyMarker = AdvancedMarkerElement | LegacyMarker;
 interface GoogleMapProps {
   height?: number;
   marker: { lat: number; lng: number } | null;
@@ -13,191 +16,210 @@ interface GoogleMapProps {
 
 const DEFAULT_CENTER = { lat: 40.7128, lng: -74.006 };
 const DEFAULT_ZOOM = 16;
+const MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID;
 
 export function InteractivePoiMap({ height = 320, marker, onMarkerChange }: GoogleMapProps) {
-  const [map, setMap] = useState<GoogleMapsType["Map"] | null>(null);
-  const [mapsApi, setMapsApi] = useState<GoogleMapsType | null>(null);
+  const [googleMaps, setGoogleMaps] = useState<GoogleMaps | null>(null);
+  const [map, setMap] = useState<any>(null);
+  const [mapMarker, setMapMarker] = useState<AnyMarker | null>(null);
   const [mapContainer, setMapContainer] = useState<HTMLDivElement | null>(null);
-  const [mapMarker, setMapMarker] = useState<GoogleMapsType["Marker"] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [searchError, setSearchError] = useState<string | null>(null);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const [autocompleteService, setAutocompleteService] =
+    useState<google.maps.places.AutocompleteService | null>(null);
+  const [placesService, setPlacesService] = useState<google.maps.places.PlacesService | null>(null);
+  const [predictions, setPredictions] = useState<google.maps.places.AutocompletePrediction[]>([]);
+  const [searchValue, setSearchValue] = useState("");
+  const [activePredictionIndex, setActivePredictionIndex] = useState(-1);
+  const predictionDebounceRef = useRef<number | null>(null);
 
   const center = useMemo(() => marker ?? DEFAULT_CENTER, [marker]);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      setIsLoading(true);
+      try {
+        const googleInstance = await loadGoogleMaps();
+        if (!cancelled && googleInstance) {
+          setGoogleMaps(googleInstance);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          const message =
+            err instanceof Error
+              ? err.message
+              : "Failed to load Google Maps API.";
+          setLoadError(message);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const isAdvancedMarker = useCallback(
+    (marker: AnyMarker | null): marker is AdvancedMarkerElement =>
+      Boolean(marker && "position" in marker && !("setPosition" in marker)),
+    [],
+  );
+
+  const isLegacyMarker = useCallback(
+    (marker: AnyMarker | null): marker is LegacyMarker =>
+      Boolean(marker && typeof (marker as LegacyMarker).setPosition === "function"),
+    [],
+  );
+
+  const setMarkerPosition = useCallback(
+    (marker: AnyMarker, coords: google.maps.LatLngLiteral) => {
+      if (isAdvancedMarker(marker)) {
+        marker.position = coords;
+      } else if (isLegacyMarker(marker)) {
+        marker.setPosition(coords);
+      }
+    },
+    [isAdvancedMarker, isLegacyMarker],
+  );
+
+  const setMarkerMap = useCallback(
+    (marker: AnyMarker, mapInstance: google.maps.Map | null) => {
+      if (isAdvancedMarker(marker)) {
+        marker.map = mapInstance ?? null;
+      } else if (isLegacyMarker(marker)) {
+        marker.setMap(mapInstance ?? null);
+      }
+    },
+    [isAdvancedMarker, isLegacyMarker],
+  );
+
   const initializeMap = useCallback(
-    (maps: GoogleMapsType) => {
+    (maps: GoogleMaps) => {
       if (!mapContainer || map) {
         return;
       }
 
-      const mapInstance = new maps.Map(mapContainer, {
+      const container = mapContainer as HTMLDivElement;
+
+      const mapInstance = new maps.maps.Map(container, {
         center,
         zoom: DEFAULT_ZOOM,
         mapTypeControl: false,
         fullscreenControl: false,
         streetViewControl: false,
         gestureHandling: "greedy",
+        ...(MAP_ID ? { mapId: MAP_ID } : {}),
       });
 
-      const markerInstance = new maps.Marker({
-        position: center,
-        map: marker ? mapInstance : undefined,
-        draggable: true,
-      });
+      const supportsAdvancedMarker =
+        Boolean(MAP_ID && maps.maps.marker?.AdvancedMarkerElement);
 
-      markerInstance.addListener("dragend", () => {
-        const position = markerInstance.getPosition();
-        if (position) {
-          onMarkerChange({ lat: position.lat(), lng: position.lng() });
+      const markerInstance: AnyMarker = supportsAdvancedMarker
+        ? new maps.maps.marker.AdvancedMarkerElement({
+            position: center,
+            map: marker ? mapInstance : undefined,
+            gmpDraggable: true,
+          })
+        : new maps.maps.Marker({
+            position: center,
+            map: marker ? mapInstance : undefined,
+            draggable: true,
+          });
+
+      markerInstance.addListener("dragend", (event: any) => {
+        const latLng =
+          event?.latLng ??
+          (event?.detail?.latLng ?? event?.target?.position ?? null);
+        if (latLng) {
+          const lat = typeof latLng.lat === "function" ? latLng.lat() : latLng.lat;
+          const lng = typeof latLng.lng === "function" ? latLng.lng() : latLng.lng;
+          onMarkerChange({ lat, lng });
         }
       });
 
       mapInstance.addListener("click", (event: any) => {
-        if (!event.latLng) {
+        if (!event?.latLng) {
           return;
         }
         const coords = { lat: event.latLng.lat(), lng: event.latLng.lng() };
-        markerInstance.setPosition(coords);
-        markerInstance.setMap(mapInstance);
+        setMarkerPosition(markerInstance, coords);
+        setMarkerMap(markerInstance, mapInstance);
         onMarkerChange(coords);
       });
 
       setMap(mapInstance);
       setMapMarker(markerInstance);
     },
-    [center, mapContainer, map, marker, onMarkerChange],
+    [center, mapContainer, map, marker, onMarkerChange, setMarkerPosition, setMarkerMap],
   );
 
   useEffect(() => {
-    const existingScript = document.querySelector<HTMLScriptElement>(
-      'script[data-google-maps-loader="true"]',
-    );
-
-    if (existingScript && (window as any).google?.maps) {
-      setMapsApi((window as any).google.maps);
-      return;
+    if (googleMaps) {
+      initializeMap(googleMaps);
     }
+  }, [googleMaps, initializeMap]);
 
-    const apiKey = "AIzaSyAW9nZTfMsKqlQZ9sFeG-hHE33s5QtTRzs";
-    console.log("apiKey", apiKey);
-    if (!apiKey) {
-      setLoadError("Google Maps API key is missing. Set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY.");
-      return;
+  useEffect(() => {
+    if (searchInputRef.current) {
+      searchInputRef.current.setAttribute("autocomplete", "off");
     }
-
-    const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-    script.async = true;
-    script.defer = true;
-    script.dataset.googleMapsLoader = "true";
-
-    const onLoad = () => {
-      if ((window as any).google?.maps) {
-        setMapsApi((window as any).google.maps);
-      } else {
-        setLoadError("Failed to load Google Maps API.");
-      }
-      setIsLoading(false);
-    };
-
-    setIsLoading(true);
-    script.addEventListener("load", onLoad);
-    script.addEventListener("error", () => {
-      setIsLoading(false);
-      setLoadError("Failed to load Google Maps API script.");
-    });
-
-    document.head.appendChild(script);
-
-    return () => {
-      script.removeEventListener("load", onLoad);
-    };
   }, []);
 
   useEffect(() => {
-    if (mapsApi) {
-      initializeMap(mapsApi);
-    }
-  }, [mapsApi, initializeMap]);
-
-  useEffect(() => {
-    if (!map || !mapMarker || !mapsApi) {
+    if (!map || !mapMarker || !googleMaps) {
       return;
     }
 
     if (marker) {
-      mapMarker.setPosition(marker);
-      mapMarker.setMap(map);
+      setMarkerPosition(mapMarker, marker);
+      setMarkerMap(mapMarker, map);
       map.panTo(marker);
       map.setZoom(DEFAULT_ZOOM);
     } else {
-      mapMarker.setMap(null);
+      setMarkerMap(mapMarker, null);
       map.panTo(DEFAULT_CENTER);
       map.setZoom(DEFAULT_ZOOM);
     }
-  }, [map, mapMarker, marker, mapsApi]);
+  }, [map, mapMarker, marker, googleMaps, setMarkerPosition, setMarkerMap]);
 
   useEffect(() => {
-    if (!mapsApi || !map || !searchInputRef.current) {
+    if (!googleMaps || !map) {
       return;
     }
 
-    if (!("places" in mapsApi) || !mapsApi.places?.Autocomplete) {
+    if (!googleMaps.maps.places) {
       setSearchError("Places library not available.");
       return;
     }
 
-    const autocomplete = new mapsApi.places.Autocomplete(searchInputRef.current, {
-      fields: ["geometry", "name", "formatted_address"],
-      types: ["geocode"],
-    });
+    if (!autocompleteService) {
+      setAutocompleteService(new googleMaps.maps.places.AutocompleteService());
+    }
 
-    autocomplete.bindTo("bounds", map);
-
-    const placeChangedListener = autocomplete.addListener("place_changed", () => {
-      const place = autocomplete.getPlace();
-
-      if (!place.geometry?.location || !mapMarker) {
-        setSearchError("No location data available for that place.");
-        return;
-      }
-
-      setSearchError(null);
-
-      const location = place.geometry.location;
-      const coords = { lat: location.lat(), lng: location.lng() };
-
-      map.panTo(coords);
-      map.setZoom(18);
-      mapMarker.setMap(map);
-      mapMarker.setPosition(coords);
-      onMarkerChange(coords);
-
-      if (place.formatted_address || place.name) {
-        const inputEl = searchInputRef.current;
-        if (inputEl) {
-          inputEl.value = place.formatted_address ?? place.name ?? "";
-        }
-      }
-    });
-
-    return () => {
-      mapsApi.event?.removeListener(placeChangedListener);
-      mapsApi.event?.clearInstanceListeners?.(autocomplete);
-    };
-  }, [map, mapMarker, mapsApi, onMarkerChange]);
+    if (!placesService) {
+      setPlacesService(new googleMaps.maps.places.PlacesService(map));
+    }
+  }, [googleMaps, map, autocompleteService, placesService]);
 
   const handleManualSearch = useCallback(() => {
-    const query = searchInputRef.current?.value.trim();
+    const query = searchValue.trim();
 
-    if (!query || !mapsApi || !map || !mapMarker) {
+    if (!query || !googleMaps || !map || !mapMarker) {
       return;
     }
 
     setSearchError(null);
-    const geocoder = new mapsApi.Geocoder();
+    const geocoder = new googleMaps.maps.Geocoder();
 
     geocoder.geocode({ address: query }, (results: any, status: string) => {
       if (status === "OK" && results[0]?.geometry?.location) {
@@ -206,32 +228,144 @@ export function InteractivePoiMap({ height = 320, marker, onMarkerChange }: Goog
 
         map.panTo(coords);
         map.setZoom(18);
-        mapMarker.setMap(map);
-        mapMarker.setPosition(coords);
+        setMarkerMap(mapMarker, map);
+        setMarkerPosition(mapMarker, coords);
         onMarkerChange(coords);
+        setPredictions([]);
+        setActivePredictionIndex(-1);
+        setSearchValue(results[0].formatted_address ?? query);
       } else {
         setSearchError("No results found for that search.");
       }
     });
-  }, [map, mapMarker, mapsApi, onMarkerChange]);
+  }, [
+    map,
+    mapMarker,
+    googleMaps,
+    onMarkerChange,
+    setMarkerMap,
+    setMarkerPosition,
+    searchValue,
+  ]);
+
+  const handlePredictionSelect = useCallback(
+    (prediction: google.maps.places.AutocompletePrediction | null) => {
+      if (!prediction || !placesService || !googleMaps || !map || !mapMarker) {
+        return;
+      }
+
+      placesService.getDetails(
+        {
+          placeId: prediction.place_id,
+          fields: ["geometry", "formatted_address", "name"],
+        },
+        (place, status) => {
+          if (
+            status !== googleMaps.maps.places.PlacesServiceStatus.OK ||
+            !place?.geometry?.location
+          ) {
+            setSearchError("Unable to retrieve details for that place.");
+            return;
+          }
+
+          setSearchError(null);
+          const location = place.geometry.location;
+          const coords = { lat: location.lat(), lng: location.lng() };
+          map.panTo(coords);
+          map.setZoom(18);
+          setMarkerMap(mapMarker, map);
+          setMarkerPosition(mapMarker, coords);
+          onMarkerChange(coords);
+          setPredictions([]);
+          setActivePredictionIndex(-1);
+          setSearchValue(
+            place.formatted_address ?? place.name ?? prediction.description ?? "",
+          );
+        },
+      );
+    },
+    [placesService, googleMaps, map, mapMarker, setMarkerMap, setMarkerPosition, onMarkerChange],
+  );
 
   const handleSearchKeyDown = useCallback(
     (event: KeyboardEvent<HTMLInputElement>) => {
       if (event.key === "Enter") {
         event.preventDefault();
-        handleManualSearch();
+        if (activePredictionIndex >= 0 && predictions[activePredictionIndex]) {
+          handlePredictionSelect(predictions[activePredictionIndex]);
+        } else {
+          handleManualSearch();
+        }
+      } else if (event.key === "ArrowDown" && predictions.length > 0) {
+        event.preventDefault();
+        setActivePredictionIndex((prev) => (prev + 1) % predictions.length);
+      } else if (event.key === "ArrowUp" && predictions.length > 0) {
+        event.preventDefault();
+        setActivePredictionIndex((prev) =>
+          prev <= 0 ? predictions.length - 1 : prev - 1,
+        );
+      } else if (event.key === "Escape") {
+        setPredictions([]);
+        setActivePredictionIndex(-1);
       }
     },
-    [handleManualSearch],
+    [handleManualSearch, predictions, activePredictionIndex, handlePredictionSelect],
   );
 
-  const handleSearchChange = useCallback(() => {
-    if (searchError) {
-      setSearchError(null);
-    }
-  }, [searchError]);
+  const handleSearchChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setSearchValue(event.target.value);
+      if (searchError) {
+        setSearchError(null);
+      }
+    },
+    [searchError],
+  );
 
-  const isMapReady = Boolean(map && mapMarker && mapsApi);
+  useEffect(() => {
+    if (!autocompleteService || !googleMaps) {
+      return;
+    }
+
+    if (predictionDebounceRef.current) {
+      window.clearTimeout(predictionDebounceRef.current);
+    }
+
+    const trimmed = searchValue.trim();
+    if (!trimmed || trimmed.length < 3) {
+      setPredictions([]);
+      setActivePredictionIndex(-1);
+      return;
+    }
+
+    predictionDebounceRef.current = window.setTimeout(() => {
+      autocompleteService.getPlacePredictions(
+        {
+          input: trimmed,
+          types: ["geocode"],
+        },
+        (results, status) => {
+          if (
+            status === googleMaps.maps.places.PlacesServiceStatus.OK &&
+            results?.length
+          ) {
+            setPredictions(results);
+            setActivePredictionIndex(-1);
+          } else {
+            setPredictions([]);
+          }
+        },
+      );
+    }, 250);
+
+    return () => {
+      if (predictionDebounceRef.current) {
+        window.clearTimeout(predictionDebounceRef.current);
+      }
+    };
+  }, [searchValue, autocompleteService, googleMaps]);
+
+  const isMapReady = Boolean(map && mapMarker && googleMaps);
 
   return (
     <div className="relative">
@@ -241,6 +375,7 @@ export function InteractivePoiMap({ height = 320, marker, onMarkerChange }: Goog
             ref={searchInputRef}
             type="text"
             placeholder="Search for a location"
+            value={searchValue}
             onKeyDown={handleSearchKeyDown}
             onChange={handleSearchChange}
             className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
@@ -258,6 +393,34 @@ export function InteractivePoiMap({ height = 320, marker, onMarkerChange }: Goog
         {searchError && (
           <div className="pointer-events-auto rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2 text-xs text-destructive shadow-sm">
             {searchError}
+          </div>
+        )}
+        {predictions.length > 0 && (
+          <div className="pointer-events-auto max-h-64 overflow-auto rounded-lg border border-border bg-background shadow-lg">
+            {predictions.map((prediction, index) => (
+              <button
+                key={prediction.place_id}
+                type="button"
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                  handlePredictionSelect(prediction);
+                }}
+                className={`flex w-full flex-col items-start gap-0.5 px-3 py-2 text-left text-sm transition ${
+                  index === activePredictionIndex
+                    ? "bg-primary/10 text-primary"
+                    : "hover:bg-muted"
+                }`}
+              >
+                <span className="font-medium">
+                  {prediction.structured_formatting?.main_text ?? prediction.description}
+                </span>
+                {prediction.structured_formatting?.secondary_text && (
+                  <span className="text-xs text-muted-foreground">
+                    {prediction.structured_formatting.secondary_text}
+                  </span>
+                )}
+              </button>
+            ))}
           </div>
         )}
       </div>
