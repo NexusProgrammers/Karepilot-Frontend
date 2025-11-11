@@ -255,7 +255,7 @@ export function CreatePOIModal({ isOpen, onClose }: CreatePOIModalProps) {
                     Location on Map
                   </h4>
                   <p className="text-xs text-muted-foreground">
-                    Click on the map to set the precise POI coordinates
+                    Search for a location or click on the map to set the precise POI coordinates
                   </p>
                 </div>
                 <Button
