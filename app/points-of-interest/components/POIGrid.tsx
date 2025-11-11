@@ -4,8 +4,13 @@ import { useGetPointsOfInterestQuery } from "@/lib/api/pointsOfInterestApi";
 import { QueryErrorState } from "@/components/common/QueryErrorState";
 import POICard from "./POICard";
 import { POIGridSkeleton } from "./POIGridSkeleton";
+import type { PointsOfInterestQuery } from "@/lib/types/points-of-interest/api";
 
-export default function POIGrid() {
+interface POIGridProps {
+  queryParams: PointsOfInterestQuery;
+}
+
+export default function POIGrid({ queryParams }: POIGridProps) {
   const {
     data,
     isLoading,
@@ -13,7 +18,7 @@ export default function POIGrid() {
     isError,
     error,
     refetch,
-  } = useGetPointsOfInterestQuery();
+  } = useGetPointsOfInterestQuery(queryParams);
 
   const pointsOfInterest = data?.data?.pointsOfInterest ?? [];
   const isBusy = isLoading || isFetching;
