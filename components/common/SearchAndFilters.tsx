@@ -18,6 +18,8 @@ export type SearchAndFiltersProps = {
   }[];
   onSearchChange?: (query: string) => void;
   onFilterChange?: (filterLabel: string, value: string) => void;
+  searchValue?: string;
+  selectedFilters?: Record<string, string>;
 };
 
 export default function SearchAndFilters({
@@ -25,6 +27,8 @@ export default function SearchAndFilters({
   filters = [],
   onSearchChange,
   onFilterChange,
+  searchValue,
+  selectedFilters: controlledFilters,
 }: SearchAndFiltersProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilters, setSelectedFilters] = useState<
@@ -69,6 +73,34 @@ export default function SearchAndFilters({
   const toggleDropdown = (filterLabel: string) => {
     setOpenDropdown((prev) => (prev === filterLabel ? null : filterLabel));
   };
+
+  useEffect(() => {
+    if (typeof searchValue === "string" && searchValue !== searchQuery) {
+      setSearchQuery(searchValue);
+    }
+  }, [searchValue]);
+
+  useEffect(() => {
+    if (controlledFilters) {
+      setSelectedFilters((prev) => ({
+        ...prev,
+        ...controlledFilters,
+      }));
+    }
+  }, [controlledFilters]);
+
+  useEffect(() => {
+    setSelectedFilters((prev) => {
+      const updated = { ...prev };
+      filters.forEach((filter) => {
+        if (!(filter.label in updated)) {
+          updated[filter.label] =
+            filter.defaultValue || filter.options[0]?.value || "";
+        }
+      });
+      return updated;
+    });
+  }, [filters]);
 
   return (
     <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between border border-border rounded-2xl p-4 bg-card">
