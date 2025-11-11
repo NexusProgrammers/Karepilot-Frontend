@@ -23,7 +23,14 @@ export default function PointsOfInterestPage() {
         <POIHeader onCreatePOI={() => setIsCreateModalOpen(true)} />
         <POIStats />
         <POITabs />
-        <POISearchAndFilters />
+        <POISearchAndFilters
+          search={""}
+          status={"all"}
+          building={""}
+          onSearchChange={() => {}}
+          onStatusChange={() => {}}
+          onBuildingChange={() => {}}
+        />
         <div>
           <h1>Settings</h1>
         </div>
