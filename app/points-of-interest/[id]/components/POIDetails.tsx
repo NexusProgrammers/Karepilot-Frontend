@@ -2,8 +2,8 @@
 
 import { PointOfInterestModal } from "@/app/dashboard/[id]/components/CreatePOIModal";
 import { useGetPointOfInterestByIdQuery } from "@/lib/api/pointsOfInterestApi";
-import { useState } from "react";
-import { notFound, useParams } from "next/navigation";
+import { useState, useCallback } from "react";
+import { notFound, useParams, useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import {
   POIDetailHeader,
@@ -16,11 +16,16 @@ import {
   POIDetailSkeleton,
 } from ".";
 import { QueryErrorState } from "@/components/common/QueryErrorState";
+import { useDeletePointOfInterestMutation } from "@/lib/api/pointsOfInterestApi";
+import { DeleteConfirmationDialog } from "@/components/common/DeleteConfirmationDialog";
 
 export default function POIDetailPage() {
   const params = useParams<{ id: string }>();
-  const poiId = params?.id;
+  const poiRouteId = params?.id;
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [skipDetailQuery, setSkipDetailQuery] = useState(false);
+  const router = useRouter();
 
   const {
     data,
@@ -29,15 +34,32 @@ export default function POIDetailPage() {
     isError,
     error,
     refetch,
-  } = useGetPointOfInterestByIdQuery(poiId!, {
-    skip: !poiId,
+  } = useGetPointOfInterestByIdQuery(poiRouteId!, {
+    skip: skipDetailQuery || !poiRouteId,
   });
 
-  if (!poiId) {
-    notFound();
-  }
+  const [deletePointOfInterest, { isLoading: isDeleting }] = useDeletePointOfInterestMutation();
+
+  const poi = data?.data?.pointOfInterest;
+  const poiRecordId = poi?.id;
+  const poiName = poi?.name ?? "";
 
   const isBusy = isLoading || isFetching;
+
+  const handleCloseDeleteDialog = useCallback(() => {
+    setIsDeleteDialogOpen(false);
+  }, []);
+
+  const handleConfirmDelete = useCallback(async () => {
+    if (!poiRecordId) {
+      return;
+    }
+
+    setSkipDetailQuery(true);
+
+    await deletePointOfInterest(poiRecordId).unwrap();
+    router.push("/points-of-interest");
+  }, [deletePointOfInterest, poiRecordId, router]);
 
   if (isBusy) {
     return (
@@ -72,10 +94,8 @@ export default function POIDetailPage() {
     );
   }
 
-  const poi = data?.data?.pointOfInterest;
-
-  if (!poi) {
-    notFound();
+  if (skipDetailQuery) {
+    return null;
   }
 
   const handleEditClick = () => {
@@ -87,8 +107,12 @@ export default function POIDetailPage() {
   };
 
   const handleDeleteClick = () => {
-    console.log("Delete POI:", poi.id);
+    setIsDeleteDialogOpen(true);
   };
+
+  if (!poi || !poiRouteId) {
+    notFound();
+  }
 
   const handleViewOnMapClick = () => {
     console.log("View on map:", poi.id);
@@ -122,6 +146,7 @@ export default function POIDetailPage() {
                 onViewOnMapClick={handleViewOnMapClick}
                 onGetDirectionsClick={handleGetDirectionsClick}
                 onDeleteClick={handleDeleteClick}
+                isDeleteLoading={isDeleting}
               />
               <StatusMetadataCard poi={poi} />
               <LocationPreviewCard poi={poi} />
@@ -133,6 +158,17 @@ export default function POIDetailPage() {
           isOpen={isEditModalOpen}
           onClose={handleCloseEditModal}
           pointOfInterest={poi}
+        />
+
+        <DeleteConfirmationDialog
+          isOpen={isDeleteDialogOpen}
+          onClose={handleCloseDeleteDialog}
+          onConfirm={handleConfirmDelete}
+          title="Delete Point of Interest"
+          description="This will permanently remove the selected point of interest and all of its details. This action cannot be undone."
+          itemName={poiName}
+          itemType="point of interest"
+          isLoading={isDeleting}
         />
       </div>
     </DashboardLayout>

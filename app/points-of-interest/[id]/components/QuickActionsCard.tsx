@@ -8,6 +8,7 @@ interface QuickActionsCardProps {
   onViewOnMapClick: () => void;
   onGetDirectionsClick: () => void;
   onDeleteClick: () => void;
+  isDeleteLoading?: boolean;
 }
 
 export function QuickActionsCard({
@@ -15,6 +16,7 @@ export function QuickActionsCard({
   onViewOnMapClick,
   onGetDirectionsClick,
   onDeleteClick,
+  isDeleteLoading = false,
 }: QuickActionsCardProps) {
   return (
     <div className="bg-card border border-border rounded-xl p-6">
@@ -50,10 +52,11 @@ export function QuickActionsCard({
         <Button
           onClick={onDeleteClick}
           variant="ghost"
-          className="w-full justify-start gap-3 px-4 py-3 text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 cursor-pointer"
+          disabled={isDeleteLoading}
+          className="w-full justify-start gap-3 px-4 py-3 text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
         >
           <Trash2 className="w-4 h-4 text-red-600" />
-          Delete POI
+          {isDeleteLoading ? "Deleting..." : "Delete POI"}
         </Button>
       </div>
     </div>

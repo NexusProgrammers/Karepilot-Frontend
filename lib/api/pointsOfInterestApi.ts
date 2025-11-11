@@ -63,6 +63,23 @@ export const pointsOfInterestApi = createApi({
         "PointsOfInterest",
       ],
     }),
+    deactivatePointOfInterest: builder.mutation<PointOfInterestResponse, string>({
+      query: (id) => ({
+        url: `/users/admin/points-of-interest/${id}`,
+        method: "PATCH",
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "PointsOfInterest", id },
+        "PointsOfInterest",
+      ],
+    }),
+    deletePointOfInterest: builder.mutation<PointOfInterestResponse, string>({
+      query: (id) => ({
+        url: `/users/admin/points-of-interest/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["PointsOfInterest"],
+    }),
   }),
 });
 
@@ -71,5 +88,7 @@ export const {
   useGetPointOfInterestByIdQuery,
   useCreatePointOfInterestMutation,
   useUpdatePointOfInterestMutation,
+  useDeactivatePointOfInterestMutation,
+  useDeletePointOfInterestMutation,
 } = pointsOfInterestApi;
 
