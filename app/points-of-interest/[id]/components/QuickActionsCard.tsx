@@ -1,9 +1,9 @@
 import { Edit3, MapPin, Compass, Trash2 } from "@/icons/Icons";
 import { Button } from "@/components/ui/button";
-import { POI } from "@/lib/points-of-interest/types";
+import { PointOfInterest } from "@/lib/points-of-interest/types";
 
 interface QuickActionsCardProps {
-  poi: POI;
+  poi: PointOfInterest;
   onEditClick: () => void;
   onViewOnMapClick: () => void;
   onGetDirectionsClick: () => void;

@@ -7,10 +7,10 @@ import POIStats from "./components/POIStats";
 import POITabs from "./components/POITabs";
 import POISearchAndFilters from "./components/POISearchAndFilters";
 import POIGrid from "./components/POIGrid";
-import { CreatePOIModal } from "@/app/dashboard/[id]/components/CreatePOIModal";
+import { PointOfInterestModal } from "@/app/dashboard/[id]/components/CreatePOIModal";
 
 export default function PointsOfInterestPage() {
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <DashboardLayout
@@ -21,15 +21,16 @@ export default function PointsOfInterestPage() {
       backLink="/dashboard/central-medical-hospital"
     >
       <div className="space-y-6">
-        <POIHeader onCreatePOI={() => setIsCreateModalOpen(true)} />
+        <POIHeader onCreatePOI={() => setIsModalOpen(true)} />
         <POIStats />
         <POITabs />
         <POISearchAndFilters />
         <POIGrid />
       </div>
-      <CreatePOIModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+      <PointOfInterestModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        pointOfInterest={null}
       />
     </DashboardLayout>
   );

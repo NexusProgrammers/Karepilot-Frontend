@@ -1,8 +1,8 @@
 import { Phone, Mail, Clock } from "@/icons/Icons";
-import { POI } from "@/lib/points-of-interest/types";
+import { PointOfInterest } from "@/lib/points-of-interest/types";
 
 interface ContactInformationCardProps {
-  poi: POI;
+  poi: PointOfInterest;
 }
 
 export function ContactInformationCard({ poi }: ContactInformationCardProps) {

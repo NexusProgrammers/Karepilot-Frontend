@@ -1,27 +1,45 @@
 "use client";
 
-import { POI } from "@/lib/points-of-interest/types";
+import { PointOfInterest } from "@/lib/points-of-interest/types";
 import { MapPin, Settings, Ear } from "@/icons/Icons";
 import { GrWheelchairActive } from "react-icons/gr";
 import { Button } from "@/components/ui/button";
-import { EditPOIModal } from "@/app/dashboard/[id]/components/EditPOIModal";
-import { useState } from "react";
+import { PointOfInterestModal } from "@/app/dashboard/[id]/components/CreatePOIModal";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 
 interface POICardProps {
-  poi: POI;
+  poi: PointOfInterest;
 }
 
+const dateFormatter = new Intl.DateTimeFormat("en", {
+  year: "numeric",
+  month: "short",
+  day: "2-digit",
+});
+
 export default function POICard({ poi }: POICardProps) {
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleEditClick = () => {
-    setIsEditModalOpen(true);
+    setIsModalOpen(true);
   };
 
-  const handleCloseEditModal = () => {
-    setIsEditModalOpen(false);
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
+
+  const displayTags = useMemo(() => {
+    if (poi.tags && poi.tags.length > 0) {
+      return poi.tags;
+    }
+    return poi.category ? [poi.category] : [];
+  }, [poi.tags, poi.category]);
+
+  const lastUpdated = poi.updatedAt ?? poi.createdAt;
+  const formattedUpdatedAt = lastUpdated
+    ? dateFormatter.format(new Date(lastUpdated))
+    : "";
 
   return (
     <div className="bg-card border border-border rounded-2xl overflow-hidden">
@@ -29,50 +47,58 @@ export default function POICard({ poi }: POICardProps) {
         <div className="flex items-start flex-col sm:flex-row justify-between mb-3">
           <div className="flex-1">
             <h3 className="text-xl font-semibold text-card-foreground mb-1">
-              {poi.title}
+              {poi.name}
             </h3>
             <p className="text-sm text-muted-foreground">
               {poi.building} • {poi.floor}
             </p>
           </div>
-          <span className="text-xs bg-gray-100 dark:bg-gray-950 px-3 py-1 rounded-md">
-            {poi.categoryType}
-          </span>
+          {poi.categoryType && (
+            <span className="text-xs bg-muted px-3 py-1 rounded-md text-muted-foreground">
+              {poi.categoryType}
+            </span>
+          )}
         </div>
 
         <div className="mb-4">
           <p className="text-base font-normal text-card-foreground mb-2 flex items-center gap-2">
             <MapPin className="w-4 h-4 text-muted-foreground" />
-            {poi.roomNumber}
+            {poi.roomNumber || "—"}
           </p>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            {poi.description}
-          </p>
+          {poi.description && (
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {poi.description}
+            </p>
+          )}
         </div>
 
-        <div className="flex flex-wrap gap-2 mb-4">
-          {poi.categories.map((category, index) => (
-            <span
-              key={index}
-              className="text-xs px-3 py-1.5 rounded-lg bg-muted text-muted-foreground font-medium"
-            >
-              {category}
-            </span>
-          ))}
-        </div>
+        {displayTags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {displayTags.map((tag, index) => (
+              <span
+                key={index}
+                className="text-xs px-3 py-1.5 rounded-lg bg-muted text-muted-foreground font-medium"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            {poi.accessibility.wheelchair && (
+            {poi.accessibility?.wheelchairAccessible && (
               <GrWheelchairActive className="w-4 h-4 text-blue-500" />
             )}
-            {poi.accessibility.hearingLoop && (
+            {poi.accessibility?.hearingLoop && (
               <Ear className="w-4 h-4 text-yellow-500" />
             )}
           </div>
-          <span className="text-xs text-muted-foreground">
-            Updated {poi.updatedDate}
-          </span>
+          {formattedUpdatedAt && (
+            <span className="text-xs text-muted-foreground">
+              Updated {formattedUpdatedAt}
+            </span>
+          )}
         </div>
       </div>
 
@@ -101,10 +127,10 @@ export default function POICard({ poi }: POICardProps) {
         </Button>
       </div>
 
-      <EditPOIModal
-        isOpen={isEditModalOpen}
-        onClose={handleCloseEditModal}
-        poi={poi}
+      <PointOfInterestModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        pointOfInterest={poi}
       />
     </div>
   );

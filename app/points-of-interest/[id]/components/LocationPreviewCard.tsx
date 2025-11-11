@@ -1,11 +1,16 @@
 import { Map } from "@/icons/Icons";
-import { POI } from "@/lib/points-of-interest/types";
+import { PointOfInterest } from "@/lib/points-of-interest/types";
 
 interface LocationPreviewCardProps {
-  poi: POI;
+  poi: PointOfInterest;
 }
 
 export function LocationPreviewCard({ poi }: LocationPreviewCardProps) {
+  const latitude =
+    poi.mapCoordinates?.latitude ?? poi.mapCoordinates?.y ?? null;
+  const longitude =
+    poi.mapCoordinates?.longitude ?? poi.mapCoordinates?.x ?? null;
+
   return (
     <div className="bg-card border border-border rounded-xl p-6">
       <h3 className="text-lg font-semibold text-card-foreground mb-4">
@@ -16,9 +21,13 @@ export function LocationPreviewCard({ poi }: LocationPreviewCardProps) {
         <p className="text-sm font-medium text-muted-foreground mb-1">
           Map Preview
         </p>
-        {poi.coordinates && (
+        {latitude !== null && longitude !== null ? (
           <p className="text-xs text-muted-foreground">
-            x: {poi.coordinates.x}, y: {poi.coordinates.y}
+            Latitude: {latitude}, Longitude: {longitude}
+          </p>
+        ) : (
+          <p className="text-xs text-muted-foreground">
+            Coordinates not available
           </p>
         )}
       </div>

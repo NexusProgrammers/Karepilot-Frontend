@@ -1,302 +1,522 @@
+import { useState, useMemo, useEffect } from "react";
+import dynamic from "next/dynamic";
+import { Formik, Form } from "formik";
+
+import toast from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import { ToggleSwitch } from "@/components/common/ToggleSwitch";
 import { CustomInput } from "@/components/common/CustomInput";
 import { CustomSelect } from "@/components/common/CustomSelect";
 import { CustomTextarea } from "@/components/common/CustomTextarea";
-import { ToggleSwitch } from "@/components/common/ToggleSwitch";
-import { CreatePIOIcon } from "@/icons/Svg";
+import { X } from "@/icons/Icons";
+import {
+  useCreatePointOfInterestMutation,
+  useUpdatePointOfInterestMutation,
+} from "@/lib/api/pointsOfInterestApi";
+import { useGetOrganizationsQuery } from "@/lib/api/organizationsApi";
+import { PointOfInterest } from "@/lib/points-of-interest/types";
 import { buildings, facilities, floors } from "@/lib/dashboard/data";
-import { MapPin, X } from "@/icons/Icons";
-import dynamic from "next/dynamic";
-import { useState, useMemo } from "react";
-import { Button } from "@/components/ui/button";
+import { loginValidationSchema } from "@/lib/validations";
 
-interface CreatePOIModalProps {
+interface PointOfInterestModalProps {
   isOpen: boolean;
   onClose: () => void;
+  pointOfInterest?: PointOfInterest | null;
+  onSuccess?: () => void;
 }
 
-export function CreatePOIModal({ isOpen, onClose }: CreatePOIModalProps) {
-  const GoogleMap = useMemo(
+const statusOptions = ["Active", "Inactive", "Maintenance"];
+
+const GoogleMap = dynamic(
+  () => import("@/components/maps").then((mod) => mod.InteractivePoiMap),
+  { ssr: false }
+);
+
+export function PointOfInterestModal({
+  isOpen,
+  onClose,
+  pointOfInterest,
+  onSuccess,
+}: PointOfInterestModalProps) {
+  const isEditMode = Boolean(pointOfInterest);
+
+  const [createPointOfInterest, { isLoading: isCreating }] =
+    useCreatePointOfInterestMutation();
+  const [updatePointOfInterest, { isLoading: isUpdating }] =
+    useUpdatePointOfInterestMutation();
+
+  const { data: organizationsData } = useGetOrganizationsQuery({ limit: 100 });
+
+  const organizationOptions = useMemo(
     () =>
-      dynamic(
-        () =>
-          import("@/components/maps").then((mod) => mod.InteractivePoiMap),
-        { ssr: false },
-      ),
-    [],
+      organizationsData?.data?.organizations?.map((org) => ({
+        name: org.name,
+        value: org.id,
+      })) ?? [],
+    [organizationsData]
   );
 
-  const [poiName, setPoiName] = useState("");
-  const [facility, setFacility] = useState("");
-  const [building, setBuilding] = useState("");
-  const [floor, setFloor] = useState("");
-  const [roomNumber, setRoomNumber] = useState("");
-  const [description, setDescription] = useState("");
-  const [tags, setTags] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [operatingHours, setOperatingHours] = useState("");
-  const [wheelchairAccessible, setWheelchairAccessible] = useState(false);
-  const [hearingLoop, setHearingLoop] = useState(false);
-  const [visualAidSupport, setVisualAidSupport] = useState(false);
-  const [roomNumberAlt, setRoomNumberAlt] = useState("");
-  const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
+  const initialValues = useMemo(
+    () => ({
+      organizationId: pointOfInterest?.organization?.id ?? "",
+      name: pointOfInterest?.name ?? "",
+      category: pointOfInterest?.category ?? "",
+      categoryType: pointOfInterest?.categoryType ?? "",
+      building: pointOfInterest?.building ?? "",
+      floor: pointOfInterest?.floor ?? "",
+      roomNumber: pointOfInterest?.roomNumber ?? "",
+      description: pointOfInterest?.description ?? "",
+      tags: pointOfInterest?.tags?.join(", ") ?? "",
+      amenities: pointOfInterest?.amenities?.join(", ") ?? "",
+      phone: pointOfInterest?.contact?.phone ?? "",
+      email: pointOfInterest?.contact?.email ?? "",
+      operatingHours: pointOfInterest?.contact?.operatingHours ?? "",
+      wheelchairAccessible:
+        pointOfInterest?.accessibility?.wheelchairAccessible ?? false,
+      hearingLoop: pointOfInterest?.accessibility?.hearingLoop ?? false,
+      visualAidSupport:
+        pointOfInterest?.accessibility?.visualAidSupport ?? false,
+      status: pointOfInterest?.status ?? "Active",
+      latitude:
+        pointOfInterest?.mapCoordinates?.latitude?.toString() ??
+        pointOfInterest?.mapCoordinates?.y?.toString() ??
+        "",
+      longitude:
+        pointOfInterest?.mapCoordinates?.longitude?.toString() ??
+        pointOfInterest?.mapCoordinates?.x?.toString() ??
+        "",
+      isActive: pointOfInterest?.isActive ?? true,
+    }),
+    [pointOfInterest]
+  );
 
-  const handleSubmit = () => {
-    console.log({
-      poiName,
-      facility,
-      building,
-      floor,
-      roomNumber,
-      description,
-      tags,
-      email,
-      phone,
-      operatingHours,
-      wheelchairAccessible,
-      hearingLoop,
-      visualAidSupport,
-      roomNumberAlt,
-      coordinates,
-    });
-  };
+  const [marker, setMarker] = useState<{ lat: number; lng: number } | null>(
+    null
+  );
 
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      onClose();
+  useEffect(() => {
+    if (!isOpen) {
+      setMarker(null);
+      return;
     }
+
+    const lat =
+      pointOfInterest?.mapCoordinates?.latitude ??
+      pointOfInterest?.mapCoordinates?.y;
+    const lng =
+      pointOfInterest?.mapCoordinates?.longitude ??
+      pointOfInterest?.mapCoordinates?.x;
+
+    if (typeof lat === "number" && typeof lng === "number") {
+      setMarker({ lat, lng });
+    } else {
+      setMarker(null);
+    }
+  }, [isOpen, pointOfInterest]);
+
+  const handleClose = (resetForm?: () => void) => {
+    resetForm?.();
+    onClose();
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
+
+  const isMutationLoading = isCreating || isUpdating;
 
   return (
-    <div
-      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
-      onClick={handleBackdropClick}
+    <Formik
+      initialValues={initialValues}
+      validationSchema={loginValidationSchema}
+      enableReinitialize
+      onSubmit={async (values, { setSubmitting, resetForm }) => {
+        try {
+          const payload = {
+            organizationId: values.organizationId,
+            name: values.name,
+            category: values.category,
+            categoryType: values.categoryType || undefined,
+            building: values.building,
+            floor: values.floor,
+            roomNumber: values.roomNumber || undefined,
+            description: values.description || undefined,
+            tags: values.tags
+              ? values.tags
+                  .split(",")
+                  .map((tag) => tag.trim())
+                  .filter(Boolean)
+              : [],
+            amenities: values.amenities
+              ? values.amenities
+                  .split(",")
+                  .map((amenity) => amenity.trim())
+                  .filter(Boolean)
+              : [],
+            contact:
+              values.phone || values.email || values.operatingHours
+                ? {
+                    phone: values.phone || undefined,
+                    email: values.email || undefined,
+                    operatingHours: values.operatingHours || undefined,
+                  }
+                : undefined,
+            accessibility: {
+              wheelchairAccessible: values.wheelchairAccessible,
+              hearingLoop: values.hearingLoop,
+              visualAidSupport: values.visualAidSupport,
+            },
+            status: values.status,
+            mapCoordinates:
+              values.latitude || values.longitude
+                ? {
+                    latitude: values.latitude
+                      ? parseFloat(values.latitude)
+                      : undefined,
+                    longitude: values.longitude
+                      ? parseFloat(values.longitude)
+                      : undefined,
+                  }
+                : undefined,
+            isActive: values.isActive,
+          };
+
+          if (isEditMode && pointOfInterest) {
+            await updatePointOfInterest({
+              id: pointOfInterest.id,
+              data: payload,
+            }).unwrap();
+            toast.success("Point of interest updated successfully");
+          } else {
+            await createPointOfInterest(payload).unwrap();
+            toast.success("Point of interest created successfully");
+          }
+
+          handleClose(resetForm);
+          onSuccess?.();
+        } catch (err: any) {
+          console.error("POI mutation error:", err);
+          toast.error(
+            err?.data?.message ||
+              "Failed to save point of interest. Please try again."
+          );
+        } finally {
+          setSubmitting(false);
+        }
+      }}
     >
-      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-[700px] relative max-h-[90vh] overflow-hidden flex flex-col">
-        <div className="px-6 pt-6 pb-4 border-b border-border">
-          <div className="flex items-start justify-between mb-2">
-            <h2 className="text-xl font-semibold text-card-foreground">
-              Create Point of Interest
-            </h2>
-            <Button
-              onClick={onClose}
-              variant="ghost"
-              size="sm"
-              className="text-muted-foreground hover:text-foreground transition-colors -mt-1 cursor-pointer p-1 h-auto"
-            >
-              <X className="w-5 h-5" />
-            </Button>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Add a new location or service to help visitors navigate
-          </p>
-        </div>
-
-        <div className="px-6 py-6 overflow-y-auto flex-1">
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold text-card-foreground mb-1">
-              POI Details
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              Provide information about this point of interest
-            </p>
-          </div>
-
-          <div className="space-y-5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <CustomInput
-                value={poiName}
-                onChange={setPoiName}
-                placeholder="e.g. Emergency Department"
-                label="POI Name"
-                required
-              />
-
-              <CustomSelect
-                value={facility}
-                onChange={setFacility}
-                options={facilities}
-                placeholder="Select facility"
-                label="Facility"
-                required
-              />
+      {({
+        values,
+        errors,
+        touched,
+        setFieldValue,
+        isSubmitting,
+        resetForm,
+      }) => (
+        <div
+          className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              handleClose(resetForm);
+            }
+          }}
+        >
+          <Form className="bg-card rounded-2xl shadow-2xl w-full max-w-[700px] max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="px-6 pt-6 pb-4 border-b border-border">
+              <div className="flex items-start justify-between mb-2">
+                <h2 className="text-xl font-semibold text-card-foreground">
+                  {isEditMode
+                    ? "Edit Point of Interest"
+                    : "Create Point of Interest"}
+                </h2>
+                <Button
+                  type="button"
+                  onClick={() => handleClose(resetForm)}
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground hover:text-foreground transition-colors -mt-1 cursor-pointer p-1 h-auto"
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {isEditMode
+                  ? "Update information about this point of interest"
+                  : "Add a new location or service to help visitors navigate"}
+              </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              <CustomSelect
-                value={building}
-                onChange={setBuilding}
-                options={buildings}
-                placeholder="Select building"
-                label="Building"
-                required
-              />
-
-              <CustomSelect
-                value={floor}
-                onChange={setFloor}
-                options={floors}
-                placeholder="Select floor"
-                label="Floor"
-                required
-              />
-              <CustomInput
-                value={roomNumber}
-                onChange={setRoomNumber}
-                placeholder="e.g. ED-001"
-                label="Room Number"
-                required
-              />
-            </div>
-
-            <CustomTextarea
-              value={description}
-              onChange={setDescription}
-              placeholder="Brief description of the location or service"
-              label="Description"
-            />
-
-            <CustomInput
-              value={tags}
-              onChange={setTags}
-              placeholder="e.g. emergency, 24/7, trauma (comma-separated)"
-              label="Tags"
-            />
-
-            <div className="pt-4 border-t border-border">
-              <h3 className="text-sm font-semibold text-card-foreground mb-4">
-                Contact Information
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                <CustomInput
-                  value={phone}
-                  onChange={setPhone}
-                  placeholder="+1-555-012-4353"
-                  label="Phone"
-                  type="tel"
-                />
-
-                <CustomInput
-                  value={email}
-                  onChange={setEmail}
-                  placeholder="email@example.com"
-                  label="Email"
-                  type="email"
+            <div className="px-6 py-6 overflow-y-auto flex-1 space-y-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CustomSelect
+                  value={values.organizationId}
+                  onChange={(value) => setFieldValue("organizationId", value)}
+                  options={organizationOptions}
+                  placeholder="Select organization"
+                  label="Organization"
+                  required
+                  error={errors.organizationId}
+                  touched={touched.organizationId}
                 />
                 <CustomInput
-                  value={operatingHours}
-                  onChange={setOperatingHours}
-                  placeholder="9:00 AM - 5:00 PM"
-                  label="Operating Hours"
+                  value={values.name}
+                  onChange={(value) => setFieldValue("name", value)}
+                  placeholder="e.g. Emergency Department"
+                  label="POI Name"
+                  required
+                  error={errors.name}
+                  touched={touched.name}
                 />
               </div>
-            </div>
 
-            <div className="pt-4 border-t border-border">
-              <h3 className="text-sm font-semibold text-card-foreground mb-4">
-                Accessibility Features
-              </h3>
-              <div className="space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                <CustomSelect
+                  value={values.category}
+                  onChange={(value) => setFieldValue("category", value)}
+                  options={facilities}
+                  placeholder="Select category"
+                  label="Category"
+                  required
+                  error={errors.category}
+                  touched={touched.category}
+                />
+
+                <CustomSelect
+                  value={values.categoryType}
+                  onChange={(value) => setFieldValue("categoryType", value)}
+                  options={[
+                    "Medical Services",
+                    "Passenger Amenities",
+                    "Dining",
+                    "Leisure",
+                    "Security",
+                  ]}
+                  placeholder="Select category type"
+                  label="Category Type"
+                  error={errors.categoryType}
+                  touched={touched.categoryType}
+                />
+
+                <CustomSelect
+                  value={values.status}
+                  onChange={(value) => setFieldValue("status", value)}
+                  options={statusOptions}
+                  placeholder="Select status"
+                  label="Status"
+                  required
+                  error={errors.status}
+                  touched={touched.status}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                <CustomSelect
+                  value={values.building}
+                  onChange={(value) => setFieldValue("building", value)}
+                  options={buildings}
+                  placeholder="Select building"
+                  label="Building"
+                  required
+                  error={errors.building}
+                  touched={touched.building}
+                />
+
+                <CustomSelect
+                  value={values.floor}
+                  onChange={(value) => setFieldValue("floor", value)}
+                  options={floors}
+                  placeholder="Select floor"
+                  label="Floor"
+                  required
+                  error={errors.floor}
+                  touched={touched.floor}
+                />
+                <CustomInput
+                  value={values.roomNumber}
+                  onChange={(value) => setFieldValue("roomNumber", value)}
+                  placeholder="e.g. ED-001"
+                  label="Room Number"
+                  error={errors.roomNumber}
+                  touched={touched.roomNumber}
+                />
+              </div>
+
+              <CustomTextarea
+                value={values.description}
+                onChange={(value) => setFieldValue("description", value)}
+                placeholder="Brief description of the location or service"
+                label="Description"
+              />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CustomInput
+                  value={values.tags}
+                  onChange={(value) => setFieldValue("tags", value)}
+                  placeholder="e.g. emergency, 24/7, trauma"
+                  label="Tags"
+                />
+                <CustomInput
+                  value={values.amenities}
+                  onChange={(value) => setFieldValue("amenities", value)}
+                  placeholder="e.g. WiFi, Waiting Area"
+                  label="Amenities"
+                />
+              </div>
+
+              <div className="pt-4 border-t border-border">
+                <h3 className="text-sm font-semibold text-card-foreground mb-4">
+                  Contact Information
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  <CustomInput
+                    value={values.phone}
+                    onChange={(value) => setFieldValue("phone", value)}
+                    placeholder="+1-555-012-4353"
+                    label="Phone"
+                    type="tel"
+                  />
+
+                  <CustomInput
+                    value={values.email}
+                    onChange={(value) => setFieldValue("email", value)}
+                    placeholder="email@example.com"
+                    label="Email"
+                    type="email"
+                    error={errors.email}
+                    touched={touched.email}
+                  />
+                  <CustomInput
+                    value={values.operatingHours}
+                    onChange={(value) => setFieldValue("operatingHours", value)}
+                    placeholder="9:00 AM - 5:00 PM"
+                    label="Operating Hours"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-border space-y-3">
+                <h3 className="text-sm font-semibold text-card-foreground">
+                  Accessibility Features
+                </h3>
                 <ToggleSwitch
-                  checked={wheelchairAccessible}
-                  onChange={setWheelchairAccessible}
+                  checked={values.wheelchairAccessible}
+                  onChange={(checked) =>
+                    setFieldValue("wheelchairAccessible", checked)
+                  }
                   label="Wheelchair Accessible"
                   description="Full wheelchair accessibility"
                 />
                 <ToggleSwitch
-                  checked={hearingLoop}
-                  onChange={setHearingLoop}
+                  checked={values.hearingLoop}
+                  onChange={(checked) => setFieldValue("hearingLoop", checked)}
                   label="Hearing Loop"
                   description="Hearing assistance available"
                 />
                 <ToggleSwitch
-                  checked={visualAidSupport}
-                  onChange={setVisualAidSupport}
+                  checked={values.visualAidSupport}
+                  onChange={(checked) =>
+                    setFieldValue("visualAidSupport", checked)
+                  }
                   label="Visual Aid Support"
                   description="Visual aids available"
                 />
               </div>
-            </div>
 
-            <div className="pt-4 border-t border-border">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <CustomInput
-                  value={roomNumberAlt}
-                  onChange={setRoomNumberAlt}
-                  placeholder="e.g. ED-001"
-                  label="Room Number"
-                  required
+              <div className="pt-4 border-t border-border space-y-3">
+                <ToggleSwitch
+                  checked={values.isActive}
+                  onChange={(checked) => setFieldValue("isActive", checked)}
+                  label="Active"
+                  description="Toggle the active status of this POI"
                 />
-                <div className="grid grid-cols-2 gap-3">
-                  <CustomInput
-                    value={coordinates?.lat ? coordinates.lat.toFixed(6) : ""}
-                    onChange={() => undefined}
-                    placeholder="Latitude"
-                    label="Latitude"
-                    disabled
-                  />
-                  <CustomInput
-                    value={coordinates?.lng ? coordinates.lng.toFixed(6) : ""}
-                    onChange={() => undefined}
-                    placeholder="Longitude"
-                    label="Longitude"
-                    disabled
+              </div>
+
+              <div className="pt-4 border-t border-border">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <CustomInput
+                      value={values.latitude}
+                      onChange={(value) => setFieldValue("latitude", value)}
+                      placeholder="Latitude"
+                      label="Latitude"
+                      error={errors.latitude}
+                      touched={touched.latitude}
+                    />
+                    <CustomInput
+                      value={values.longitude}
+                      onChange={(value) => setFieldValue("longitude", value)}
+                      placeholder="Longitude"
+                      label="Longitude"
+                      error={errors.longitude}
+                      touched={touched.longitude}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-sm font-semibold text-card-foreground">
+                      Location on Map
+                    </h4>
+                    <p className="text-xs text-muted-foreground">
+                      Search for a location or click on the map to set the
+                      precise POI coordinates
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-auto px-3 py-2 cursor-pointer"
+                    onClick={() => {
+                      setMarker(null);
+                      setFieldValue("latitude", "");
+                      setFieldValue("longitude", "");
+                    }}
+                  >
+                    Reset
+                  </Button>
+                </div>
+                <div className="border border-border rounded-xl overflow-hidden">
+                  <GoogleMap
+                    height={320}
+                    marker={marker}
+                    onMarkerChange={(coords) => {
+                      setMarker(coords);
+                      setFieldValue("latitude", coords?.lat.toFixed(6));
+                      setFieldValue("longitude", coords?.lng.toFixed(6));
+                    }}
                   />
                 </div>
               </div>
             </div>
 
-            <div className="pt-2 space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="text-sm font-semibold text-card-foreground">
-                    Location on Map
-                  </h4>
-                  <p className="text-xs text-muted-foreground">
-                    Search for a location or click on the map to set the precise POI coordinates
-                  </p>
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="h-auto px-3 py-2 cursor-pointer"
-                  onClick={() => setCoordinates(null)}
-                >
-                  Reset
-                </Button>
-              </div>
-              <div className="border border-border rounded-xl overflow-hidden">
-                <GoogleMap
-                  height={320}
-                  marker={coordinates}
-                  onMarkerChange={setCoordinates}
-                />
-              </div>
+            <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-border bg-muted/50">
+              <Button
+                type="button"
+                onClick={() => handleClose(resetForm)}
+                variant="outline"
+                className="px-5 py-2.5 cursor-pointer text-sm font-medium text-muted-foreground bg-background border border-border rounded-lg hover:bg-accent transition-colors flex items-center gap-2"
+                disabled={isSubmitting || isMutationLoading}
+              >
+                <X className="w-4 h-4" />
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="px-5 flex gap-2 py-2.5 text-sm cursor-pointer font-medium text-white bg-[#3D8C6C] rounded-lg transition-colors hover:bg-[#3D8C6C]/90 disabled:opacity-60"
+                disabled={isSubmitting || isMutationLoading}
+              >
+                {isEditMode ? "Save Changes" : "Create POI"}
+              </Button>
             </div>
-          </div>
+          </Form>
         </div>
-
-        <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-border bg-muted/50">
-          <Button
-            onClick={onClose}
-            variant="outline"
-            className="px-5 py-2.5 cursor-pointer text-sm font-medium text-muted-foreground bg-background border border-border rounded-lg hover:bg-accent transition-colors flex items-center gap-2"
-          >
-            <X className="w-4 h-4" />
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            className="px-5 flex gap-2 py-2.5 text-sm cursor-pointer font-medium text-white bg-[#3D8C6C] rounded-lg transition-colors hover:bg-[#3D8C6C]/90"
-          >
-            <CreatePIOIcon />
-            Create POI
-          </Button>
-        </div>
-      </div>
-    </div>
+      )}
+    </Formik>
   );
 }
+
+export { PointOfInterestModal as CreatePOIModal };
