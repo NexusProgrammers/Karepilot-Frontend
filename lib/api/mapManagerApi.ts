@@ -148,7 +148,7 @@ export const mapManagerApi = createApi({
     >({
       query: (params) => ({
         url: `${mapManagerBasePath}/buildings`,
-        params: sanitizeQueryParams(params ?? {}),
+        params: sanitizeQueryParams(params as Record<string, unknown> ?? {}),
       }),
       providesTags: (result) =>
         result?.data?.buildings
@@ -250,7 +250,7 @@ export const mapManagerApi = createApi({
     >({
       query: (params) => ({
         url: `${mapManagerBasePath}/floors`,
-        params: sanitizeQueryParams(params ?? {}),
+        params: sanitizeQueryParams(params as Record<string, unknown> ?? {}),
       }),
       providesTags: (result) =>
         result?.data?.floors
