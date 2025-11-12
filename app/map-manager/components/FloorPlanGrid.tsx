@@ -1,106 +1,173 @@
-"use client";
+ "use client";
 
-import { floorPlans } from "@/lib/map-manager/data";
-import { MapPin, Settings } from "@/icons/Icons";
+import { MapManagerFloor } from "@/lib/types/map-manager";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { MapPin, Edit, Plus } from "@/icons/Icons";
 
-export default function FloorPlanGrid() {
+interface FloorPlanGridProps {
+  floors: MapManagerFloor[];
+  isLoading?: boolean;
+  onCreateFloor: () => void;
+  onEditFloor: (floor: MapManagerFloor) => void;
+}
+
+const FloorGridSkeleton = () => (
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {Array.from({ length: 4 }).map((_, index) => (
+      <div
+        key={index}
+        className="bg-card rounded-4xl border border-border overflow-hidden p-6 animate-pulse"
+      >
+        <div className="relative h-48 bg-muted rounded-3xl mb-6" />
+        <div className="space-y-3">
+          <div className="h-4 bg-muted rounded w-2/3" />
+          <div className="h-4 bg-muted rounded w-1/2" />
+          <div className="h-4 bg-muted rounded w-1/3" />
+        </div>
+        <div className="grid grid-cols-2 gap-3 mt-6">
+          <div className="h-9 bg-muted rounded" />
+          <div className="h-9 bg-muted rounded" />
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+export default function FloorPlanGrid({
+  floors,
+  isLoading,
+  onCreateFloor,
+  onEditFloor,
+}: FloorPlanGridProps) {
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="flex justify-end">
+          <Button
+            variant="outline"
+            className="cursor-not-allowed opacity-50"
+            disabled
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Floor
+          </Button>
+        </div>
+        <FloorGridSkeleton />
+      </div>
+    );
+  }
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {floorPlans.map((plan) => (
-        <div
-          key={plan.id}
-          className="bg-card rounded-4xl shadow-sm border border-gray-300 overflow-hidden hover:shadow-md transition-shadow p-6"
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <Button
+          onClick={onCreateFloor}
+          className="bg-[#3D8C6C] hover:bg-[#2D6B4F] text-white rounded-xl cursor-pointer"
         >
-          <div className="relative h-48 md:h-80 bg-muted flex items-center justify-center rounded-3xl border border-dashed border-gray-200">
-            {plan.hasPreview ? (
-              <div className="w-full h-full bg-gradient-to-br from-muted/50 to-muted/30 flex items-center justify-center">
+          <Plus className="w-4 h-4 mr-2" />
+          Add Floor
+        </Button>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {floors.map((floor) => {
+          const building =
+            typeof floor.building === "object" && floor.building !== null
+              ? floor.building
+              : undefined;
+
+          return (
+            <div
+              key={floor.id}
+              className="bg-card rounded-4xl border border-border overflow-hidden hover:shadow-md transition-shadow"
+            >
+              <div className="relative h-48 bg-muted flex items-center justify-center rounded-3xl border border-dashed border-border mx-6 mt-6 mb-4">
                 <div className="text-center text-muted-foreground">
                   <MapPin className="w-8 h-8 mx-auto mb-2" />
-                  <p className="text-sm">Map Preview</p>
+                  <p className="text-sm">
+                    Level {floor.level} • Sequence {floor.sequence}
+                  </p>
+                </div>
+                <div className="absolute top-3 right-3">
+                  <span
+                    className={`px-3 py-1 text-xs font-medium rounded-full ${
+                      floor.isDefault
+                        ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {floor.isDefault ? "Default Floor" : "Floor"}
+                  </span>
                 </div>
               </div>
-            ) : (
-              <div className="text-center text-muted-foreground">
-                <MapPin className="w-8 h-8 mx-auto mb-2" />
-                <p className="text-sm">No Preview</p>
+
+              <div className="px-6 pb-6">
+                <h3 className="font-semibold text-card-foreground text-base mb-2">
+                  {floor.name}
+                </h3>
+                {building && (
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {building.name}
+                    {building.code ? ` • ${building.code}` : ""}
+                  </p>
+                )}
+
+                {floor.description && (
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {floor.description}
+                  </p>
+                )}
+
+                <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                  <span>{floor.isBasement ? "Basement Level" : "Above Ground"}</span>
+                  <span>{floor.isActive ? "Active" : "Inactive"}</span>
+                </div>
+
+                {floor.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {floor.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-3 py-1 text-xs font-medium bg-muted text-muted-foreground rounded-full"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <hr className="mb-6" />
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    className="flex-1 cursor-pointer px-4 py-2 border border-border rounded-lg text-sm font-medium text-foreground hover:bg-accent transition-colors"
+                    onClick={() => onEditFloor(floor)}
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit Floor
+                  </Button>
+                </div>
               </div>
-            )}
-
-            <div className="absolute top-3 right-3">
-              {plan.status === "Published" && (
-                <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium rounded-full">
-                  {plan.status}
-                </span>
-              )}
-              {plan.status === "Building" && (
-                <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-medium rounded-full">
-                  {plan.status}
-                </span>
-              )}
-              {plan.status === "New" && (
-                <span className="px-3 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 text-xs font-medium rounded-full">
-                  {plan.status}
-                </span>
-              )}
             </div>
-          </div>
-
-          <div className="p-4">
-            <h3 className="font-semibold text-card-foreground text-base mb-2">
-              {plan.title}
-            </h3>
-
-            <p className="text-sm text-muted-foreground mb-4">
-              {plan.subtitle}
-            </p>
-
-            <div className="space-y-1 mb-4">
-              <div className="flex justify-between items-center text-sm text-muted-foreground">
-                <span>
-                  {plan.fileType} • {plan.fileSize}
-                </span>
-                <span>{plan.version}</span>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Modified: {plan.modifiedDate}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Scale: {plan.scale}
-              </p>
-            </div>
-            <hr className="mb-6" />
-            <div className="flex gap-2 w-full">
-              <Link href="/map-manager/map-editor" className="w-full">
-                <Button
-                  variant="outline"
-                  className="flex cursor-pointer w-full items-center justify-center gap-2 flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground hover:bg-accent transition-colors"
-                >
-                  Preview
-                </Button>
-              </Link>
-              <Link href="/map-manager/map-editor" className="w-full">
-                <Button
-                  variant="outline"
-                  className="flex cursor-pointer items-center w-full justify-center gap-2 flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground hover:bg-accent transition-colors"
-                >
-                  Edit
-                </Button>
-              </Link>
-              <Link href="/map-manager/map-editor">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex cursor-pointer items-center justify-center w-10 h-10 bg-background border border-border rounded-lg text-foreground hover:bg-accent transition-colors"
-                >
-                  <Settings className="w-4 h-4 text-muted-foreground" />
-                </Button>
-              </Link>
-            </div>
-          </div>
+          );
+        })}
+      </div>
+      {floors.length === 0 && (
+        <div className="bg-card border border-border rounded-3xl p-10 text-center">
+          <h3 className="text-lg font-semibold text-card-foreground mb-2">
+            No floors found
+          </h3>
+          <p className="text-sm text-muted-foreground mb-6">
+            Try adjusting your filters or add a new floor to get started.
+          </p>
+          <Button
+            onClick={onCreateFloor}
+            className="bg-[#3D8C6C] hover:bg-[#2D6B4F] text-white rounded-xl cursor-pointer"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Floor
+          </Button>
         </div>
-      ))}
+      )}
     </div>
   );
 }
