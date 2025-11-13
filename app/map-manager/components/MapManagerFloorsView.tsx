@@ -8,15 +8,19 @@ import MapManagerSearchAndFilters from "./SearchAndFilters";
 import FloorPlanGrid from "./FloorPlanGrid";
 import ManageBuildingModal from "./ManageBuildingModal";
 import ManageFloorModal from "./ManageFloorModal";
+import ManageFloorPlanModal from "./ManageFloorPlanModal";
 import { usePrimaryOrganization } from "@/lib/hooks/usePrimaryOrganization";
 import {
   useGetMapManagerBuildingsQuery,
-  useGetMapManagerBuildingStatsQuery,
   useGetMapManagerFloorsQuery,
+  useGetMapManagerFloorPlansQuery,
+  useGetMapManagerFloorPlanStatsQuery,
 } from "@/lib/api/mapManagerApi";
+import { useGetOrganizationsQuery } from "@/lib/api/organizationsApi";
 import {
   MapManagerBuilding,
   MapManagerFloor,
+  MapManagerFloorPlan,
 } from "@/lib/types/map-manager";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
@@ -26,11 +30,17 @@ import { cn } from "@/lib/utils";
 
 export default function MapManagerFloorsView() {
   const {
-    organizationId,
-    organizationName,
-    isLoading: isOrganizationLoading,
+    organizationId: primaryOrganizationId,
+    organizationName: primaryOrganizationName,
+    isLoading: isPrimaryOrganizationLoading,
   } = usePrimaryOrganization();
 
+  const [selectedOrganizationId, setSelectedOrganizationId] = useState<string | undefined>(
+    undefined,
+  );
+  const [selectedOrganizationName, setSelectedOrganizationName] = useState<string | undefined>(
+    undefined,
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBuildingId, setSelectedBuildingId] = useState<string>("all");
   const [isBuildingModalOpen, setIsBuildingModalOpen] = useState(false);
@@ -40,9 +50,42 @@ export default function MapManagerFloorsView() {
   const [initialBuildingIdForFloor, setInitialBuildingIdForFloor] = useState<
     string | undefined
   >(undefined);
+  const [isFloorPlanModalOpen, setIsFloorPlanModalOpen] = useState(false);
+  const [floorPlanToEdit, setFloorPlanToEdit] = useState<MapManagerFloorPlan | null>(null);
 
-  const buildingsQueryEnabled = Boolean(organizationId);
-  const floorsQueryEnabled = Boolean(organizationId);
+  const { data: organizationsData, isFetching: isFetchingOrganizations } =
+    useGetOrganizationsQuery({
+      limit: 100,
+      status: "active",
+    });
+
+  useEffect(() => {
+    if (!selectedOrganizationId && primaryOrganizationId) {
+      setSelectedOrganizationId(primaryOrganizationId);
+      setSelectedOrganizationName(primaryOrganizationName);
+    }
+  }, [primaryOrganizationId, primaryOrganizationName, selectedOrganizationId]);
+
+  useEffect(() => {
+    if (organizationsData?.data?.organizations && selectedOrganizationId) {
+      const currentOrg = organizationsData.data.organizations.find(
+        (org) => org.id === selectedOrganizationId,
+      );
+      if (currentOrg) {
+        setSelectedOrganizationName(currentOrg.name);
+      }
+    }
+  }, [organizationsData?.data?.organizations, selectedOrganizationId]);
+
+  const organizationOptions =
+    organizationsData?.data?.organizations.map((organization) => ({
+      label: organization.name,
+      value: organization.id,
+    })) ?? [];
+
+  const buildingsQueryEnabled = Boolean(selectedOrganizationId);
+  const floorsQueryEnabled = Boolean(selectedOrganizationId);
+  const floorPlansQueryEnabled = Boolean(selectedOrganizationId);
 
   const {
     data: buildingsData,
@@ -51,14 +94,17 @@ export default function MapManagerFloorsView() {
     refetch: refetchBuildings,
   } = useGetMapManagerBuildingsQuery(
     {
-      organization: organizationId,
+      organization: selectedOrganizationId,
       search: searchQuery || undefined,
       limit: 50,
     },
     { skip: !buildingsQueryEnabled },
   );
 
-  const buildings = buildingsData?.data?.buildings ?? [];
+  const buildings = useMemo(
+    () => buildingsData?.data?.buildings ?? [],
+    [buildingsData?.data?.buildings],
+  );
 
   useEffect(() => {
     if (
@@ -81,36 +127,55 @@ export default function MapManagerFloorsView() {
   }, [buildings]);
 
   const {
-    data: statsData,
-    isLoading: isLoadingStats,
-    isFetching: isFetchingStats,
-    refetch: refetchStats,
-  } = useGetMapManagerBuildingStatsQuery(
-    { organization: organizationId ?? undefined },
-    { skip: !organizationId },
+    data: floorPlanStatsData,
+    isLoading: isLoadingFloorPlanStats,
+    isFetching: isFetchingFloorPlanStats,
+    refetch: refetchFloorPlanStats,
+  } = useGetMapManagerFloorPlanStatsQuery(
+    { organization: selectedOrganizationId ?? undefined },
+    { skip: !floorPlansQueryEnabled },
   );
 
   const {
-    data: floorsData,
-    isLoading: isLoadingFloors,
-    isFetching: isFetchingFloors,
-    refetch: refetchFloors,
-  } = useGetMapManagerFloorsQuery(
+    data: floorPlansData,
+    isLoading: isLoadingFloorPlans,
+    isFetching: isFetchingFloorPlans,
+    refetch: refetchFloorPlans,
+  } = useGetMapManagerFloorPlansQuery(
     {
-      organization: organizationId,
+      organization: selectedOrganizationId,
       building: selectedBuildingId !== "all" ? selectedBuildingId : undefined,
       search: searchQuery || undefined,
       limit: 20,
     },
+    { skip: !floorPlansQueryEnabled },
+  );
+
+  const floorPlans = useMemo(
+    () => floorPlansData?.data?.floorPlans ?? [],
+    [floorPlansData?.data?.floorPlans],
+  );
+
+  const {
+    data: floorsData,
+    isFetching: isFetchingFloors,
+    refetch: refetchFloors,
+  } = useGetMapManagerFloorsQuery(
+    {
+      organization: selectedOrganizationId,
+      building: selectedBuildingId !== "all" ? selectedBuildingId : undefined,
+      limit: 100,
+    },
     { skip: !floorsQueryEnabled },
   );
 
-  const floors = floorsData?.data?.floors ?? [];
+  const floors = useMemo(() => floorsData?.data?.floors ?? [], [floorsData?.data?.floors]);
 
   const handleRefresh = () => {
     refetchBuildings();
     refetchFloors();
-    refetchStats();
+    refetchFloorPlans();
+    refetchFloorPlanStats();
   };
 
   const handleCreateBuilding = () => {
@@ -148,20 +213,31 @@ export default function MapManagerFloorsView() {
     setIsFloorModalOpen(true);
   };
 
+  const handleCreateFloorPlan = () => {
+    setFloorPlanToEdit(null);
+    setIsFloorPlanModalOpen(true);
+  };
+
+  const handleEditFloorPlan = (floorPlan: MapManagerFloorPlan) => {
+    setFloorPlanToEdit(floorPlan);
+    setIsFloorPlanModalOpen(true);
+  };
+
   const isLoadingAny =
-    isOrganizationLoading ||
+    isPrimaryOrganizationLoading ||
+    isFetchingOrganizations ||
     isLoadingBuildings ||
     isFetchingBuildings ||
-    isLoadingFloors ||
-    isFetchingFloors ||
-    isLoadingStats ||
-    isFetchingStats;
+    isLoadingFloorPlans ||
+    isFetchingFloorPlans ||
+    isLoadingFloorPlanStats ||
+    isFetchingFloorPlanStats;
 
   return (
     <DashboardLayout
       showBackButton
       showOrganizationHeader
-      organizationName={organizationName}
+      organizationName={selectedOrganizationName}
       pageTitle="Map Manager"
       backLink="/dashboard/central-medical-hospital"
     >
@@ -177,7 +253,16 @@ export default function MapManagerFloorsView() {
           </Button>
         </div>
         <MapManagerHeader
-          organizationName={organizationName}
+          organizationName={selectedOrganizationName}
+          organizationOptions={organizationOptions}
+          selectedOrganizationId={selectedOrganizationId}
+          onOrganizationChange={(organization) => {
+            setSelectedOrganizationId(organization);
+            setSelectedBuildingId("all");
+            setSearchQuery("");
+          }}
+          isOrganizationsLoading={isPrimaryOrganizationLoading || isFetchingOrganizations}
+          onPrimaryAction={handleCreateFloorPlan}
           extraActions={
             <Button
               variant="outline"
@@ -189,8 +274,8 @@ export default function MapManagerFloorsView() {
           }
         />
         <MapManagerStats
-          stats={statsData?.data}
-          isLoading={isLoadingStats || isFetchingStats}
+          stats={floorPlanStatsData?.data}
+          isLoading={isLoadingFloorPlanStats || isFetchingFloorPlanStats}
         />
         <MapManagerTabs />
         <MapManagerSearchAndFilters
@@ -201,10 +286,10 @@ export default function MapManagerFloorsView() {
           onBuildingChange={setSelectedBuildingId}
         />
         <FloorPlanGrid
-          floors={floors}
-          isLoading={isLoadingFloors || isFetchingFloors}
-          onCreateFloor={() => handleAddFloor()}
-          onEditFloor={handleEditFloor}
+          floorPlans={floorPlans}
+          isLoading={isLoadingFloorPlans || isFetchingFloorPlans}
+          onCreateFloorPlan={handleCreateFloorPlan}
+          onEditFloorPlan={handleEditFloorPlan}
         />
       </div>
 
@@ -214,9 +299,9 @@ export default function MapManagerFloorsView() {
           setIsBuildingModalOpen(false);
           setBuildingToEdit(null);
           refetchBuildings();
-          refetchStats();
+          refetchFloorPlanStats();
         }}
-        organizationId={organizationId ?? ""}
+        organizationId={selectedOrganizationId ?? ""}
         building={buildingToEdit}
       />
 
@@ -228,12 +313,27 @@ export default function MapManagerFloorsView() {
           setInitialBuildingIdForFloor(undefined);
           refetchFloors();
           refetchBuildings();
-          refetchStats();
+          refetchFloorPlanStats();
         }}
-        organizationId={organizationId ?? ""}
+        organizationId={selectedOrganizationId ?? ""}
         buildings={buildings}
         floor={floorToEdit}
         initialBuildingId={initialBuildingIdForFloor}
+      />
+
+      <ManageFloorPlanModal
+        isOpen={isFloorPlanModalOpen}
+        onClose={() => {
+          setIsFloorPlanModalOpen(false);
+          setFloorPlanToEdit(null);
+          refetchFloorPlans();
+          refetchFloorPlanStats();
+          refetchFloors();
+          refetchBuildings();
+        }}
+        organizationId={selectedOrganizationId ?? ""}
+        buildings={buildings}
+        floorPlan={floorPlanToEdit}
       />
     </DashboardLayout>
   );

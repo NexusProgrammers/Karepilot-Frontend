@@ -13,6 +13,13 @@ import {
   MapManagerFloorQuery,
   MapManagerFloorResponse,
   MapManagerFloorsResponse,
+  MapManagerFloorPlan,
+  MapManagerFloorPlansResponse,
+  MapManagerFloorPlanResponse,
+  MapManagerFloorPlanQuery,
+  MapManagerFloorPlanStatsResponse,
+  CreateMapManagerFloorPlanRequest,
+  UpdateMapManagerFloorPlanRequest,
   MapManagerSettings,
   MapManagerSettingsResponse,
   UpdateMapManagerBuildingRequest,
@@ -33,6 +40,7 @@ const mapLayerDefaults: Record<MapLayerType, boolean> = {
   ruler: false,
   measurement: false,
   annotation: true,
+  
   message: false,
   media: false,
 };
@@ -100,6 +108,57 @@ const normalizeFloor = (floor: any): MapManagerFloor => {
   };
 };
 
+const normalizeFloorPlan = (floorPlan: any): MapManagerFloorPlan => {
+  const building = floorPlan.building;
+  const floor = floorPlan.floor;
+
+  return {
+    id: floorPlan.id || floorPlan._id,
+    organization: floorPlan.organization,
+    building:
+      typeof building === "object" && building !== null
+        ? {
+            id: building.id || building._id,
+            name: building.name,
+            code: building.code,
+          }
+        : {
+            id: building,
+            name: "",
+          },
+    floor:
+      typeof floor === "object" && floor !== null
+        ? {
+            id: floor.id || floor._id,
+            name: floor.name,
+            code: floor.code,
+            level: floor.level,
+          }
+        : {
+            id: floor,
+            name: "",
+          },
+    name: floorPlan.name,
+    status: floorPlan.status,
+    description: floorPlan.description ?? "",
+    scale: floorPlan.scale ?? "",
+    tags: Array.isArray(floorPlan.tags) ? floorPlan.tags : [],
+    file: floorPlan.file
+      ? {
+          fileName: floorPlan.file.fileName,
+          mimeType: floorPlan.file.mimeType,
+          fileSizeInBytes: floorPlan.file.fileSizeInBytes,
+          url: floorPlan.file.url,
+        }
+      : null,
+    previewUrl: floorPlan.preview?.url ?? undefined,
+    versionNumber: floorPlan.versionNumber ?? 1,
+    lastPublishedAt: floorPlan.lastPublishedAt ?? undefined,
+    createdAt: floorPlan.createdAt,
+    updatedAt: floorPlan.updatedAt,
+  };
+};
+
 const normalizeSettings = (settings: any): MapManagerSettings => ({
   organization: settings.organization,
   autoPublishUpdates: settings.autoPublishUpdates ?? false,
@@ -140,6 +199,8 @@ export const mapManagerApi = createApi({
     "MapManagerBuildingStats",
     "MapManagerFloors",
     "MapManagerSettings",
+    "MapManagerFloorPlans",
+    "MapManagerFloorPlanStats",
   ],
   endpoints: (builder) => ({
     getMapManagerBuildings: builder.query<
@@ -339,6 +400,108 @@ export const mapManagerApi = createApi({
         { type: "MapManagerBuildingStats", id: "STATS" },
       ],
     }),
+    getMapManagerFloorPlans: builder.query<
+      MapManagerFloorPlansResponse,
+      MapManagerFloorPlanQuery | void
+    >({
+      query: (params) => ({
+        url: `${mapManagerBasePath}/floor-plans`,
+        params: sanitizeQueryParams(params as Record<string, unknown> ?? {}),
+      }),
+      providesTags: (result) =>
+        result?.data?.floorPlans
+          ? [
+              ...result.data.floorPlans.map((plan) => ({
+                type: "MapManagerFloorPlans" as const,
+                id: plan.id,
+              })),
+              { type: "MapManagerFloorPlans" as const, id: "LIST" },
+            ]
+          : [{ type: "MapManagerFloorPlans" as const, id: "LIST" }],
+      transformResponse: (response: MapManagerFloorPlansResponse) => ({
+        ...response,
+        data: {
+          ...response.data,
+          floorPlans: response.data.floorPlans.map(normalizeFloorPlan),
+        },
+      }),
+    }),
+    getMapManagerFloorPlanById: builder.query<MapManagerFloorPlanResponse, string>({
+      query: (id) => ({
+        url: `${mapManagerBasePath}/floor-plans/${id}`,
+      }),
+      providesTags: (result, error, id) => [{ type: "MapManagerFloorPlans", id }],
+      transformResponse: (response: MapManagerFloorPlanResponse) => ({
+        ...response,
+        data: {
+          floorPlan: normalizeFloorPlan(response.data.floorPlan),
+        },
+      }),
+    }),
+    createMapManagerFloorPlan: builder.mutation<
+      MapManagerFloorPlanResponse,
+      CreateMapManagerFloorPlanRequest
+    >({
+      query: (data) => ({
+        url: `${mapManagerBasePath}/floor-plans`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: [
+        { type: "MapManagerFloorPlans", id: "LIST" },
+        { type: "MapManagerFloorPlanStats", id: "STATS" },
+      ],
+      transformResponse: (response: MapManagerFloorPlanResponse) => ({
+        ...response,
+        data: {
+          floorPlan: normalizeFloorPlan(response.data.floorPlan),
+        },
+      }),
+    }),
+    updateMapManagerFloorPlan: builder.mutation<
+      MapManagerFloorPlanResponse,
+      { id: string; data: UpdateMapManagerFloorPlanRequest }
+    >({
+      query: ({ id, data }) => ({
+        url: `${mapManagerBasePath}/floor-plans/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "MapManagerFloorPlans", id },
+        { type: "MapManagerFloorPlans", id: "LIST" },
+        { type: "MapManagerFloorPlanStats", id: "STATS" },
+      ],
+      transformResponse: (response: MapManagerFloorPlanResponse) => ({
+        ...response,
+        data: {
+          floorPlan: normalizeFloorPlan(response.data.floorPlan),
+        },
+      }),
+    }),
+    deleteMapManagerFloorPlan: builder.mutation<
+      { success: boolean; message: string },
+      string
+    >({
+      query: (id) => ({
+        url: `${mapManagerBasePath}/floor-plans/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: [
+        { type: "MapManagerFloorPlans", id: "LIST" },
+        { type: "MapManagerFloorPlanStats", id: "STATS" },
+      ],
+    }),
+    getMapManagerFloorPlanStats: builder.query<
+      MapManagerFloorPlanStatsResponse,
+      { organization?: string; building?: string; floor?: string } | void
+    >({
+      query: (params) => ({
+        url: `${mapManagerBasePath}/floor-plans/stats`,
+        params: sanitizeQueryParams(params ?? {}),
+      }),
+      providesTags: [{ type: "MapManagerFloorPlanStats", id: "STATS" }],
+    }),
     getMapManagerSettings: builder.query<MapManagerSettingsResponse, string>({
       query: (organizationId) => ({
         url: `${mapManagerBasePath}/settings/${organizationId}`,
@@ -383,6 +546,12 @@ export const {
   useCreateMapManagerFloorMutation,
   useUpdateMapManagerFloorMutation,
   useDeleteMapManagerFloorMutation,
+  useGetMapManagerFloorPlansQuery,
+  useGetMapManagerFloorPlanByIdQuery,
+  useCreateMapManagerFloorPlanMutation,
+  useUpdateMapManagerFloorPlanMutation,
+  useDeleteMapManagerFloorPlanMutation,
+  useGetMapManagerFloorPlanStatsQuery,
   useGetMapManagerSettingsQuery,
   useUpdateMapManagerSettingsMutation,
 } = mapManagerApi;

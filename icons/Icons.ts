@@ -87,8 +87,13 @@ import {
   Redo,
   Ruler,
   Info,
-  HeartCrack 
-  
+  HeartCrack,
+  CheckCircle2,
+  ClipboardList,
+  Archive,
+  Layers,
+  ExternalLink,
+  UploadCloud
 } from "lucide-react";
 
 export {
@@ -179,6 +184,12 @@ export {
   Redo,
   Ruler,
   Info,
-  HeartCrack 
+  HeartCrack,
+  CheckCircle2,
+  ClipboardList,
+  Archive,
+  Layers,
+  ExternalLink,
+  UploadCloud
 };
 export type { LucideIcon };

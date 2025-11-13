@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import MapManagerHeader from "./MapManagerHeader";
-import MapManagerStats from "./MapManagerStats";
+import MapManagerBuildingStats from "./MapManagerBuildingStats";
 import MapManagerTabs from "./MapManagerTabs";
 import MapManagerSearchAndFilters from "./SearchAndFilters";
 import BuildingGrid from "./BuildingGrid";
@@ -14,6 +14,7 @@ import {
   useGetMapManagerBuildingsQuery,
   useGetMapManagerBuildingStatsQuery,
 } from "@/lib/api/mapManagerApi";
+import { useGetOrganizationsQuery } from "@/lib/api/organizationsApi";
 import { MapManagerBuilding } from "@/lib/types/map-manager";
 import { FilterOption } from "@/components/common/SearchAndFilters";
 import { Button } from "@/components/ui/button";
@@ -22,11 +23,17 @@ import { cn } from "@/lib/utils";
 
 export default function MapManagerBuildingsView() {
   const {
-    organizationId,
-    organizationName,
-    isLoading: isOrganizationLoading,
+    organizationId: primaryOrganizationId,
+    organizationName: primaryOrganizationName,
+    isLoading: isPrimaryOrganizationLoading,
   } = usePrimaryOrganization();
 
+  const [selectedOrganizationId, setSelectedOrganizationId] = useState<string | undefined>(
+    undefined,
+  );
+  const [selectedOrganizationName, setSelectedOrganizationName] = useState<string | undefined>(
+    undefined,
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBuildingId, setSelectedBuildingId] = useState<string>("all");
   const [isBuildingModalOpen, setIsBuildingModalOpen] = useState(false);
@@ -36,6 +43,36 @@ export default function MapManagerBuildingsView() {
     string | undefined
   >(undefined);
 
+  const { data: organizationsData, isFetching: isFetchingOrganizations } =
+    useGetOrganizationsQuery({
+      limit: 100,
+      status: "active",
+    });
+
+  useEffect(() => {
+    if (!selectedOrganizationId && primaryOrganizationId) {
+      setSelectedOrganizationId(primaryOrganizationId);
+      setSelectedOrganizationName(primaryOrganizationName);
+    }
+  }, [primaryOrganizationId, primaryOrganizationName, selectedOrganizationId]);
+
+  useEffect(() => {
+    if (organizationsData?.data?.organizations && selectedOrganizationId) {
+      const organization = organizationsData.data.organizations.find(
+        (org) => org.id === selectedOrganizationId,
+      );
+      if (organization) {
+        setSelectedOrganizationName(organization.name);
+      }
+    }
+  }, [organizationsData?.data?.organizations, selectedOrganizationId]);
+
+  const organizationOptions =
+    organizationsData?.data?.organizations.map((organization) => ({
+      label: organization.name,
+      value: organization.id,
+    })) ?? [];
+
   const {
     data: buildingsData,
     isLoading: isLoadingBuildings,
@@ -43,14 +80,17 @@ export default function MapManagerBuildingsView() {
     refetch: refetchBuildings,
   } = useGetMapManagerBuildingsQuery(
     {
-      organization: organizationId,
+      organization: selectedOrganizationId,
       search: searchQuery || undefined,
       limit: 100,
     },
-    { skip: !organizationId },
+    { skip: !selectedOrganizationId },
   );
 
-  const buildings = buildingsData?.data?.buildings ?? [];
+  const buildings = useMemo(
+    () => buildingsData?.data?.buildings ?? [],
+    [buildingsData?.data?.buildings],
+  );
 
   const buildingOptions: FilterOption[] = useMemo(() => {
     const options: FilterOption[] = [{ label: "All Buildings", value: "all" }];
@@ -83,8 +123,8 @@ export default function MapManagerBuildingsView() {
     isFetching: isFetchingStats,
     refetch: refetchStats,
   } = useGetMapManagerBuildingStatsQuery(
-    { organization: organizationId ?? undefined },
-    { skip: !organizationId },
+    { organization: selectedOrganizationId ?? undefined },
+    { skip: !selectedOrganizationId },
   );
 
   const handleRefresh = () => {
@@ -107,8 +147,20 @@ export default function MapManagerBuildingsView() {
     setIsFloorModalOpen(true);
   };
 
+  const handleQuickAddFloor = () => {
+    if (buildings.length === 0) {
+      return;
+    }
+
+    const resolvedBuildingId =
+      selectedBuildingId !== "all" ? selectedBuildingId : buildings[0]?.id;
+    setInitialBuildingIdForFloor(resolvedBuildingId);
+    setIsFloorModalOpen(true);
+  };
+
   const isLoadingAny =
-    isOrganizationLoading ||
+    isPrimaryOrganizationLoading ||
+    isFetchingOrganizations ||
     isLoadingBuildings ||
     isFetchingBuildings ||
     isLoadingStats ||
@@ -118,7 +170,7 @@ export default function MapManagerBuildingsView() {
     <DashboardLayout
       showBackButton
       showOrganizationHeader
-      organizationName={organizationName}
+      organizationName={selectedOrganizationName}
       pageTitle="Map Manager"
       backLink="/dashboard/central-medical-hospital"
     >
@@ -134,18 +186,28 @@ export default function MapManagerBuildingsView() {
           </Button>
         </div>
         <MapManagerHeader
-          organizationName={organizationName}
+          organizationName={selectedOrganizationName}
+          organizationOptions={organizationOptions}
+          selectedOrganizationId={selectedOrganizationId}
+          onOrganizationChange={(organization) => {
+            setSelectedOrganizationId(organization);
+            setSelectedBuildingId("all");
+            setSearchQuery("");
+          }}
+          isOrganizationsLoading={isPrimaryOrganizationLoading || isFetchingOrganizations}
+          actionLabel="Add Building"
+          onPrimaryAction={handleCreateBuilding}
           extraActions={
             <Button
               variant="outline"
               className="cursor-pointer"
-              onClick={handleCreateBuilding}
+              onClick={handleQuickAddFloor}
             >
-              Add Building
+              Add Floor
             </Button>
           }
         />
-        <MapManagerStats
+        <MapManagerBuildingStats
           stats={statsData?.data}
           isLoading={isLoadingStats || isFetchingStats}
         />
@@ -174,7 +236,7 @@ export default function MapManagerBuildingsView() {
           refetchBuildings();
           refetchStats();
         }}
-        organizationId={organizationId ?? ""}
+        organizationId={selectedOrganizationId ?? ""}
         building={buildingToEdit}
       />
 
@@ -186,7 +248,7 @@ export default function MapManagerBuildingsView() {
           refetchBuildings();
           refetchStats();
         }}
-        organizationId={organizationId ?? ""}
+        organizationId={selectedOrganizationId ?? ""}
         buildings={buildings}
         initialBuildingId={initialBuildingIdForFloor}
       />

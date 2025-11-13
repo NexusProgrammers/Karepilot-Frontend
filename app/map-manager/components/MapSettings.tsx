@@ -188,21 +188,21 @@ export default function MapSettings({ organizationId }: MapSettingsProps) {
             <h2 className="text-xl font-semibold text-card-foreground mb-2">
               Map Settings
             </h2>
-            <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
               Configure map display, processing, and publishing options for your
               organization.
-            </p>
-          </div>
+        </p>
+      </div>
 
           <section className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
               Processing
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <ToggleSwitch
+          <ToggleSwitch
                 checked={values.autoPublishUpdates}
                 onChange={(value) => setFieldValue("autoPublishUpdates", value)}
-                label="Auto-publish updates"
+            label="Auto-publish updates"
                 description="Automatically publish maps immediately after changes are saved."
               />
               <ToggleSwitch
@@ -232,8 +232,8 @@ export default function MapSettings({ organizationId }: MapSettingsProps) {
                 onChange={(value) => setFieldValue("defaultShowGrid", value)}
                 label="Show grid"
                 description="Display the design grid by default in the editor."
-              />
-            </div>
+          />
+        </div>
           </section>
 
           <section className="space-y-4">
@@ -348,7 +348,7 @@ export default function MapSettings({ organizationId }: MapSettingsProps) {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {MAP_LAYER_OPTIONS.map((layer) => (
-                <ToggleSwitch
+          <ToggleSwitch
                   key={layer.value}
                   checked={values.defaultLayerVisibility[layer.value]}
                   onChange={(value) =>
@@ -358,7 +358,7 @@ export default function MapSettings({ organizationId }: MapSettingsProps) {
                   description={`Show ${layer.label.toLowerCase()} layer by default`}
                 />
               ))}
-            </div>
+        </div>
           </section>
 
           <section className="space-y-4">
@@ -382,7 +382,7 @@ export default function MapSettings({ organizationId }: MapSettingsProps) {
                 label="Notify publish failure"
                 description="Alert when publishing fails due to validation or processing issues."
               />
-              <ToggleSwitch
+          <ToggleSwitch
                 checked={values.notificationApprovalRequired}
                 onChange={(value) =>
                   setFieldValue("notificationApprovalRequired", value)
@@ -424,7 +424,7 @@ export default function MapSettings({ organizationId }: MapSettingsProps) {
                   />
                 )}
               </Field>
-            </div>
+        </div>
           </section>
 
           <div className="flex justify-end">
@@ -438,7 +438,7 @@ export default function MapSettings({ organizationId }: MapSettingsProps) {
               )}
               Save Settings
             </Button>
-          </div>
+      </div>
         </Form>
       )}
     </Formik>

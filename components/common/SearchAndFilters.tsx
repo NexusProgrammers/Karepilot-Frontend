@@ -74,11 +74,11 @@ export default function SearchAndFilters({
     setOpenDropdown((prev) => (prev === filterLabel ? null : filterLabel));
   };
 
-  useEffect(() => {
-    if (typeof searchValue === "string" && searchValue !== searchQuery) {
-      setSearchQuery(searchValue);
-    }
-  }, [searchValue]);
+useEffect(() => {
+  if (typeof searchValue === "string" && searchValue !== searchQuery) {
+    setSearchQuery(searchValue);
+  }
+}, [searchValue, searchQuery]);
 
   useEffect(() => {
     if (controlledFilters) {

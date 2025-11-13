@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { MapLayerType } from "../types/map-manager";
+import { FloorPlanStatus, MapLayerType } from "../types/map-manager";
 
 export interface MapManagerSettingsFormValues {
   organization: string;
@@ -129,6 +129,43 @@ export const mapManagerFloorSchema = Yup.object().shape({
   sequence: Yup.number().min(0, "Sequence cannot be negative").required("Sequence is required"),
   description: Yup.string().max(500, "Description cannot exceed 500 characters").optional(),
   tags: Yup.string().optional(),
+});
+
+export interface MapManagerFloorPlanFormValues {
+  organization: string;
+  building: string;
+  floor: string;
+  name: string;
+  status: FloorPlanStatus;
+  description: string;
+  scale: string;
+  tags: string;
+  fileName: string;
+  mimeType: string;
+  fileSizeInBytes: number;
+  fileUrl: string;
+  previewUrl: string;
+}
+
+export const mapManagerFloorPlanSchema = Yup.object().shape({
+  organization: Yup.string().required("Organization is required"),
+  building: Yup.string().required("Building is required"),
+  floor: Yup.string().required("Floor is required"),
+  name: Yup.string()
+    .min(2, "Name must be at least 2 characters")
+    .max(180, "Name cannot exceed 180 characters")
+    .required("Floor plan name is required"),
+  status: Yup.mixed<FloorPlanStatus>()
+    .oneOf(["Draft", "Published", "Archived", "Building", "New"])
+    .required("Status is required"),
+  description: Yup.string().max(2000, "Description cannot exceed 2000 characters").optional(),
+  scale: Yup.string().max(50, "Scale cannot exceed 50 characters").optional(),
+  tags: Yup.string().optional(),
+  fileName: Yup.string().optional(),
+  mimeType: Yup.string().optional(),
+  fileSizeInBytes: Yup.number().integer().min(0, "File size must be positive").optional(),
+  fileUrl: Yup.string().url("Invalid file URL").optional(),
+  previewUrl: Yup.string().url("Invalid preview URL").optional(),
 });
 
 

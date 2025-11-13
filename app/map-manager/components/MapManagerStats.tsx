@@ -4,51 +4,54 @@ import StatsGridWithIcons, {
   StatItemWithIcon,
 } from "@/components/common/StatsGridWithIcons";
 import StatsGridSkeleton from "@/components/common/StatsGridSkeleton";
-import {
-  Building2,
-  Map,
-  Grid3x3,
-  Users,
-} from "@/icons/Icons";
-import { MapManagerBuildingStats } from "@/lib/types/map-manager";
+import { Map, CheckCircle2, ClipboardList, Archive, Layers } from "@/icons/Icons";
+import { MapManagerFloorPlanStats } from "@/lib/types/map-manager";
 
 interface MapManagerStatsProps {
-  stats?: MapManagerBuildingStats | null;
+  stats?: MapManagerFloorPlanStats | null;
   isLoading?: boolean;
 }
 
 const buildStatsItems = (
-  stats?: MapManagerBuildingStats | null,
+  stats?: MapManagerFloorPlanStats | null,
 ): StatItemWithIcon[] => [
   {
-    id: "total-buildings",
-    title: "Total Buildings",
+    id: "total-floor-plans",
+    title: "Total Floor Plans",
     value: stats?.total ?? 0,
-    icon: Building2,
+    icon: Map,
     iconBg: "bg-green-100 dark:bg-green-900/30",
     iconColor: "text-green-600 dark:text-green-400",
   },
   {
-    id: "active-buildings",
-    title: "Active Buildings",
-    value: stats?.active ?? 0,
-    icon: Users,
+    id: "published-floor-plans",
+    title: "Published",
+    value: stats?.published ?? 0,
+    icon: CheckCircle2,
     iconBg: "bg-blue-100 dark:bg-blue-900/30",
     iconColor: "text-blue-600 dark:text-blue-400",
   },
   {
-    id: "inactive-buildings",
-    title: "Inactive Buildings",
-    value: stats?.inactive ?? 0,
-    icon: Map,
-    iconBg: "bg-orange-100 dark:bg-orange-900/30",
-    iconColor: "text-orange-600 dark:text-orange-400",
+    id: "draft-floor-plans",
+    title: "Drafts",
+    value: stats?.draft ?? 0,
+    icon: ClipboardList,
+    iconBg: "bg-amber-100 dark:bg-amber-900/30",
+    iconColor: "text-amber-600 dark:text-amber-400",
   },
   {
-    id: "total-floors",
-    title: "Total Floors",
-    value: stats?.totalFloors ?? 0,
-    icon: Grid3x3,
+    id: "archived-floor-plans",
+    title: "Archived",
+    value: stats?.archived ?? 0,
+    icon: Archive,
+    iconBg: "bg-gray-100 dark:bg-gray-800",
+    iconColor: "text-gray-600 dark:text-gray-300",
+  },
+  {
+    id: "in-progress-floor-plans",
+    title: "In Progress",
+    value: stats?.inProgress ?? 0,
+    icon: Layers,
     iconBg: "bg-purple-100 dark:bg-purple-900/30",
     iconColor: "text-purple-600 dark:text-purple-400",
   },
