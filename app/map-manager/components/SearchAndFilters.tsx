@@ -1,43 +1,47 @@
 "use client";
 
-import SearchAndFilters from "@/components/common/SearchAndFilters";
+import SearchAndFilters, {
+  FilterOption,
+} from "@/components/common/SearchAndFilters";
 
-export default function MapManagerSearchAndFilters() {
-  const handleSearchChange = (query: string) => {
-    console.log("Search query:", query);
-  };
+interface MapManagerSearchAndFiltersProps {
+  searchQuery: string;
+  onSearchChange: (value: string) => void;
+  buildingOptions: FilterOption[];
+  selectedBuilding: string;
+  onBuildingChange: (value: string) => void;
+}
 
-  const handleFilterChange = (filterLabel: string, value: string) => {
-    console.log(`Filter ${filterLabel} changed to:`, value);
-  };
+export default function MapManagerSearchAndFilters({
+  searchQuery,
+  onSearchChange,
+  buildingOptions,
+  selectedBuilding,
+  onBuildingChange,
+}: MapManagerSearchAndFiltersProps) {
+  const filters =
+    buildingOptions.length > 0
+      ? [
+          {
+            label: "Building",
+            options: buildingOptions,
+            defaultValue: buildingOptions[0]?.value,
+          },
+        ]
+      : [];
 
   return (
     <SearchAndFilters
       searchPlaceholder="Search floor plans..."
-      filters={[
-        {
-          label: "Status",
-          options: [
-            { label: "All Status", value: "all" },
-            { label: "Published", value: "published" },
-            { label: "Draft", value: "draft" },
-            { label: "Archived", value: "archived" },
-          ],
-          defaultValue: "all",
-        },
-        {
-          label: "Building",
-          options: [
-            { label: "All Buildings", value: "all" },
-            { label: "Main Building", value: "main" },
-            { label: "Emergency Wing", value: "emergency" },
-            { label: "Diagnostic Center", value: "diagnostic" },
-          ],
-          defaultValue: "all",
-        },
-      ]}
-      onSearchChange={handleSearchChange}
-      onFilterChange={handleFilterChange}
+      searchValue={searchQuery}
+      onSearchChange={onSearchChange}
+      filters={filters}
+      selectedFilters={{ Building: selectedBuilding }}
+      onFilterChange={(label, value) => {
+        if (label === "Building") {
+          onBuildingChange(value);
+        }
+      }}
     />
   );
 }

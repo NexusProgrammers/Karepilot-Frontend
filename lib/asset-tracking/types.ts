@@ -1,4 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { ComponentType } from "react";
+
 export interface Asset {
   id: number;
   name: string;
@@ -16,7 +17,7 @@ export interface StatItem {
   id: string;
   title: string;
   value: number;
-  icon: any;
+  icon: ComponentType<{ className?: string }>;
   iconBg: string;
   iconColor: string;
 }
