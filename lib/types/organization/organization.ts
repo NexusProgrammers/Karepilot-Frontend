@@ -84,7 +84,6 @@ export interface UpdateOrganizationRequest {
 }
 
 export interface OrganizationQuery {
-  status?: string;
   page?: number;
   limit?: number;
   search?: string;

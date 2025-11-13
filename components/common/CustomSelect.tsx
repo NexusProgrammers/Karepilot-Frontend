@@ -5,18 +5,9 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, LucideIcon } from "@/icons/Icons";
 
 interface CustomSelectProps {
-  name?: string;
   value: string;
-  onChange?: (value: string) => void;
-  onValueChange?: (value: string) => void;
-  options:
-    | string[]
-    | {
-        name?: string;
-        label?: string;
-        icon?: LucideIcon;
-        value?: string;
-      }[];
+  onChange: (value: string) => void;
+  options: string[] | { name: string; icon?: LucideIcon; value?: string }[];
   placeholder: string;
   label: string;
   required?: boolean;
@@ -27,10 +18,8 @@ interface CustomSelectProps {
 }
 
 export function CustomSelect({
-  name,
   value,
   onChange,
-  onValueChange,
   options,
   placeholder,
   label,
@@ -42,8 +31,6 @@ export function CustomSelect({
 }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const handleOptionSelect = onValueChange ?? onChange ?? (() => {});
-  const labelId = name ? `${name}-label` : undefined;
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -62,7 +49,7 @@ export function CustomSelect({
   const hasError = touched && error;
 
   const normalizedOptions = (options as Array<
-    string | { name?: string; label?: string; icon?: LucideIcon; value?: string }
+    string | { name: string; icon?: LucideIcon; value?: string }
   >).map((option) => {
     if (typeof option === "string") {
       return {
@@ -72,10 +59,9 @@ export function CustomSelect({
       };
     }
 
-    const optionName = option.name ?? option.label ?? option.value ?? "";
     return {
-      name: optionName,
-      value: option.value ?? optionName,
+      name: option.name,
+      value: option.value ?? option.name,
       IconComponent: option.icon ?? null,
     };
   });
@@ -85,10 +71,7 @@ export function CustomSelect({
   
   return (
     <div>
-      <label
-        id={labelId}
-        className={`block text-xs font-medium mb-1.5 ${hasError ? 'text-red-500' : 'text-muted-foreground'}`}
-      >
+      <label className={`block text-xs font-medium mb-1.5 ${hasError ? 'text-red-500' : 'text-muted-foreground'}`}>
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <div className="relative" ref={dropdownRef}>
@@ -97,9 +80,6 @@ export function CustomSelect({
           onClick={() => !disabled && setIsOpen(!isOpen)}
           variant="ghost"
           disabled={disabled}
-          aria-haspopup="listbox"
-          aria-expanded={isOpen}
-          aria-labelledby={labelId}
           className={`w-full px-0 py-2.5 bg-transparent border-0 border-b text-sm text-left 
           focus:outline-none transition-colors flex items-center justify-between gap-2 ${
             disabled 
@@ -139,7 +119,7 @@ export function CustomSelect({
                   key={option.value}
                   type="button"
                   onClick={() => {
-                    handleOptionSelect(option.value);
+                    onChange(option.value);
                     setIsOpen(false);
                   }}
                   variant="ghost"
