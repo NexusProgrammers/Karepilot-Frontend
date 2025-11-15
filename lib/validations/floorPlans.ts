@@ -7,6 +7,7 @@ export interface CreateFloorPlanFormValues {
   mapName: string;
   mapScale: string;
   description: string;
+  tags?: string[];
   selectedFile: File | null;
 }
 
@@ -25,6 +26,9 @@ export const createFloorPlanSchema = Yup.object().shape({
     .max(500, "Description cannot exceed 500 characters")
     .nullable()
     .required(),
+  tags: Yup.array()
+    .of(Yup.string().max(40, "Tag cannot exceed 40 characters"))
+    .optional(),
   selectedFile: Yup.mixed<File>()
     .required("Please select a file to upload")
     .test("fileType", "Unsupported file format. Supported: PDF, PNG, JPG, SVG, DWG, CAD", (value) => {

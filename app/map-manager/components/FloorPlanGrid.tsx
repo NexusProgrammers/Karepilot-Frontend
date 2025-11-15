@@ -113,9 +113,9 @@ export default function FloorPlanGrid({
               className="bg-card rounded-4xl shadow-sm border border-gray-300 overflow-hidden hover:shadow-md transition-shadow p-6"
             >
               <div className="relative h-48 md:h-80 bg-muted flex items-center justify-center rounded-3xl border border-dashed border-gray-200 overflow-hidden">
-                {plan.media?.thumbnailUrl ? (
+                {plan.media?.fileUrl ? (
                   <Image
-                    src={plan.media.thumbnailUrl}
+                    src={plan.media.fileUrl}
                     alt={plan.title}
                     fill
                     className="object-cover"

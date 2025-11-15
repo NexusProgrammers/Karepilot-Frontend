@@ -45,6 +45,7 @@ export function UploadFloorPlanModal({
 
   const organizations = organizationsData?.data?.organizations || [];
   const [selectedOrganizationId, setSelectedOrganizationId] = useState("");
+  const [tagInput, setTagInput] = useState("");
 
   const { data: floorPlansData } = useGetAllFloorPlansQuery(
     {
@@ -66,6 +67,7 @@ export function UploadFloorPlanModal({
     mapName: "",
     mapScale: "",
     description: "",
+    tags: [],
     selectedFile: null,
   };
 
@@ -94,6 +96,7 @@ export function UploadFloorPlanModal({
   useEffect(() => {
     if (!isOpen) {
       setSelectedOrganizationId("");
+      setTagInput("");
     }
   }, [isOpen]);
 
@@ -104,8 +107,8 @@ export function UploadFloorPlanModal({
       className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
     >
-      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-[700px] relative">
-        <div className="px-6 pt-6 pb-4">
+      <div className="bg-card rounded-2xl shadow-2xl w-full max-w-[700px] relative max-h-[90vh] flex flex-col overflow-hidden">
+        <div className="px-6 pt-6 pb-4 flex-shrink-0 border-b border-border">
           <div className="flex items-start justify-between mb-2">
             <h2 className="text-xl font-semibold text-card-foreground">
               Upload Floor Plan
@@ -125,17 +128,18 @@ export function UploadFloorPlanModal({
           </p>
         </div>
 
-        <Formik
-          key={isOpen ? "open" : "closed"}
-          initialValues={{
-            ...initialValues,
-            organizationId: selectedOrganizationId,
-          }}
-          validationSchema={createFloorPlanSchema}
-          enableReinitialize
-          validateOnBlur={true}
-          validateOnChange={true}
-          onSubmit={async (values, { setSubmitting, resetForm, setTouched }) => {
+        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+          <Formik
+            key={isOpen ? "open" : "closed"}
+            initialValues={{
+              ...initialValues,
+              organizationId: selectedOrganizationId,
+            }}
+            validationSchema={createFloorPlanSchema}
+            enableReinitialize
+            validateOnBlur={true}
+            validateOnChange={true}
+            onSubmit={async (values, { setSubmitting, resetForm, setTouched }) => {
             // Mark all fields as touched to show validation errors
             setTouched({
               organizationId: true,
@@ -144,6 +148,7 @@ export function UploadFloorPlanModal({
               mapName: true,
               mapScale: true,
               description: true,
+              tags: true,
               selectedFile: true,
             });
 
@@ -175,14 +180,11 @@ export function UploadFloorPlanModal({
                 media: {
                   fileUrl: uploadResult.data.url,
                   fileKey: uploadResult.data.publicId,
-                  thumbnailUrl: null,
-                  thumbnailKey: null,
                 },
                 metadata: {
                   scale: values.mapScale.trim(),
                   description: values.description.trim() || null,
-                  tags: [],
-                  highlights: [],
+                  tags: values.tags && values.tags.length > 0 ? values.tags : [],
                 },
                 versionNotes: values.description.trim() || null,
               };
@@ -194,6 +196,7 @@ export function UploadFloorPlanModal({
 
               resetForm();
               setSelectedOrganizationId("");
+              setTagInput("");
               onSuccess?.();
               onClose();
             } catch (error: any) {
@@ -226,8 +229,8 @@ export function UploadFloorPlanModal({
             const isLoading = isSubmitting || isCreating;
 
             return (
-              <Form>
-                <div className="px-6 pb-6">
+              <Form className="flex flex-col h-full min-h-0">
+                <div className="px-6 pt-6 pb-4 overflow-y-auto flex-1 min-h-0">
                   <div className="mb-4">
                     <h3 className="text-sm font-semibold text-card-foreground mb-1">
                       Upload New Floor Plan
@@ -331,6 +334,69 @@ export function UploadFloorPlanModal({
                     </Field>
 
                     <div>
+                      <label className="block text-xs font-medium mb-2.5 text-muted-foreground">
+                        Tags
+                      </label>
+                      <div className="border-b border-border pb-3">
+                        <input
+                          type="text"
+                          value={tagInput}
+                          onChange={(e) => setTagInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            if ((e.key === "Enter" || e.key === ",") && tagInput.trim()) {
+                              e.preventDefault();
+                              const newTag = tagInput.trim();
+                              if (newTag.length > 40) {
+                                toast.error("Tag cannot exceed 40 characters");
+                                return;
+                              }
+                              if (!values.tags?.includes(newTag)) {
+                                const updatedTags = [...(values.tags || []), newTag];
+                                setFieldValue("tags", updatedTags);
+                                setTagInput("");
+                              } else {
+                                toast.error("Tag already exists");
+                                setTagInput("");
+                              }
+                            }
+                          }}
+                          placeholder="Type tag and press Enter or comma to add"
+                          disabled={isLoading}
+                          className="w-full px-0 py-2.5 bg-transparent border-0 border-b text-sm text-foreground placeholder:text-muted-foreground focus:outline-none transition-colors focus:border-foreground"
+                        />
+                      </div>
+                      {values.tags && values.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          {values.tags.map((tag, index) => (
+                            <div
+                              key={index}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium bg-muted text-muted-foreground"
+                            >
+                              <span>{tag}</span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updatedTags = values.tags?.filter((_, i) => i !== index) || [];
+                                  setFieldValue("tags", updatedTags);
+                                }}
+                                disabled={isLoading}
+                                className="hover:text-foreground transition-colors disabled:opacity-50"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {touched.tags && errors.tags && (
+                        <p className="text-xs text-red-500 mt-1">{errors.tags}</p>
+                      )}
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Press Enter or comma to add tags. Each tag can be up to 40 characters.
+                      </p>
+                    </div>
+
+                    <div>
                       <label className="block text-sm font-medium text-muted-foreground mb-2">
                         Floor Plan File <span className="text-red-500">*</span>
                       </label>
@@ -377,7 +443,7 @@ export function UploadFloorPlanModal({
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-border rounded-b-2xl">
+                <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-border rounded-b-2xl flex-shrink-0 bg-card">
                   <Button
                     type="button"
                     onClick={onClose}
@@ -409,7 +475,8 @@ export function UploadFloorPlanModal({
               </Form>
             );
           }}
-        </Formik>
+          </Formik>
+        </div>
       </div>
     </div>
   );

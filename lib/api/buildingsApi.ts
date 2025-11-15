@@ -31,6 +31,43 @@ export const buildingsApi = createApi({
       }),
       invalidatesTags: ["Buildings"],
     }),
+    updateBuilding: builder.mutation<
+      MapBuildingResponse,
+      { id: string; data: Partial<CreateMapBuildingRequest> }
+    >({
+      query: ({ id, data }) => ({
+        url: `/users/admin/map-management/buildings/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Buildings", id },
+        "Buildings",
+      ],
+    }),
+    deleteBuilding: builder.mutation<
+      { success: boolean; message: string },
+      string
+    >({
+      query: (id) => ({
+        url: `/users/admin/map-management/buildings/${id}/permanent`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Buildings"],
+    }),
+    archiveBuilding: builder.mutation<
+      MapBuildingResponse,
+      string
+    >({
+      query: (id) => ({
+        url: `/users/admin/map-management/buildings/${id}/archive`,
+        method: "PATCH",
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "Buildings", id },
+        "Buildings",
+      ],
+    }),
   }),
 });
 
@@ -38,5 +75,8 @@ export const {
   useGetAllBuildingsQuery,
   useGetBuildingByIdQuery,
   useCreateBuildingMutation,
+  useUpdateBuildingMutation,
+  useDeleteBuildingMutation,
+  useArchiveBuildingMutation,
 } = buildingsApi;
 
