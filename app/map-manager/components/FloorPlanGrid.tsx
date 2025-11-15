@@ -9,8 +9,8 @@ import Image from "next/image";
 import SearchAndFilters from "./SearchAndFilters";
 
 interface FloorPlanGridProps {
-  searchQuery?: string; // Debounced search query for API calls
-  searchInputValue?: string; // Non-debounced value for input field
+  searchQuery?: string; 
+  searchInputValue?: string;
   selectedStatus?: string;
   selectedBuilding?: string;
   onSearchChange?: (query: string) => void;

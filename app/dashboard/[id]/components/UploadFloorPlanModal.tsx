@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -45,16 +46,14 @@ export function UploadFloorPlanModal({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  // Fetch organizations
   const { data: organizationsData } = useGetOrganizationsQuery();
-
-  // Fetch buildings from floor plans API based on selected organization
+  
   const { data: floorPlansData } = useGetAllFloorPlansQuery({
     page: 1,
     limit: 1,
     ...(selectedOrganizationId ? { organizationId: selectedOrganizationId } : {}),
   }, {
-    skip: !selectedOrganizationId, // Skip query if no organization selected
+    skip: !selectedOrganizationId, 
   });
 
   const [createFloorPlan, { isLoading: isCreating }] = useCreateFloorPlanMutation();
@@ -62,7 +61,6 @@ export function UploadFloorPlanModal({
   const organizations = organizationsData?.data?.organizations || [];
   const buildings = floorPlansData?.data.availableFilters.buildings || [];
 
-  // Set default organization from route params if available
   useEffect(() => {
     if (routeOrganizationId && organizations.length > 0 && !selectedOrganizationId) {
       const orgExists = organizations.find((org) => org.id === routeOrganizationId);
@@ -72,12 +70,10 @@ export function UploadFloorPlanModal({
     }
   }, [routeOrganizationId, organizations, selectedOrganizationId]);
 
-  // Reset building when organization changes
   useEffect(() => {
     setSelectedBuildingId("");
   }, [selectedOrganizationId]);
 
-  // Reset form when modal closes
   useEffect(() => {
     if (!isOpen) {
       setSelectedOrganizationId("");
@@ -98,7 +94,6 @@ export function UploadFloorPlanModal({
   };
 
   const handleSubmit = async () => {
-    // Validation
     if (!selectedOrganizationId) {
       toast.error("Please select an organization");
       return;
@@ -133,7 +128,6 @@ export function UploadFloorPlanModal({
       setIsUploading(true);
       toast.loading("Uploading file...");
 
-      // Step 1: Upload the file
       const uploadResult = await uploadFile(selectedFile, "floor-plans");
 
       if (!uploadResult.success || !uploadResult.data.url) {
@@ -143,7 +137,6 @@ export function UploadFloorPlanModal({
       toast.dismiss();
       toast.loading("Creating floor plan...");
 
-      // Step 2: Create floor plan with uploaded file URL
       const floorPlanData = {
         organizationId: selectedOrganizationId,
         buildingId: selectedBuildingId,
@@ -171,7 +164,6 @@ export function UploadFloorPlanModal({
       toast.dismiss();
       toast.success(result.message || "Floor plan created successfully!");
 
-      // Reset form and close modal
       setSelectedOrganizationId("");
       setSelectedBuildingId("");
       setSelectedFloor("");
@@ -181,7 +173,6 @@ export function UploadFloorPlanModal({
       setSelectedFile(null);
       setIsUploading(false);
 
-      // Call success callback if provided
       if (onSuccess) {
         onSuccess();
       }
