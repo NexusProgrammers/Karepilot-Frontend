@@ -135,8 +135,8 @@ export default function BuildingGrid() {
     return (
       <QueryErrorState
         error={error}
-        refetch={refetch}
-        message="Failed to load buildings"
+        onRetry={() => refetch()}
+        description="Failed to load buildings"
       />
     );
   }
