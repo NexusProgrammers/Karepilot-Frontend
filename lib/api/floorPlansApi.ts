@@ -3,6 +3,7 @@ import {
   FloorPlansListResponse,
   FloorPlanResponse,
   FloorPlanQuery,
+  CreateFloorPlanRequest,
 } from "../types/map-management/floorPlans";
 import { baseQuery } from "./baseConfig";
 
@@ -22,11 +23,20 @@ export const floorPlansApi = createApi({
       query: (id) => `/users/admin/map-management/floor-plans/${id}`,
       providesTags: (result, error, id) => [{ type: "FloorPlans", id }],
     }),
+    createFloorPlan: builder.mutation<FloorPlanResponse, CreateFloorPlanRequest>({
+      query: (data) => ({
+        url: "/users/admin/map-management/floor-plans",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["FloorPlans"],
+    }),
   }),
 });
 
 export const {
   useGetAllFloorPlansQuery,
   useGetFloorPlanByIdQuery,
+  useCreateFloorPlanMutation,
 } = floorPlansApi;
 

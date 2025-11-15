@@ -83,6 +83,7 @@ export interface FloorPlanQuery {
   floorLabel?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
+  organizationId?: string;
 }
 
 export interface FloorPlanResponse {
@@ -91,5 +92,18 @@ export interface FloorPlanResponse {
   data: {
     floorPlan: FloorPlan;
   };
+}
+
+export interface CreateFloorPlanRequest {
+  organizationId: string;
+  buildingId: string;
+  title: string;
+  floorLabel: string;
+  floorNumber?: number | null;
+  status?: "Draft" | "Published" | "Disabled" | "Archived";
+  media?: FloorPlanMedia;
+  metadata?: FloorPlanMetadata;
+  isTemplate?: boolean;
+  versionNotes?: string | null;
 }
 

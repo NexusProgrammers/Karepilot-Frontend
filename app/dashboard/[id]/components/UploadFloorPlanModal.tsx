@@ -1,29 +1,95 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import { X, CloudUpload } from "@/icons/Icons";
 import { CustomSelect } from "@/components/common/CustomSelect";
-import { CustomTextarea } from "@/components/common/CustomTextarea";
 import { Button } from "@/components/ui/button";
+import { uploadFile } from "@/lib/api/uploadApi";
+import { useCreateFloorPlanMutation, useGetAllFloorPlansQuery } from "@/lib/api/floorPlansApi";
+import { useGetOrganizationsQuery } from "@/lib/api/organizationsApi";
+import toast from "react-hot-toast";
 
 interface UploadFloorPlanModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
-const buildings = ["Main Building", "Emergency Wing", "Diagnostic Center"];
-const floors = ["Ground Floor", "1st Floor", "2nd Floor"];
+const floorLabels = [
+  "Ground Floor",
+  "1st Floor",
+  "2nd Floor",
+  "3rd Floor",
+  "4th Floor",
+  "5th Floor",
+  "Basement",
+  "Lower Level",
+  "Upper Level",
+];
 
 export function UploadFloorPlanModal({
   isOpen,
   onClose,
+  onSuccess,
 }: UploadFloorPlanModalProps) {
-  const [selectedBuilding, setSelectedBuilding] = useState("");
+  const params = useParams();
+  const routeOrganizationId = params?.id as string;
+
+  const [selectedOrganizationId, setSelectedOrganizationId] = useState("");
+  const [selectedBuildingId, setSelectedBuildingId] = useState("");
   const [selectedFloor, setSelectedFloor] = useState("");
   const [mapName, setMapName] = useState("");
   const [mapScale, setMapScale] = useState("");
   const [description, setDescription] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  // Fetch organizations
+  const { data: organizationsData } = useGetOrganizationsQuery();
+
+  // Fetch buildings from floor plans API based on selected organization
+  const { data: floorPlansData } = useGetAllFloorPlansQuery({
+    page: 1,
+    limit: 1,
+    ...(selectedOrganizationId ? { organizationId: selectedOrganizationId } : {}),
+  }, {
+    skip: !selectedOrganizationId, // Skip query if no organization selected
+  });
+
+  const [createFloorPlan, { isLoading: isCreating }] = useCreateFloorPlanMutation();
+
+  const organizations = organizationsData?.data?.organizations || [];
+  const buildings = floorPlansData?.data.availableFilters.buildings || [];
+
+  // Set default organization from route params if available
+  useEffect(() => {
+    if (routeOrganizationId && organizations.length > 0 && !selectedOrganizationId) {
+      const orgExists = organizations.find((org) => org.id === routeOrganizationId);
+      if (orgExists) {
+        setSelectedOrganizationId(routeOrganizationId);
+      }
+    }
+  }, [routeOrganizationId, organizations, selectedOrganizationId]);
+
+  // Reset building when organization changes
+  useEffect(() => {
+    setSelectedBuildingId("");
+  }, [selectedOrganizationId]);
+
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setSelectedOrganizationId("");
+      setSelectedBuildingId("");
+      setSelectedFloor("");
+      setMapName("");
+      setMapScale("");
+      setDescription("");
+      setSelectedFile(null);
+      setIsUploading(false);
+    }
+  }, [isOpen]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -31,15 +97,110 @@ export function UploadFloorPlanModal({
     }
   };
 
-  const handleSubmit = () => {
-    console.log({
-      building: selectedBuilding,
-      floor: selectedFloor,
-      mapName,
-      mapScale,
-      description,
-      file: selectedFile,
-    });
+  const handleSubmit = async () => {
+    // Validation
+    if (!selectedOrganizationId) {
+      toast.error("Please select an organization");
+      return;
+    }
+
+    if (!selectedBuildingId) {
+      toast.error("Please select a building");
+      return;
+    }
+
+    if (!selectedFloor) {
+      toast.error("Please select a floor");
+      return;
+    }
+
+    if (!mapName.trim()) {
+      toast.error("Please enter a map name");
+      return;
+    }
+
+    if (!mapScale.trim()) {
+      toast.error("Please enter a map scale");
+      return;
+    }
+
+    if (!selectedFile) {
+      toast.error("Please select a file to upload");
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      toast.loading("Uploading file...");
+
+      // Step 1: Upload the file
+      const uploadResult = await uploadFile(selectedFile, "floor-plans");
+
+      if (!uploadResult.success || !uploadResult.data.url) {
+        throw new Error(uploadResult.message || "Failed to upload file");
+      }
+
+      toast.dismiss();
+      toast.loading("Creating floor plan...");
+
+      // Step 2: Create floor plan with uploaded file URL
+      const floorPlanData = {
+        organizationId: selectedOrganizationId,
+        buildingId: selectedBuildingId,
+        title: mapName.trim(),
+        floorLabel: selectedFloor,
+        floorNumber: extractFloorNumber(selectedFloor),
+        status: "Draft" as const,
+        media: {
+          fileUrl: uploadResult.data.url,
+          fileKey: uploadResult.data.publicId,
+          thumbnailUrl: null,
+          thumbnailKey: null,
+        },
+        metadata: {
+          scale: mapScale.trim(),
+          description: description.trim() || null,
+          tags: [],
+          highlights: [],
+        },
+        versionNotes: description.trim() || null,
+      };
+
+      const result = await createFloorPlan(floorPlanData).unwrap();
+
+      toast.dismiss();
+      toast.success(result.message || "Floor plan created successfully!");
+
+      // Reset form and close modal
+      setSelectedOrganizationId("");
+      setSelectedBuildingId("");
+      setSelectedFloor("");
+      setMapName("");
+      setMapScale("");
+      setDescription("");
+      setSelectedFile(null);
+      setIsUploading(false);
+
+      // Call success callback if provided
+      if (onSuccess) {
+        onSuccess();
+      }
+
+      onClose();
+    } catch (error: any) {
+      toast.dismiss();
+      const errorMessage =
+        error?.data?.message || error?.message || "Failed to create floor plan";
+      toast.error(errorMessage);
+      setIsUploading(false);
+    }
+  };
+
+  const extractFloorNumber = (floorLabel: string): number | null => {
+    const lower = floorLabel.toLowerCase();
+    if (lower.includes("ground") || lower.includes("basement")) return 0;
+    const match = floorLabel.match(/\d+/);
+    return match ? parseInt(match[0], 10) : null;
   };
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -47,6 +208,8 @@ export function UploadFloorPlanModal({
       onClose();
     }
   };
+
+  const isLoading = isUploading || isCreating;
 
   if (!isOpen) return null;
 
@@ -65,7 +228,8 @@ export function UploadFloorPlanModal({
               onClick={onClose}
               variant="ghost"
               size="sm"
-              className="text-muted-foreground hover:text-foreground transition-colors -mt-1 cursor-pointer p-1 h-auto"
+              disabled={isLoading}
+              className="text-muted-foreground hover:text-foreground transition-colors -mt-1 cursor-pointer p-1 h-auto disabled:opacity-50"
             >
               <X className="w-5 h-5" />
             </Button>
@@ -86,23 +250,35 @@ export function UploadFloorPlanModal({
           </div>
 
           <div className="space-y-4">
+            <CustomSelect
+              value={selectedOrganizationId}
+              onChange={setSelectedOrganizationId}
+              options={organizations.map((org) => ({ name: org.name, value: org.id }))}
+              placeholder="Select organization"
+              label="Organization"
+              required
+              disabled={isLoading || organizations.length === 0}
+            />
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <CustomSelect
-                value={selectedBuilding}
-                onChange={setSelectedBuilding}
-                options={buildings}
-                placeholder="Select building"
+                value={selectedBuildingId}
+                onChange={setSelectedBuildingId}
+                options={buildings.map((b) => ({ name: b.name, value: b.id }))}
+                placeholder={selectedOrganizationId ? "Select building" : "Select organization first"}
                 label="Building"
                 required
+                disabled={isLoading || !selectedOrganizationId || buildings.length === 0}
               />
 
               <CustomSelect
                 value={selectedFloor}
                 onChange={setSelectedFloor}
-                options={floors}
+                options={floorLabels}
                 placeholder="Select floor"
                 label="Floor"
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -115,7 +291,8 @@ export function UploadFloorPlanModal({
                 value={mapName}
                 onChange={(e) => setMapName(e.target.value)}
                 placeholder="e.g. Main Building Floor 1"
-                className="w-full px-0 py-2.5 bg-transparent border-0 border-b border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground"
+                disabled={isLoading}
+                className="w-full px-0 py-2.5 bg-transparent border-0 border-b border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
 
@@ -128,16 +305,24 @@ export function UploadFloorPlanModal({
                 value={mapScale}
                 onChange={(e) => setMapScale(e.target.value)}
                 placeholder="1:100"
-                className="w-full px-0 py-2.5 bg-transparent border-0 border-b border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground"
+                disabled={isLoading}
+                className="w-full px-0 py-2.5 bg-transparent border-0 border-b border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
 
-            <CustomTextarea
-              value={description}
-              onChange={setDescription}
-              placeholder="Optional description or notes about this floor plan"
-              label="Description"
-            />
+            <div>
+              <label className="block text-xs font-medium text-muted-foreground mb-2.5">
+                Description
+              </label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Optional description or notes about this floor plan"
+                disabled={isLoading}
+                rows={3}
+                className="w-full px-0 py-2.5 bg-transparent border-0 border-b border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+            </div>
 
             <div>
               <label className="block text-sm font-medium text-muted-foreground mb-2">
@@ -149,11 +334,14 @@ export function UploadFloorPlanModal({
                   id="floor-plan-upload"
                   accept=".pdf,.png,.jpg,.jpeg,.svg,.dwg,.cad"
                   onChange={handleFileChange}
+                  disabled={isLoading}
                   className="hidden"
                 />
                 <label
                   htmlFor="floor-plan-upload"
-                  className="cursor-pointer flex items-center gap-3"
+                  className={`cursor-pointer flex items-center gap-3 ${
+                    isLoading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                 >
                   <div className="flex items-center justify-center w-10 h-10 bg-background rounded">
                     <CloudUpload className="w-5 h-5 text-muted-foreground" />
@@ -171,7 +359,7 @@ export function UploadFloorPlanModal({
                 </label>
               </div>
               <p className="text-xs text-muted-foreground mt-2">
-                Supported formats: PDF, Vector, CAD
+                Supported formats: PDF, PNG, JPG, SVG, DWG, CAD
               </p>
             </div>
           </div>
@@ -181,17 +369,28 @@ export function UploadFloorPlanModal({
           <Button
             onClick={onClose}
             variant="outline"
-            className="px-5 py-2.5 text-sm cursor-pointer font-medium text-muted-foreground bg-background border border-border rounded-lg hover:bg-accent transition-colors flex items-center gap-2"
+            disabled={isLoading}
+            className="px-5 py-2.5 text-sm cursor-pointer font-medium text-muted-foreground bg-background border border-border rounded-lg hover:bg-accent transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <X className="w-4 h-4" />
             Cancel
           </Button>
           <Button
             onClick={handleSubmit}
-            className="px-5 py-2.5 text-sm font-medium cursor-pointer text-white bg-[#3D8C6C] rounded-lg transition-colors flex items-center gap-2 hover:bg-[#3D8C6C]/90"
+            disabled={isLoading}
+            className="px-5 py-2.5 text-sm font-medium cursor-pointer text-white bg-[#3D8C6C] rounded-lg transition-colors flex items-center gap-2 hover:bg-[#3D8C6C]/90 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <CloudUpload className="w-4 h-4" />
-            Upload Floor Map
+            {isLoading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                {isUploading ? "Uploading..." : "Creating..."}
+              </>
+            ) : (
+              <>
+                <CloudUpload className="w-4 h-4" />
+                Upload Floor Map
+              </>
+            )}
           </Button>
         </div>
       </div>
@@ -199,21 +398,4 @@ export function UploadFloorPlanModal({
   );
 }
 
-export default function App() {
-  const [isModalOpen, setIsModalOpen] = useState(true);
-
-  return (
-    <div className="min-h-screen bg-background p-8">
-      <Button
-        onClick={() => setIsModalOpen(true)}
-        className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 cursor-pointer"
-      >
-        Open Modal
-      </Button>
-      <UploadFloorPlanModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
-    </div>
-  );
-}
+export default UploadFloorPlanModal;
