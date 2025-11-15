@@ -29,8 +29,6 @@ export const mapSettingsApi = createApi({
         method: "PUT",
         body: data,
       }),
-      // Don't invalidate tags to prevent automatic refetch that causes loops
-      // The component will handle updates manually
       invalidatesTags: [],
     }),
   }),

@@ -10,6 +10,7 @@ import { organizationsApi } from '../api/organizationsApi';
 import { pointsOfInterestApi } from '../api/pointsOfInterestApi';
 import { floorPlansApi } from '../api/floorPlansApi';
 import { mapSettingsApi } from '../api/mapSettingsApi';
+import { buildingsApi } from '../api/buildingsApi';
 
 export const store = configureStore({
   reducer: {
@@ -24,6 +25,7 @@ export const store = configureStore({
     [pointsOfInterestApi.reducerPath]: pointsOfInterestApi.reducer,
     [floorPlansApi.reducerPath]: floorPlansApi.reducer,
     [mapSettingsApi.reducerPath]: mapSettingsApi.reducer,
+    [buildingsApi.reducerPath]: buildingsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -40,7 +42,8 @@ export const store = configureStore({
       organizationsApi.middleware,
       pointsOfInterestApi.middleware,
       floorPlansApi.middleware,
-      mapSettingsApi.middleware
+      mapSettingsApi.middleware,
+      buildingsApi.middleware
     ),
 });
 
