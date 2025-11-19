@@ -1,5 +1,5 @@
 import { TabItem } from "@/lib/types/common/navigation";
-import { MapPin, CheckCircle, Edit3, Building2 } from "@/icons/Icons";
+import { MapPin, CheckCircle, Edit3 } from "@/icons/Icons";
 import { StatItemWithIcon } from "@/components/common/StatsGridWithIcons";
 
 export interface FloorPlan {
@@ -44,14 +44,6 @@ export const mapStats: MapStats[] = [
     icon: Edit3,
     iconBg: "bg-yellow-100",
     iconColor: "text-yellow-600",
-  },
-  {
-    id: 4,
-    title: "Buildings",
-    value: "4",
-    icon: Building2,
-    iconBg: "bg-blue-100",
-    iconColor: "text-blue-600",
   },
 ];
 
@@ -128,7 +120,6 @@ export const buildingOptions = [
 
 export const tabs = [
   { id: "floor-plans", label: "Floor Plans", href: "/map-manager" },
-  { id: "buildings", label: "Buildings", href: "/map-manager/buildings" },
   { id: "settings", label: "Settings", href: "/map-manager/settings" },
 ];
 
@@ -169,9 +160,6 @@ export const buildings = [
 
 export const mapManagerTabs: TabItem[] = [
   { id: "floor-plans", label: "Floor Plans", href: "/map-manager" },
-  { id: "drawing-tools", label: "Drawing Tools", href: "/map-manager/drawing-tools" },
-  { id: "layers", label: "Layers", href: "/map-manager/layers" },
   { id: "properties", label: "Properties", href: "/map-manager/properties" },
-  { id: "buildings", label: "Buildings", href: "/map-manager/buildings" },
   { id: "settings", label: "Settings", href: "/map-manager/settings" },
 ];
