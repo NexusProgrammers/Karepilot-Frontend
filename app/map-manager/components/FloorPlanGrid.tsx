@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useGetAllFloorPlansQuery } from "@/lib/api/floorPlansApi";
 import { MapPin, Settings } from "@/icons/Icons";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import Link from "next/link";
 import { QueryErrorState } from "@/components/common/QueryErrorState";
 import Image from "next/image";
 import SearchAndFilters from "./SearchAndFilters";
+import { UploadFloorPlanModal } from "../../dashboard/[id]/components/UploadFloorPlanModal";
 
 interface FloorPlanGridProps {
   searchQuery?: string; 
@@ -53,6 +55,15 @@ export default function FloorPlanGrid({
   onStatusChange,
   onBuildingChange,
 }: FloorPlanGridProps) {
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    mode: "upload" | "preview" | "edit";
+    floorPlanId?: string;
+  }>({
+    isOpen: false,
+    mode: "upload",
+  });
+
   const { data, isLoading, error, refetch } = useGetAllFloorPlansQuery({
     page: 1,
     limit: 12,
@@ -63,6 +74,33 @@ export default function FloorPlanGrid({
 
   const floorPlans = data?.data.floorPlans || [];
   const availableFilters = data?.data.availableFilters;
+
+  const handlePreview = (floorPlanId: string) => {
+    setModalState({
+      isOpen: true,
+      mode: "preview",
+      floorPlanId,
+    });
+  };
+
+  const handleEdit = (floorPlanId: string) => {
+    setModalState({
+      isOpen: true,
+      mode: "edit",
+      floorPlanId,
+    });
+  };
+
+  const handleCloseModal = () => {
+    setModalState({
+      isOpen: false,
+      mode: "upload",
+    });
+  };
+
+  const handleModalSuccess = () => {
+    refetch();
+  };
 
   return (
     <>
@@ -174,22 +212,20 @@ export default function FloorPlanGrid({
                 </div>
                 <hr className="mb-6" />
                 <div className="flex gap-2 w-full">
-                  <Link href={`/map-manager/map-editor?floorPlan=${plan.id}`} className="w-full">
-                    <Button
-                      variant="outline"
-                      className="flex cursor-pointer w-full items-center justify-center gap-2 flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground hover:bg-accent transition-colors"
-                    >
-                      Preview
-                    </Button>
-                  </Link>
-                  <Link href={`/map-manager/map-editor?floorPlan=${plan.id}`} className="w-full">
-                    <Button
-                      variant="outline"
-                      className="flex cursor-pointer items-center w-full justify-center gap-2 flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground hover:bg-accent transition-colors"
-                    >
-                      Edit
-                    </Button>
-                  </Link>
+                  <Button
+                    variant="outline"
+                    onClick={() => handlePreview(plan.id)}
+                    className="flex cursor-pointer w-full items-center justify-center gap-2 flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground hover:bg-accent transition-colors"
+                  >
+                    Preview
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => handleEdit(plan.id)}
+                    className="flex cursor-pointer items-center w-full justify-center gap-2 flex-1 px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground hover:bg-accent transition-colors"
+                  >
+                    Edit
+                  </Button>
                   <Link href={`/map-manager/map-editor?floorPlan=${plan.id}`}>
                     <Button
                       variant="outline"
@@ -205,6 +241,14 @@ export default function FloorPlanGrid({
           ))}
         </div>
       )}
+
+      <UploadFloorPlanModal
+        isOpen={modalState.isOpen}
+        onClose={handleCloseModal}
+        onSuccess={handleModalSuccess}
+        mode={modalState.mode}
+        floorPlanId={modalState.floorPlanId}
+      />
     </>
   );
 }

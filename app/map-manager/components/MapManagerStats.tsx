@@ -3,7 +3,7 @@
 import { useGetAllFloorPlansQuery } from "@/lib/api/floorPlansApi";
 import StatsGridWithIcons from "@/components/common/StatsGridWithIcons";
 import StatsGridSkeleton from "@/components/common/StatsGridSkeleton";
-import { MapPin, CheckCircle, Edit3 } from "@/icons/Icons";
+import { MapPin, CheckCircle, Edit3, Building2 } from "@/icons/Icons";
 import { StatItemWithIcon } from "@/components/common/StatsGridWithIcons";
 
 export default function MapManagerStats() {
@@ -13,12 +13,12 @@ export default function MapManagerStats() {
   });
 
   if (isLoading) {
-    return <StatsGridSkeleton count={3} />;
+    return <StatsGridSkeleton count={4} />;
   }
 
   const stats = data?.data.stats;
   if (!stats) {
-    return <StatsGridSkeleton count={3} />;
+    return <StatsGridSkeleton count={4} />;
   }
 
   const mapStats: StatItemWithIcon[] = [
@@ -45,6 +45,14 @@ export default function MapManagerStats() {
       icon: Edit3,
       iconBg: "bg-yellow-100",
       iconColor: "text-yellow-600",
+    },
+    {
+      id: 4,
+      title: "Buildings",
+      value: stats.buildings.toString(),
+      icon: Building2,
+      iconBg: "bg-blue-100",
+      iconColor: "text-blue-600",
     },
   ];
 

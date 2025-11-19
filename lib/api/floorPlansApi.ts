@@ -31,6 +31,20 @@ export const floorPlansApi = createApi({
       }),
       invalidatesTags: ["FloorPlans"],
     }),
+    updateFloorPlan: builder.mutation<
+      FloorPlanResponse,
+      { id: string; data: CreateFloorPlanRequest }
+    >({
+      query: ({ id, data }) => ({
+        url: `/users/admin/map-management/floor-plans/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "FloorPlans", id },
+        "FloorPlans",
+      ],
+    }),
   }),
 });
 
@@ -38,5 +52,6 @@ export const {
   useGetAllFloorPlansQuery,
   useGetFloorPlanByIdQuery,
   useCreateFloorPlanMutation,
+  useUpdateFloorPlanMutation,
 } = floorPlansApi;
 

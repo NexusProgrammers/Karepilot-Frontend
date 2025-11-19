@@ -78,6 +78,7 @@ export default function SearchAndFilters({
     if (typeof searchValue === "string" && searchValue !== searchQuery) {
       setSearchQuery(searchValue);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchValue]);
 
   useEffect(() => {
