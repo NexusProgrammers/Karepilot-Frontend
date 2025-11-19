@@ -62,10 +62,11 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
   const stageRef = useRef<Konva.Stage>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const { data: pois = [], isLoading: isLoadingPOIs } = useGetPOIsByFloorPlanQuery(
-    { floorPlanId: floorPlanId || "" },
+  const { data: pois = [], isLoading: isLoadingPOIs, error: poisError } = useGetPOIsByFloorPlanQuery(
+    { floorPlanId: floorPlanId || "", isActive: true },
     { skip: !floorPlanId }
   );
+
   const [updatePOI] = useUpdatePOIMutation();
 
   const [elements, setElements] = useState<MapElement[]>([]);
@@ -191,16 +192,18 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
 
   const poiMap = new Map(pois.map((poi: MapEditorPOI) => [poi.id, poi]));
 
-  const poiElements: MapElement[] = pois.map((poi: MapEditorPOI) => ({
-    id: poi.id,
-    type: "poi",
-    x: poi.coordinates.x,
-    y: poi.coordinates.y,
-    radius: 8,
-    color: poi.color || getPOIColor(poi.category),
-    label: poi.name,
-    draggable: true,
-  }));
+  const poiElements: MapElement[] = pois
+    .filter((poi: MapEditorPOI) => poi.isActive && poi.coordinates && typeof poi.coordinates.x === 'number' && typeof poi.coordinates.y === 'number')
+    .map((poi: MapEditorPOI) => ({
+      id: poi.id,
+      type: "poi",
+      x: poi.coordinates.x,
+      y: poi.coordinates.y,
+      radius: 8,
+      color: poi.color || getPOIColor(poi.category),
+      label: poi.name,
+      draggable: true,
+    }));
 
   const renderElement = (element: MapElement) => {
     switch (element.type) {
