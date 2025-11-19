@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
-import { Formik, Form, Field } from "formik";
+import { Formik, Form, Field, useFormikContext } from "formik";
 import Image from "next/image";
 import { X, CloudUpload } from "@/icons/Icons";
 import { CustomInput } from "@/components/common/CustomInput";
@@ -18,7 +18,7 @@ import {
 } from "@/lib/api/floorPlansApi";
 import { useGetBuildingByIdQuery } from "@/lib/api/buildingsApi";
 import { useGetOrganizationsQuery } from "@/lib/api/organizationsApi";
-import { createFloorPlanSchema, CreateFloorPlanFormValues } from "@/lib/validations";
+import { createFloorPlanSchema, updateFloorPlanSchema, CreateFloorPlanFormValues } from "@/lib/validations";
 import toast from "react-hot-toast";
 
 type ModalMode = "upload" | "preview" | "edit";
@@ -137,6 +137,29 @@ export function UploadFloorPlanModal({
     }
   }, [isOpen, organizationIdFromBuilding]);
 
+  const OrganizationSync = ({
+    selectedOrganizationId,
+    setSelectedOrganizationId,
+  }: {
+    selectedOrganizationId: string;
+    setSelectedOrganizationId: (id: string) => void;
+  }) => {
+    const { values, setFieldValue } = useFormikContext<CreateFloorPlanFormValues>();
+    const prevOrgIdRef = useRef<string>(values.organizationId || "");
+
+    useEffect(() => {
+      if (values.organizationId !== selectedOrganizationId && values.organizationId !== prevOrgIdRef.current) {
+        prevOrgIdRef.current = values.organizationId;
+        setSelectedOrganizationId(values.organizationId);
+        if (values.buildingId) {
+          setFieldValue("buildingId", "");
+        }
+      }
+    }, [values.organizationId, values.buildingId, selectedOrganizationId, setSelectedOrganizationId, setFieldValue]);
+
+    return null;
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -192,7 +215,7 @@ export function UploadFloorPlanModal({
               tags: floorPlan?.metadata?.tags || [],
               selectedFile: null,
             }}
-            validationSchema={isPreviewMode ? undefined : createFloorPlanSchema}
+            validationSchema={isPreviewMode ? undefined : isEditMode ? updateFloorPlanSchema : createFloorPlanSchema}
             enableReinitialize={true}
             validateOnBlur={!isPreviewMode}
             validateOnChange={!isPreviewMode}
@@ -201,7 +224,6 @@ export function UploadFloorPlanModal({
                 onClose();
                 return;
               }
-            // Mark all fields as touched to show validation errors
             setTouched({
               organizationId: true,
               buildingId: true,
@@ -210,12 +232,11 @@ export function UploadFloorPlanModal({
               mapScale: true,
               description: true,
               tags: true,
-              selectedFile: true,
+              ...(isUploadMode ? { selectedFile: true } : {}),
             });
 
             try {
               if (isEditMode && floorPlanId) {
-                // Update existing floor plan
                 toast.loading("Updating floor plan...", { id: "update-toast" });
 
                 let media = floorPlan?.media;
@@ -260,7 +281,6 @@ export function UploadFloorPlanModal({
                 onSuccess?.();
                 onClose();
               } else if (isUploadMode) {
-                // Create new floor plan
                 if (!values.selectedFile) {
                   toast.error("Please select a file to upload");
                   setSubmitting(false);
@@ -331,17 +351,14 @@ export function UploadFloorPlanModal({
             isSubmitting,
             resetForm,
           }) => {
-            if (values.organizationId !== selectedOrganizationId) {
-              setSelectedOrganizationId(values.organizationId);
-              if (values.buildingId) {
-                setFieldValue("buildingId", "");
-              }
-            }
-
             const isLoading = isSubmitting || isCreating || isUpdating || isLoadingFloorPlan;
 
             return (
               <Form className="flex flex-col h-full min-h-0">
+                <OrganizationSync
+                  selectedOrganizationId={selectedOrganizationId}
+                  setSelectedOrganizationId={setSelectedOrganizationId}
+                />
                 <div className="px-6 pt-6 pb-4 overflow-y-auto flex-1 min-h-0">
                   <div className="mb-4">
                     <h3 className="text-sm font-semibold text-card-foreground mb-1">
