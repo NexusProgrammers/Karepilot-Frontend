@@ -73,9 +73,10 @@ const drawingTools: DrawingTool[] = [
 
 interface DrawingToolsProps {
   onToolSelect?: (toolId: string) => void;
+  selectedTool?: string | null;
 }
 
-export function DrawingTools({ onToolSelect }: DrawingToolsProps) {
+export function DrawingTools({ onToolSelect, selectedTool }: DrawingToolsProps) {
   const [hoveredTool, setHoveredTool] = useState<string | null>(null);
 
   return (
@@ -85,22 +86,44 @@ export function DrawingTools({ onToolSelect }: DrawingToolsProps) {
       </h3>
 
       <div className="space-y-1">
-        {drawingTools.map((tool) => (
-          <div
-            key={tool.id}
-            className="relative flex items-center justify-between p-3 rounded-lg hover:bg-accent/50 transition-colors cursor-pointer group"
-            onClick={() => onToolSelect?.(tool.id)}
-            onMouseEnter={() => setHoveredTool(tool.id)}
-            onMouseLeave={() => setHoveredTool(null)}
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center group-hover:bg-[#3D8C6C]/10 transition-colors">
-                <tool.icon className="w-5 h-5 text-muted-foreground group-hover:text-[#3D8C6C] transition-colors" />
+        {drawingTools.map((tool) => {
+          const isActive = selectedTool === tool.id;
+          return (
+            <div
+              key={tool.id}
+              className={`relative flex items-center justify-between p-3 rounded-lg transition-colors cursor-pointer group ${
+                isActive
+                  ? "bg-[#3D8C6C]/10 border border-[#3D8C6C]/20"
+                  : "hover:bg-accent/50"
+              }`}
+              onClick={() => onToolSelect?.(tool.id)}
+              onMouseEnter={() => setHoveredTool(tool.id)}
+              onMouseLeave={() => setHoveredTool(null)}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+                    isActive
+                      ? "bg-[#3D8C6C]/20"
+                      : "group-hover:bg-[#3D8C6C]/10"
+                  }`}
+                >
+                  <tool.icon
+                    className={`w-5 h-5 transition-colors ${
+                      isActive
+                        ? "text-[#3D8C6C]"
+                        : "text-muted-foreground group-hover:text-[#3D8C6C]"
+                    }`}
+                  />
+                </div>
+                <span
+                  className={`text-sm font-medium transition-colors ${
+                    isActive ? "text-[#3D8C6C]" : "text-foreground"
+                  }`}
+                >
+                  {tool.name}
+                </span>
               </div>
-              <span className="text-sm font-medium text-foreground">
-                {tool.name}
-              </span>
-            </div>
 
             {hoveredTool === tool.id && (
               <div className="absolute left-1/2 top-full mt-1 transform -translate-x-1/2 z-50">
@@ -116,11 +139,12 @@ export function DrawingTools({ onToolSelect }: DrawingToolsProps) {
               </div>
             )}
 
-            <button className="w-5 cursor-pointer h-5 rounded-full hover:bg-muted flex items-center justify-center transition-colors">
-              <Info className="w-5 h-5 text-muted-foreground" />
-            </button>
-          </div>
-        ))}
+              <button className="w-5 cursor-pointer h-5 rounded-full hover:bg-muted flex items-center justify-center transition-colors">
+                <Info className="w-5 h-5 text-muted-foreground" />
+              </button>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

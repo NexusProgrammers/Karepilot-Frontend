@@ -12,8 +12,20 @@ import {
   Trash2,
   Grid3x3,
   Search,
+  X,
 } from "@/icons/Icons";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useGetPOIsByFloorPlanQuery, useUpdatePOIMutation } from "@/lib/api/mapEditorPOIApi";
+import { MapEditorPOI } from "@/lib/types/map-management/mapEditorPOI";
+import toast from "react-hot-toast";
 
 interface MapElement {
   id: string;
@@ -34,153 +46,29 @@ interface MapElement {
   draggable?: boolean;
 }
 
-export function MapCanvas() {
+interface MapCanvasProps {
+  floorPlanId?: string;
+  onPOIClick?: (coordinates: { x: number; y: number }) => void;
+  selectedTool?: string | null;
+}
+
+export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasProps) {
   const [zoom, setZoom] = useState(100);
   const [stageSize, setStageSize] = useState({ width: 0, height: 0 });
+  const [showGrid, setShowGrid] = useState(true);
+  const [history, setHistory] = useState<MapElement[][]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const [showClearAllDialog, setShowClearAllDialog] = useState(false);
   const stageRef = useRef<Konva.Stage>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const [elements, setElements] = useState<MapElement[]>([
-    {
-      id: "zone1",
-      type: "zone",
-      x: 100,
-      y: 100,
-      width: 150,
-      height: 80,
-      color: "#D4EDDA",
-      label: "Zone 1",
-      draggable: true,
-    },
-    {
-      id: "zone2",
-      type: "zone",
-      x: 600,
-      y: 100,
-      width: 150,
-      height: 80,
-      color: "#F8D7DA",
-      label: "Zone 2",
-      draggable: true,
-    },
-    {
-      id: "zone3",
-      type: "zone",
-      x: 600,
-      y: 450,
-      width: 150,
-      height: 80,
-      color: "#FFEECF",
-      label: "Zone 3",
-      draggable: true,
-    },
-    {
-      id: "toilet",
-      type: "zone",
-      x: 100,
-      y: 450,
-      width: 120,
-      height: 70,
-      color: "#FFEECF",
-      label: "Toilet",
-      draggable: true,
-    },
-    {
-      id: "cafeteria",
-      type: "zone",
-      x: 350,
-      y: 250,
-      width: 180,
-      height: 100,
-      color: "#D1ECF1",
-      label: "Cafeteria",
-      draggable: true,
-    },
-    {
-      id: "meeting-room",
-      type: "zone",
-      x: 550,
-      y: 280,
-      width: 160,
-      height: 80,
-      color: "#FFEECF",
-      label: "Meeting Room",
-      draggable: true,
-    },
-    {
-      id: "office-space",
-      type: "zone",
-      x: 150,
-      y: 280,
-      width: 180,
-      height: 80,
-      color: "#FFEECF",
-      label: "Office Space",
-      draggable: true,
-    },
-    {
-      id: "reception",
-      type: "zone",
-      x: 150,
-      y: 380,
-      width: 180,
-      height: 80,
-      color: "#FFEECF",
-      label: "Reception",
-      draggable: true,
-    },
+  const { data: pois = [], isLoading: isLoadingPOIs } = useGetPOIsByFloorPlanQuery(
+    { floorPlanId: floorPlanId || "" },
+    { skip: !floorPlanId }
+  );
+  const [updatePOI] = useUpdatePOIMutation();
 
-    {
-      id: "poi1",
-      type: "poi",
-      x: 200,
-      y: 200,
-      radius: 8,
-      color: "red",
-      draggable: true,
-    },
-    {
-      id: "poi2",
-      type: "poi",
-      x: 650,
-      y: 400,
-      radius: 8,
-      color: "black",
-      draggable: true,
-    },
-
-    {
-      id: "label1",
-      type: "label",
-      x: 120,
-      y: 530,
-      color: "black",
-      label: "Entry Point",
-      draggable: true,
-    },
-    {
-      id: "label2",
-      type: "label",
-      x: 620,
-      y: 420,
-      color: "black",
-      label: "Main Road",
-      draggable: true,
-    },
-
-    {
-      id: "path1",
-      type: "path",
-      points: [100, 520, 100, 550, 300, 550, 300, 350, 400, 350],
-      color: "#007bff",
-      stroke: "#007bff",
-      strokeWidth: 3,
-      tension: 0.5,
-      pointerLength: 10,
-      pointerWidth: 10,
-      draggable: true,
-    },
-  ]);
+  const [elements, setElements] = useState<MapElement[]>([]);
 
   useEffect(() => {
     const updateSize = () => {
@@ -198,14 +86,121 @@ export function MapCanvas() {
     return () => window.removeEventListener("resize", updateSize);
   }, []);
 
+  useEffect(() => {
+    if (history.length === 0 && elements.length > 0) {
+      setHistory([[...elements]]);
+      setHistoryIndex(0);
+    }
+  }, [elements, elements.length, history.length]);
+
   const handleZoomIn = () => setZoom((prev) => Math.min(prev + 10, 200));
   const handleZoomOut = () => setZoom((prev) => Math.max(prev - 10, 50));
-
-  const handleDragEnd = (id: string, newX: number, newY: number) => {
-    setElements((prev) =>
-      prev.map((el) => (el.id === id ? { ...el, x: newX, y: newY } : el))
-    );
+  const handleReset = () => {
+    setZoom(100);
+    if (stageRef.current) {
+      stageRef.current.scale({ x: 1, y: 1 });
+      stageRef.current.position({ x: 0, y: 0 });
+    }
   };
+
+  const saveToHistory = (newElements: MapElement[]) => {
+    const newHistory = history.slice(0, historyIndex + 1);
+    newHistory.push([...newElements]);
+    setHistory(newHistory);
+    setHistoryIndex(newHistory.length - 1);
+  };
+
+  const handleUndo = () => {
+    if (historyIndex > 0) {
+      setHistoryIndex(historyIndex - 1);
+      setElements([...history[historyIndex - 1]]);
+    }
+  };
+
+  const handleRedo = () => {
+    if (historyIndex < history.length - 1) {
+      setHistoryIndex(historyIndex + 1);
+      setElements([...history[historyIndex + 1]]);
+    }
+  };
+
+  const handleClearAll = () => {
+    setShowClearAllDialog(true);
+  };
+
+  const confirmClearAll = () => {
+    setElements([]);
+    saveToHistory([]);
+    setShowClearAllDialog(false);
+    toast.success("All elements cleared");
+  };
+
+  const handleDragEnd = async (id: string, newX: number, newY: number) => {
+    const poi = poiMap.get(id);
+    
+    if (poi) {
+      try {
+        await updatePOI({
+          id: poi.id,
+          data: {
+            coordinates: {
+              x: Math.round(newX),
+              y: Math.round(newY),
+            },
+          },
+        }).unwrap();
+        toast.success("POI position updated");
+      } catch (error: any) {
+        console.error("Failed to update POI position:", error);
+        toast.error(error?.data?.message || "Failed to update POI position");
+      }
+    } else {
+      const newElements = elements.map((el) =>
+        el.id === id ? { ...el, x: newX, y: newY } : el
+      );
+      setElements(newElements);
+      saveToHistory(newElements);
+    }
+  };
+
+  const handleStageClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
+    if (selectedTool === "poi" && onPOIClick) {
+      const stage = e.target.getStage();
+      if (stage) {
+        const pointerPos = stage.getPointerPosition();
+        if (pointerPos) {
+          onPOIClick({ x: pointerPos.x, y: pointerPos.y });
+        }
+      }
+    }
+  };
+
+  const getPOIColor = (category: string): string => {
+    const colorMap: Record<string, string> = {
+      Room: "#3D8C6C", 
+      Reception: "#2563EB", 
+      Toilet: "#DC2626", 
+      Elevator: "#7C3AED", 
+      "Emergency Exit": "#F59E0B", 
+      Cafeteria: "#10B981", 
+      Pharmacy: "#EC4899", 
+      Laboratory: "#06B6D4", 
+    };
+    return colorMap[category] || "#6B7280";
+  };
+
+  const poiMap = new Map(pois.map((poi: MapEditorPOI) => [poi.id, poi]));
+
+  const poiElements: MapElement[] = pois.map((poi: MapEditorPOI) => ({
+    id: poi.id,
+    type: "poi",
+    x: poi.coordinates.x,
+    y: poi.coordinates.y,
+    radius: 8,
+    color: poi.color || getPOIColor(poi.category),
+    label: poi.name,
+    draggable: true,
+  }));
 
   const renderElement = (element: MapElement) => {
     switch (element.type) {
@@ -244,20 +239,75 @@ export function MapCanvas() {
           </Group>
         );
       case "poi":
+        const poiColor = element.color || "#3D8C6C";
+        const hexToRgba = (hex: string, alpha: number) => {
+          const r = parseInt(hex.slice(1, 3), 16);
+          const g = parseInt(hex.slice(3, 5), 16);
+          const b = parseInt(hex.slice(5, 7), 16);
+          return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        };
+        const lightFill = hexToRgba(poiColor, 0.15);
+        const borderColor = hexToRgba(poiColor, 0.4);
+        
+        const labelWidth = element.label ? element.label.length * 8 + 40 : 120;
+        const roomWidth = Math.max(labelWidth, 120);
+        const roomHeight = 60;
+        
         return (
-          <Circle
+          <Group
             key={element.id}
             x={element.x}
             y={element.y}
-            radius={element.radius || 8}
-            fill={element.color}
-            stroke="#fff"
-            strokeWidth={2}
             draggable={element.draggable}
             onDragEnd={(e) =>
               handleDragEnd(element.id, e.target.x(), e.target.y())
             }
-          />
+          >
+            {/* Room/Rectangle background with rounded corners */}
+            <Rect
+              x={-roomWidth / 2}
+              y={-roomHeight / 2}
+              width={roomWidth}
+              height={roomHeight}
+              fill={lightFill}
+              stroke={borderColor}
+              strokeWidth={2}
+              cornerRadius={8}
+            />
+            
+            {/* POI Indicator - Outer ring */}
+            <Circle
+              x={0}
+              y={-8}
+              radius={10}
+              fill={hexToRgba(poiColor, 0.3)}
+            />
+            
+            {/* POI Indicator - Inner dark circle */}
+            <Circle
+              x={0}
+              y={-8}
+              radius={6}
+              fill={poiColor}
+              stroke="#fff"
+              strokeWidth={1.5}
+            />
+            
+            {/* POI Label inside the rectangle */}
+            {element.label && (
+              <Text
+                text={element.label}
+                x={-roomWidth / 2 + 10}
+                y={roomHeight / 2 - 20}
+                fontSize={13}
+                fontFamily="Arial"
+                fontWeight="500"
+                fill="#374151"
+                width={roomWidth - 20}
+                align="center"
+              />
+            )}
+          </Group>
         );
       case "path":
         return (
@@ -307,6 +357,7 @@ export function MapCanvas() {
   };
 
   const drawGrid = () => {
+    if (!showGrid) return [];
     const gridSize = 20;
     const lines = [];
 
@@ -366,16 +417,29 @@ export function MapCanvas() {
               variant="outline"
               size="sm"
               className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+              onClick={handleReset}
             >
               <RotateCcw className="w-4 h-4" />
               <span className="hidden sm:inline">Reset</span>
             </Button>
 
-            <Button variant="outline" size="sm" className="w-8 h-8 p-0">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-8 h-8 p-0"
+              onClick={handleUndo}
+              disabled={historyIndex <= 0}
+            >
               <Undo className="w-4 h-4" />
             </Button>
 
-            <Button variant="outline" size="sm" className="w-8 h-8 p-0">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-8 h-8 p-0"
+              onClick={handleRedo}
+              disabled={historyIndex >= history.length - 1}
+            >
               <Redo className="w-4 h-4" />
             </Button>
 
@@ -383,16 +447,17 @@ export function MapCanvas() {
               variant="outline"
               size="sm"
               className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
-              onClick={() => setElements([])}
+              onClick={handleClearAll}
             >
               <Trash2 className="w-4 h-4" />
               <span className="hidden sm:inline">Clear All</span>
             </Button>
 
             <Button
-              variant="outline"
+              variant={showGrid ? "default" : "outline"}
               size="sm"
               className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+              onClick={() => setShowGrid(!showGrid)}
             >
               <Grid3x3 className="w-4 h-4" />
               <span className="hidden sm:inline">Grid</span>
@@ -405,7 +470,7 @@ export function MapCanvas() {
             <Search className="w-4 h-4" />
           </Button>
           <span className="text-xs sm:text-sm text-muted-foreground">
-            Elements {elements.length}
+            Elements {elements.length + poiElements.length}
           </span>
         </div>
       </div>
@@ -416,10 +481,12 @@ export function MapCanvas() {
           width={stageSize.width}
           height={stageSize.height}
           className="w-full h-full"
+          onClick={handleStageClick}
         >
           <Layer>
             {drawGrid()}
             {elements.map(renderElement)}
+            {poiElements.map(renderElement)}
           </Layer>
         </Stage>
 
@@ -430,6 +497,39 @@ export function MapCanvas() {
           <span className="sm:hidden">Click to add POIs</span>
         </div>
       </div>
+
+      {/* Clear All Confirmation Dialog */}
+      <Dialog open={showClearAllDialog} onOpenChange={setShowClearAllDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold text-card-foreground">
+              Clear All Elements
+            </DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground pt-2">
+              Are you sure you want to clear all elements from the canvas? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-3 sm:gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowClearAllDialog(false)}
+              className="px-5 py-2.5 text-sm font-medium text-muted-foreground bg-transparent border border-border rounded-lg hover:bg-accent transition-colors cursor-pointer flex items-center gap-2"
+            >
+              <X className="w-4 h-4" />
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={confirmClearAll}
+              className="px-5 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors cursor-pointer flex items-center gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              Clear All
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -11,38 +11,79 @@ import {
 import { CustomInput } from "@/components/common/CustomInput";
 import { CustomSelect } from "@/components/common/CustomSelect";
 import { MapPinIcon, X } from "@/icons/Icons";
-
-interface POIData {
-  name: string;
-  description: string;
-  category: string;
-  isAccessible: boolean;
-}
+import { useCreatePOIMutation } from "@/lib/api/mapEditorPOIApi";
+import toast from "react-hot-toast";
 
 interface AddPOIModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddPOI: (poiData: POIData) => void;
+  floorPlanId?: string;
+  coordinates?: { x: number; y: number };
 }
 
-export function AddPOIModal({ isOpen, onClose, onAddPOI }: AddPOIModalProps) {
+export function AddPOIModal({ isOpen, onClose, floorPlanId, coordinates }: AddPOIModalProps) {
+  const [createPOI, { isLoading }] = useCreatePOIMutation();
   const [formData, setFormData] = useState({
-    name: "e.g. Emergency Department",
+    name: "",
     description: "",
-    category: "Small",
+    category: "Room",
     isAccessible: true,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onAddPOI(formData);
-    onClose();
-    setFormData({
-      name: "Add POI",
-      description: "",
-      category: "Small",
-      isAccessible: true,
-    });
+    
+    if (!floorPlanId) {
+      toast.error("Floor plan ID is required");
+      return;
+    }
+
+    if (!coordinates) {
+      toast.error("Please click on the map to select a location");
+      return;
+    }
+
+    if (!formData.name.trim()) {
+      toast.error("POI name is required");
+      return;
+    }
+
+    const getPOIColor = (category: string): string => {
+      const colorMap: Record<string, string> = {
+        Room: "#3D8C6C", 
+        Reception: "#2563EB", 
+        Toilet: "#DC2626", 
+        Elevator: "#7C3AED", 
+        "Emergency Exit": "#F59E0B", 
+        Cafeteria: "#10B981", 
+        Pharmacy: "#EC4899", 
+        Laboratory: "#06B6D4", 
+      };
+      return colorMap[category] || "#6B7280";
+    };
+
+    try {
+      await createPOI({
+        floorPlanId,
+        name: formData.name.trim(),
+        category: formData.category,
+        description: formData.description.trim() || undefined,
+        coordinates,
+        color: getPOIColor(formData.category),
+        isAccessible: formData.isAccessible,
+      }).unwrap();
+
+      toast.success("POI created successfully");
+      setFormData({
+        name: "",
+        description: "",
+        category: "Room",
+        isAccessible: true,
+      });
+      onClose();
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to create POI");
+    }
   };
 
   const handleChange = (field: string, value: string | boolean) => {
@@ -59,7 +100,7 @@ export function AddPOIModal({ isOpen, onClose, onAddPOI }: AddPOIModalProps) {
         <form onSubmit={handleSubmit} className="space-y-4">
           <CustomInput
             label="POI Name"
-            placeholder="`e.g. Emergency Department"
+            placeholder="e.g. Emergency Department"
             value={formData.name}
             onChange={(value) => handleChange("name", value)}
             required
@@ -101,10 +142,11 @@ export function AddPOIModal({ isOpen, onClose, onAddPOI }: AddPOIModalProps) {
             </Button>
             <Button
               type="submit"
-              className="bg-[#3D8C6C] hover:bg-[#3D8C6C]/90 cursor-pointer"
+              disabled={isLoading || !floorPlanId || !coordinates}
+              className="bg-[#3D8C6C] hover:bg-[#3D8C6C]/90 cursor-pointer disabled:opacity-50"
             >
               <MapPinIcon />
-              Add POI
+              {isLoading ? "Adding..." : "Add POI"}
             </Button>
           </div>
         </form>

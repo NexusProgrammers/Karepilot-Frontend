@@ -15,7 +15,11 @@ import { AddAnnotationModal } from "./AddAnnotationModal";
 import { Button } from "@/components/ui/button";
 import { PanelLeft, PanelLeftClose } from "lucide-react";
 
-export function MapEditorContent() {
+interface MapEditorContentProps {
+  floorPlanId?: string;
+}
+
+export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showPOIModal, setShowPOIModal] = useState(false);
   const [showLabelModal, setShowLabelModal] = useState(false);
@@ -23,6 +27,8 @@ export function MapEditorContent() {
   const [showElevatorModal, setShowElevatorModal] = useState(false);
   const [showRestrictedZoneModal, setShowRestrictedZoneModal] = useState(false);
   const [showAnnotationModal, setShowAnnotationModal] = useState(false);
+  const [selectedTool, setSelectedTool] = useState<string | null>(null);
+  const [poiCoordinates, setPoiCoordinates] = useState<{ x: number; y: number } | undefined>();
 
   return (
     <div className="flex h-[calc(100vh-120px)] relative gap-4">
@@ -54,13 +60,21 @@ export function MapEditorContent() {
       >
         <div className="flex-1 p-4 space-y-4 lg:space-y-6 mt-32 lg:mt-0">
           <DrawingTools 
+            selectedTool={selectedTool}
             onToolSelect={(toolId) => {
-              if (toolId === "poi") setShowPOIModal(true);
-              if (toolId === "label") setShowLabelModal(true);
-              if (toolId === "entrance") setShowEntranceModal(true);
-              if (toolId === "elevator") setShowElevatorModal(true);
-              if (toolId === "restricted") setShowRestrictedZoneModal(true);
-              if (toolId === "annotation") setShowAnnotationModal(true);
+              setSelectedTool(toolId);
+              if (toolId === "poi") {
+              } else if (toolId === "label") {
+                setShowLabelModal(true);
+              } else if (toolId === "entrance") {
+                setShowEntranceModal(true);
+              } else if (toolId === "elevator") {
+                setShowElevatorModal(true);
+              } else if (toolId === "restricted") {
+                setShowRestrictedZoneModal(true);
+              } else if (toolId === "annotation") {
+                setShowAnnotationModal(true);
+              }
             }}
           />
           <Layers />
@@ -76,14 +90,25 @@ export function MapEditorContent() {
       )}
 
       <div className="flex-1 flex flex-col min-w-0">
-        <MapCanvas />
+        <MapCanvas 
+          floorPlanId={floorPlanId}
+          selectedTool={selectedTool}
+          onPOIClick={(coordinates) => {
+            setPoiCoordinates(coordinates);
+            setShowPOIModal(true);
+          }}
+        />
         <ActionButtons />
       </div>
 
       <AddPOIModal
         isOpen={showPOIModal}
-        onClose={() => setShowPOIModal(false)}
-        onAddPOI={(poiData) => console.log("Adding POI:", poiData)}
+        onClose={() => {
+          setShowPOIModal(false);
+          setPoiCoordinates(undefined);
+        }}
+        floorPlanId={floorPlanId}
+        coordinates={poiCoordinates}
       />
       
       <AddLabelModal
