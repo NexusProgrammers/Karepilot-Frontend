@@ -18,28 +18,18 @@ import {
   CreateUserFormValues,
   UpdateUserFormValues,
 } from "@/lib/validations";
+import { ModalMode, CreateUserModalProps } from "@/lib/types/users-and-roles";
 
-type ModalMode = "create" | "edit" | "view";
-
-interface CreateUserModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  userId?: string | null;
-  mode?: ModalMode;
-}
-
-const roles = [
-  "Admin",
-  "Manager",
-  "Technician",
-  "Staff",
-  "Security",
-  "Viewer",
-];
+const roles = ["Admin", "Manager", "Technician", "Staff", "Security", "Viewer"];
 
 const shifts = ["Day Shift", "Night Shift", "Evening Shift", "24/7"];
 
-export function CreateUserModal({ isOpen, onClose, userId, mode = "create" }: CreateUserModalProps) {
+export function CreateUserModal({
+  isOpen,
+  onClose,
+  userId,
+  mode = "create",
+}: CreateUserModalProps) {
   const isEditMode = mode === "edit" && !!userId;
   const isViewMode = mode === "view" && !!userId;
 
@@ -59,7 +49,7 @@ export function CreateUserModal({ isOpen, onClose, userId, mode = "create" }: Cr
   const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
 
   const departments = departmentsData?.data?.departments || [];
-  
+
   const getDepartmentName = (id: string) => {
     if (!id) return "";
     const dept = departments.find((d) => d.id === id || (d as any)._id === id);
@@ -106,7 +96,7 @@ export function CreateUserModal({ isOpen, onClose, userId, mode = "create" }: Cr
   ) => {
     try {
       const submitData = { ...values };
-      
+
       if (isEditMode && !submitData.password) {
         delete submitData.password;
       }
@@ -306,7 +296,11 @@ export function CreateUserModal({ isOpen, onClose, userId, mode = "create" }: Cr
                                       ? "Leave empty to keep current"
                                       : "Enter password"
                                   }
-                                  label={isEditMode ? "Password (Optional)" : "Password"}
+                                  label={
+                                    isEditMode
+                                      ? "Password (Optional)"
+                                      : "Password"
+                                  }
                                   required={!isEditMode}
                                   error={meta.error}
                                   touched={meta.touched}
@@ -354,7 +348,11 @@ export function CreateUserModal({ isOpen, onClose, userId, mode = "create" }: Cr
                         {({ field, meta }: any) => (
                           <div>
                             <CustomSelect
-                              value={field.value ? getDepartmentName(field.value) : ""}
+                              value={
+                                field.value
+                                  ? getDepartmentName(field.value)
+                                  : ""
+                              }
                               onChange={(value) => {
                                 const deptId = getDepartmentIdFromName(value);
                                 setFieldValue("department", deptId);
