@@ -17,7 +17,6 @@ export function DateRangePicker({
   onDateRangeChange,
   defaultRange = "Last 7 days",
 }: DateRangePickerProps) {
-  
   const [selectedRange, setSelectedRange] = useState(defaultRange);
   const [isRefreshing, setIsRefreshing] = useState(false);
 

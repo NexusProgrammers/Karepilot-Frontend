@@ -2,12 +2,7 @@
 
 import { useState } from "react";
 import { Eye, HeartCrack } from "@/icons/Icons";
-
-interface Layer {
-  id: string;
-  name: string;
-  visible: boolean;
-}
+import { Layer } from "@/lib/types/map-editor/components";
 
 const initialLayers: Layer[] = [
   { id: "floor-plan", name: "Floor Plan", visible: true },

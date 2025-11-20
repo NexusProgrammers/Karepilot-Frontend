@@ -1,9 +1,6 @@
 import { Asset } from "@/lib/asset-tracking/types";
 import { Building2 } from "@/icons/Icons";
-
-interface AssetCardProps {
-  asset: Asset;
-}
+import { AssetCardProps } from "@/lib/types/asset-tracking";
 
 export function AssetCard({ asset }: AssetCardProps) {
   const getStatusColor = (status: string) => {
@@ -39,9 +36,13 @@ export function AssetCard({ asset }: AssetCardProps) {
           </div>
         </div>
         <span
-          className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusColor(asset.status)}`}
+          className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusColor(
+            asset.status
+          )}`}
         >
-          {asset.status === "low-battery" ? "Low Battery" : asset.status.charAt(0).toUpperCase() + asset.status.slice(1)}
+          {asset.status === "low-battery"
+            ? "Low Battery"
+            : asset.status.charAt(0).toUpperCase() + asset.status.slice(1)}
         </span>
       </div>
 
@@ -66,7 +67,9 @@ export function AssetCard({ asset }: AssetCardProps) {
           </div>
           <div className="w-full bg-muted rounded-full h-2">
             <div
-              className={`h-2 rounded-full transition-all duration-300 ${getBatteryColor(asset.batteryLevel)}`}
+              className={`h-2 rounded-full transition-all duration-300 ${getBatteryColor(
+                asset.batteryLevel
+              )}`}
               style={{ width: `${asset.batteryLevel}%` }}
             />
           </div>

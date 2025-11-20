@@ -11,36 +11,61 @@ import {
 import { CustomInput } from "@/components/common/CustomInput";
 import { CustomSelect } from "@/components/common/CustomSelect";
 import { X, Shield } from "@/icons/Icons";
-
-interface RestrictedZoneData {
-  label: string;
-  restrictionType: string;
-}
-
-interface AddRestrictedZoneModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onAddRestrictedZone: (zoneData: RestrictedZoneData) => void;
-}
+import { useCreateRestrictedZoneMutation } from "@/lib/api/mapEditorRestrictedZoneApi";
+import { AddRestrictedZoneModalProps } from "@/lib/types/map-editor/components";
+import toast from "react-hot-toast";
 
 export function AddRestrictedZoneModal({
   isOpen,
   onClose,
-  onAddRestrictedZone,
+  floorPlanId,
+  coordinates,
 }: AddRestrictedZoneModalProps) {
+  const [createRestrictedZone, { isLoading }] = useCreateRestrictedZoneMutation();
   const [formData, setFormData] = useState({
-    label: "",
+    name: "",
+    description: "",
     restrictionType: "Staff Only",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onAddRestrictedZone(formData);
-    onClose();
-    setFormData({
-      label: "",
-      restrictionType: "Staff Only",
-    });
+
+    if (!floorPlanId) {
+      toast.error("Floor plan ID is required");
+      return;
+    }
+
+    if (!coordinates) {
+      toast.error("Please draw a zone on the map first");
+      return;
+    }
+
+    if (!formData.name.trim()) {
+      toast.error("Zone name is required");
+      return;
+    }
+
+    try {
+      await createRestrictedZone({
+        floorPlanId,
+        name: formData.name.trim(),
+        description: formData.description.trim() || undefined,
+        restrictionType: formData.restrictionType as "Staff Only" | "Authorized Personnel" | "Emergency Access Only",
+        coordinates,
+        color: "#EF4444",
+      }).unwrap();
+
+      toast.success("Restricted zone created successfully");
+      setFormData({
+        name: "",
+        description: "",
+        restrictionType: "Staff Only",
+      });
+      onClose();
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to create restricted zone");
+    }
   };
 
   const handleChange = (field: string, value: string) => {
@@ -61,11 +86,18 @@ export function AddRestrictedZoneModal({
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <CustomInput
-            label="Zone Label"
+            label="Zone Name"
             placeholder="e.g. Staff Only Area"
-            value={formData.label}
-            onChange={(value) => handleChange("label", value)}
+            value={formData.name}
+            onChange={(value) => handleChange("name", value)}
             required
+          />
+
+          <CustomInput
+            label="Description"
+            placeholder="Optional description"
+            value={formData.description}
+            onChange={(value) => handleChange("description", value)}
           />
 
           <CustomSelect
@@ -93,9 +125,10 @@ export function AddRestrictedZoneModal({
             <Button
               type="submit"
               className="bg-[#3D8C6C] hover:bg-[#3D8C6C]/90 cursor-pointer"
+              disabled={isLoading || !floorPlanId || !coordinates}
             >
               <Shield />
-              Add Zone
+              {isLoading ? "Creating..." : "Add Zone"}
             </Button>
           </div>
         </form>

@@ -11,6 +11,14 @@ import { pointsOfInterestApi } from '../api/pointsOfInterestApi';
 import { floorPlansApi } from '../api/floorPlansApi';
 import { mapSettingsApi } from '../api/mapSettingsApi';
 import { buildingsApi } from '../api/buildingsApi';
+import { mapEditorPOIApi } from '../api/mapEditorPOIApi';
+import { mapEditorEntranceApi } from '../api/mapEditorEntranceApi';
+import { mapEditorElevatorApi } from '../api/mapEditorElevatorApi';
+import { mapEditorPathApi } from '../api/mapEditorPathApi';
+import { mapEditorRestrictedZoneApi } from '../api/mapEditorRestrictedZoneApi';
+import { mapEditorLabelApi } from '../api/mapEditorLabelApi';
+import { mapEditorMeasurementApi } from '../api/mapEditorMeasurementApi';
+import { mapEditorAnnotationApi } from '../api/mapEditorAnnotationApi';
 
 export const store = configureStore({
   reducer: {
@@ -26,6 +34,14 @@ export const store = configureStore({
     [floorPlansApi.reducerPath]: floorPlansApi.reducer,
     [mapSettingsApi.reducerPath]: mapSettingsApi.reducer,
     [buildingsApi.reducerPath]: buildingsApi.reducer,
+    [mapEditorPOIApi.reducerPath]: mapEditorPOIApi.reducer,
+    [mapEditorEntranceApi.reducerPath]: mapEditorEntranceApi.reducer,
+    [mapEditorElevatorApi.reducerPath]: mapEditorElevatorApi.reducer,
+    [mapEditorPathApi.reducerPath]: mapEditorPathApi.reducer,
+    [mapEditorRestrictedZoneApi.reducerPath]: mapEditorRestrictedZoneApi.reducer,
+    [mapEditorLabelApi.reducerPath]: mapEditorLabelApi.reducer,
+    [mapEditorMeasurementApi.reducerPath]: mapEditorMeasurementApi.reducer,
+    [mapEditorAnnotationApi.reducerPath]: mapEditorAnnotationApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -43,7 +59,15 @@ export const store = configureStore({
       pointsOfInterestApi.middleware,
       floorPlansApi.middleware,
       mapSettingsApi.middleware,
-      buildingsApi.middleware
+      buildingsApi.middleware,
+      mapEditorPOIApi.middleware,
+      mapEditorEntranceApi.middleware,
+      mapEditorElevatorApi.middleware,
+      mapEditorPathApi.middleware,
+      mapEditorRestrictedZoneApi.middleware,
+      mapEditorLabelApi.middleware,
+      mapEditorMeasurementApi.middleware,
+      mapEditorAnnotationApi.middleware
     ),
 });
 

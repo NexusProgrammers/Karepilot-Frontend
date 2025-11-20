@@ -11,42 +11,63 @@ import {
 import { CustomInput } from "@/components/common/CustomInput";
 import { CustomSelect } from "@/components/common/CustomSelect";
 import { X, Tag } from "@/icons/Icons";
-
-interface LabelData {
-  name: string;
-  fontSize: string;
-  fontWeight: string;
-  color: string;
-}
-
-interface AddLabelModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onAddLabel: (labelData: LabelData) => void;
-}
+import { useCreateLabelMutation } from "@/lib/api/mapEditorLabelApi";
+import { AddLabelModalProps } from "@/lib/types/map-editor/components";
+import toast from "react-hot-toast";
 
 export function AddLabelModal({
   isOpen,
   onClose,
-  onAddLabel,
+  floorPlanId,
+  coordinates,
 }: AddLabelModalProps) {
+  const [createLabel, { isLoading }] = useCreateLabelMutation();
   const [formData, setFormData] = useState({
-    name: "",
+    text: "",
     fontSize: "16px",
     fontWeight: "Normal",
     color: "#000000",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onAddLabel(formData);
-    onClose();
-    setFormData({
-      name: "",
-      fontSize: "16px",
-      fontWeight: "Normal",
-      color: "#000000",
-    });
+
+    if (!floorPlanId) {
+      toast.error("Floor plan ID is required");
+      return;
+    }
+
+    if (!coordinates) {
+      toast.error("Please click on the map to select a location");
+      return;
+    }
+
+    if (!formData.text.trim()) {
+      toast.error("Label text is required");
+      return;
+    }
+
+    try {
+      await createLabel({
+        floorPlanId,
+        text: formData.text.trim(),
+        coordinates,
+        fontSize: formData.fontSize,
+        fontWeight: formData.fontWeight,
+        color: formData.color,
+      }).unwrap();
+
+      toast.success("Label created successfully");
+      setFormData({
+        text: "",
+        fontSize: "16px",
+        fontWeight: "Normal",
+        color: "#000000",
+      });
+      onClose();
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to create label");
+    }
   };
 
   const handleChange = (field: string, value: string) => {
@@ -82,8 +103,8 @@ export function AddLabelModal({
           <CustomInput
             label="Label Text"
             placeholder="e.g. Enter label text"
-            value={formData.name}
-            onChange={(value) => handleChange("name", value)}
+            value={formData.text}
+            onChange={(value) => handleChange("text", value)}
             required
           />
 
@@ -146,9 +167,10 @@ export function AddLabelModal({
             <Button
               type="submit"
               className="bg-[#3D8C6C] hover:bg-[#3D8C6C]/90 cursor-pointer"
+              disabled={isLoading || !floorPlanId || !coordinates}
             >
               <Tag />
-              Add Label
+              {isLoading ? "Creating..." : "Add Label"}
             </Button>
           </div>
         </form>

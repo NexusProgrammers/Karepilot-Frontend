@@ -12,25 +12,17 @@ import { CustomInput } from "@/components/common/CustomInput";
 import { CustomSelect } from "@/components/common/CustomSelect";
 import { ToggleSwitch } from "@/components/common/ToggleSwitch";
 import { X, MapPin } from "@/icons/Icons";
-
-interface EntranceData {
-  name: string;
-  description: string;
-  category: string;
-  isAccessible: boolean;
-}
-
-interface MarkEntranceModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onAddEntrance: (entranceData: EntranceData) => void;
-}
+import { useCreateEntranceMutation } from "@/lib/api/mapEditorEntranceApi";
+import { MarkEntranceModalProps } from "@/lib/types/map-editor/components";
+import toast from "react-hot-toast";
 
 export function MarkEntranceModal({
   isOpen,
   onClose,
-  onAddEntrance,
+  floorPlanId,
+  coordinates,
 }: MarkEntranceModalProps) {
+  const [createEntrance, { isLoading }] = useCreateEntranceMutation();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -38,16 +30,56 @@ export function MarkEntranceModal({
     isAccessible: true,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onAddEntrance(formData);
-    onClose();
-    setFormData({
-      name: "",
-      description: "",
-      category: "Main Entrance",
-      isAccessible: true,
-    });
+    
+    if (!floorPlanId) {
+      toast.error("Floor plan ID is required");
+      return;
+    }
+
+    if (!coordinates) {
+      toast.error("Please click on the map to select a location");
+      return;
+    }
+
+    if (!formData.name.trim()) {
+      toast.error("Entrance name is required");
+      return;
+    }
+
+    const getEntranceColor = (category: string): string => {
+      const colorMap: Record<string, string> = {
+        "Main Entrance": "#F59E0B",
+        "Emergency Exit": "#DC2626",
+        "Side Entrance": "#3D8C6C",
+        "Staff Entrance": "#2563EB",
+      };
+      return colorMap[category] || "#6B7280";
+    };
+
+    try {
+      await createEntrance({
+        floorPlanId,
+        name: formData.name.trim(),
+        category: formData.category,
+        description: formData.description.trim() || undefined,
+        coordinates,
+        color: getEntranceColor(formData.category),
+        isAccessible: formData.isAccessible,
+      }).unwrap();
+
+      toast.success("Entrance created successfully");
+      setFormData({
+        name: "",
+        description: "",
+        category: "Main Entrance",
+        isAccessible: true,
+      });
+      onClose();
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to create entrance");
+    }
   };
 
   const handleChange = (field: string, value: string | boolean) => {
@@ -103,9 +135,10 @@ export function MarkEntranceModal({
             <Button
               type="submit"
               className="bg-[#3D8C6C] hover:bg-[#3D8C6C]/90 cursor-pointer"
+              disabled={isLoading || !floorPlanId || !coordinates}
             >
               <MapPin />
-              Add Entrance
+              {isLoading ? "Adding..." : "Add Entrance"}
             </Button>
           </div>
         </form>

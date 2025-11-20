@@ -11,23 +11,17 @@ import {
 import { CustomInput } from "@/components/common/CustomInput";
 import { Checkbox } from "@/components/ui/checkbox";
 import { X, ArrowUpDown } from "@/icons/Icons";
-
-interface ElevatorData {
-  label: string;
-  connectsToFloors: string[];
-}
-
-interface AddElevatorModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onAddElevator: (elevatorData: ElevatorData) => void;
-}
+import { useCreateElevatorMutation } from "@/lib/api/mapEditorElevatorApi";
+import { AddElevatorModalProps } from "@/lib/types/map-editor/components";
+import toast from "react-hot-toast";
 
 export function AddElevatorModal({
   isOpen,
   onClose,
-  onAddElevator,
+  floorPlanId,
+  coordinates,
 }: AddElevatorModalProps) {
+  const [createElevator, { isLoading }] = useCreateElevatorMutation();
   const [formData, setFormData] = useState({
     label: "",
     connectsToFloors: ["Basement", "Floor 1"],
@@ -43,14 +37,48 @@ export function AddElevatorModal({
     "Floor 5",
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onAddElevator(formData);
-    onClose();
-    setFormData({
-      label: "",
-      connectsToFloors: ["Basement", "Floor 1"],
-    });
+
+    if (!floorPlanId) {
+      toast.error("Floor plan ID is required");
+      return;
+    }
+
+    if (!coordinates) {
+      toast.error("Please click on the map to select a location");
+      return;
+    }
+
+    if (!formData.label.trim()) {
+      toast.error("Elevator label is required");
+      return;
+    }
+
+    if (formData.connectsToFloors.length === 0) {
+      toast.error("Please select at least one floor connection");
+      return;
+    }
+
+    try {
+      await createElevator({
+        floorPlanId,
+        name: formData.label.trim(),
+        coordinates,
+        connectsToFloors: formData.connectsToFloors,
+        color: "#7C3AED",
+        isAccessible: true,
+      }).unwrap();
+
+      toast.success("Elevator created successfully");
+      setFormData({
+        label: "",
+        connectsToFloors: ["Basement", "Floor 1"],
+      });
+      onClose();
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to create elevator");
+    }
   };
 
   const handleFloorToggle = (floor: string, checked: boolean) => {
@@ -124,9 +152,10 @@ export function AddElevatorModal({
             <Button
               type="submit"
               className="bg-[#3D8C6C] hover:bg-[#3D8C6C]/90 cursor-pointer"
+              disabled={isLoading || !floorPlanId}
             >
               <ArrowUpDown />
-              Add Elevator
+              {isLoading ? "Adding..." : "Add Elevator"}
             </Button>
           </div>
         </form>
