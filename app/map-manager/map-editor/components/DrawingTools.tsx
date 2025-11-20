@@ -12,13 +12,7 @@ import {
   Info,
 } from "@/icons/Icons";
 import { useState } from "react";
-
-interface DrawingTool {
-  id: string;
-  name: string;
-  description: string;
-  icon: React.ComponentType<{ className?: string }>;
-}
+import { DrawingTool, DrawingToolsProps } from "@/lib/types/map-editor/components";
 
 const drawingTools: DrawingTool[] = [
   {
@@ -70,11 +64,6 @@ const drawingTools: DrawingTool[] = [
     icon: MessageSquare,
   },
 ];
-
-interface DrawingToolsProps {
-  onToolSelect?: (toolId: string) => void;
-  selectedTool?: string | null;
-}
 
 export function DrawingTools({ onToolSelect, selectedTool }: DrawingToolsProps) {
   const [hoveredTool, setHoveredTool] = useState<string | null>(null);

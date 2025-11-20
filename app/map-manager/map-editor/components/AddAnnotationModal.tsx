@@ -13,14 +13,8 @@ import { X, MessageSquare } from "@/icons/Icons";
 import { CustomInput } from "@/components/common/CustomInput";
 import { CustomTextarea } from "@/components/common/CustomTextarea";
 import { useCreateAnnotationMutation } from "@/lib/api/mapEditorAnnotationApi";
+import { AddAnnotationModalProps } from "@/lib/types/map-editor/components";
 import toast from "react-hot-toast";
-
-interface AddAnnotationModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  floorPlanId: string;
-  coordinates?: { x: number; y: number };
-}
 
 export function AddAnnotationModal({
   isOpen,

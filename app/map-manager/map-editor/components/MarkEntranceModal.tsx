@@ -13,14 +13,8 @@ import { CustomSelect } from "@/components/common/CustomSelect";
 import { ToggleSwitch } from "@/components/common/ToggleSwitch";
 import { X, MapPin } from "@/icons/Icons";
 import { useCreateEntranceMutation } from "@/lib/api/mapEditorEntranceApi";
+import { MarkEntranceModalProps } from "@/lib/types/map-editor/components";
 import toast from "react-hot-toast";
-
-interface MarkEntranceModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  floorPlanId?: string;
-  coordinates?: { x: number; y: number };
-}
 
 export function MarkEntranceModal({
   isOpen,

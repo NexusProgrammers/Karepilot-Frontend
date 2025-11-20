@@ -12,14 +12,8 @@ import { CustomInput } from "@/components/common/CustomInput";
 import { Checkbox } from "@/components/ui/checkbox";
 import { X, ArrowUpDown } from "@/icons/Icons";
 import { useCreateElevatorMutation } from "@/lib/api/mapEditorElevatorApi";
+import { AddElevatorModalProps } from "@/lib/types/map-editor/components";
 import toast from "react-hot-toast";
-
-interface AddElevatorModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  floorPlanId?: string;
-  coordinates?: { x: number; y: number };
-}
 
 export function AddElevatorModal({
   isOpen,

@@ -12,14 +12,8 @@ import { CustomInput } from "@/components/common/CustomInput";
 import { CustomSelect } from "@/components/common/CustomSelect";
 import { MapPinIcon, X } from "@/icons/Icons";
 import { useCreatePOIMutation } from "@/lib/api/mapEditorPOIApi";
+import { AddPOIModalProps } from "@/lib/types/map-editor/components";
 import toast from "react-hot-toast";
-
-interface AddPOIModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  floorPlanId?: string;
-  coordinates?: { x: number; y: number };
-}
 
 export function AddPOIModal({ isOpen, onClose, floorPlanId, coordinates }: AddPOIModalProps) {
   const [createPOI, { isLoading }] = useCreatePOIMutation();

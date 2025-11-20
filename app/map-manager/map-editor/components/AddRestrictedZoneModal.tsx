@@ -12,14 +12,8 @@ import { CustomInput } from "@/components/common/CustomInput";
 import { CustomSelect } from "@/components/common/CustomSelect";
 import { X, Shield } from "@/icons/Icons";
 import { useCreateRestrictedZoneMutation } from "@/lib/api/mapEditorRestrictedZoneApi";
+import { AddRestrictedZoneModalProps } from "@/lib/types/map-editor/components";
 import toast from "react-hot-toast";
-
-interface AddRestrictedZoneModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  floorPlanId?: string;
-  coordinates?: { x: number; y: number; width: number; height: number };
-}
 
 export function AddRestrictedZoneModal({
   isOpen,
