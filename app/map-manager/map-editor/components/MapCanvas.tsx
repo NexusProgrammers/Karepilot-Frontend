@@ -34,6 +34,8 @@ import { useGetPathsByFloorPlanQuery, useCreatePathMutation, useUpdatePathMutati
 import { MapEditorPath } from "@/lib/types/map-management/mapEditorPath";
 import { useGetRestrictedZonesByFloorPlanQuery, useUpdateRestrictedZoneMutation } from "@/lib/api/mapEditorRestrictedZoneApi";
 import { MapEditorRestrictedZone } from "@/lib/types/map-management/mapEditorRestrictedZone";
+import { useGetLabelsByFloorPlanQuery, useUpdateLabelMutation } from "@/lib/api/mapEditorLabelApi";
+import { MapEditorLabel } from "@/lib/types/map-management/mapEditorLabel";
 import toast from "react-hot-toast";
 
 interface MapElement {
@@ -92,6 +94,10 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
     { floorPlanId: floorPlanId || "", isActive: true },
     { skip: !floorPlanId }
   );
+  const { data: labels = [], isLoading: isLoadingLabels } = useGetLabelsByFloorPlanQuery(
+    { floorPlanId: floorPlanId || "", isActive: true },
+    { skip: !floorPlanId }
+  );
   const [updatePOI] = useUpdatePOIMutation();
   const [updateEntrance] = useUpdateEntranceMutation();
   const [updateElevator] = useUpdateElevatorMutation();
@@ -99,6 +105,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
   const [updatePath] = useUpdatePathMutation();
   const [deletePath] = useDeletePathMutation();
   const [updateRestrictedZone] = useUpdateRestrictedZoneMutation();
+  const [updateLabel] = useUpdateLabelMutation();
 
   const [elements, setElements] = useState<MapElement[]>([]);
   const [drawingPath, setDrawingPath] = useState<{ x: number; y: number }[]>([]);
@@ -106,6 +113,13 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
   const [isDrawingZone, setIsDrawingZone] = useState(false);
   const [zoneStart, setZoneStart] = useState<{ x: number; y: number } | null>(null);
   const [zoneCurrent, setZoneCurrent] = useState<{ x: number; y: number } | null>(null);
+
+  const poiMap = new Map(pois.map((poi: MapEditorPOI) => [poi.id, poi]));
+  const entranceMap = new Map(entrances.map((entrance: MapEditorEntrance) => [entrance.id, entrance]));
+  const elevatorMap = new Map(elevators.map((elevator: MapEditorElevator) => [elevator.id, elevator]));
+  const pathMap = new Map(paths.map((path: MapEditorPath) => [path.id, path]));
+  const restrictedZoneMap = new Map(restrictedZones.map((zone: MapEditorRestrictedZone) => [zone.id, zone]));
+  const labelMap = new Map(labels.map((label: MapEditorLabel) => [label.id, label]));
 
   useEffect(() => {
     const updateSize = () => {
@@ -261,11 +275,30 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
         toast.error(error?.data?.message || "Failed to update restricted zone");
       }
     } else {
-      const newElements = elements.map((el) =>
-        el.id === id ? { ...el, x: newX, y: newY } : el
-      );
-      setElements(newElements);
-      saveToHistory(newElements);
+      const label = labelMap.get(id);
+      if (label) {
+        try {
+          await updateLabel({
+            id: label.id,
+            data: {
+              coordinates: {
+                x: Math.round(newX),
+                y: Math.round(newY),
+              },
+            },
+          }).unwrap();
+          toast.success("Label position updated");
+        } catch (error: any) {
+          console.error("Failed to update label position:", error);
+          toast.error(error?.data?.message || "Failed to update label position");
+        }
+      } else {
+        const newElements = elements.map((el) =>
+          el.id === id ? { ...el, x: newX, y: newY } : el
+        );
+        setElements(newElements);
+        saveToHistory(newElements);
+      }
     }
   };
 
@@ -289,7 +322,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
         setZoneStart({ x: pointerPos.x, y: pointerPos.y });
         setZoneCurrent({ x: pointerPos.x, y: pointerPos.y });
       }
-    } else if ((selectedTool === "poi" || selectedTool === "entrance" || selectedTool === "elevator") && onPOIClick) {
+    } else if ((selectedTool === "poi" || selectedTool === "entrance" || selectedTool === "elevator" || selectedTool === "label") && onPOIClick) {
       onPOIClick({ x: pointerPos.x, y: pointerPos.y });
     }
   };
@@ -359,12 +392,6 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
     };
     return colorMap[category] || "#6B7280";
   };
-
-  const poiMap = new Map(pois.map((poi: MapEditorPOI) => [poi.id, poi]));
-  const entranceMap = new Map(entrances.map((entrance: MapEditorEntrance) => [entrance.id, entrance]));
-  const elevatorMap = new Map(elevators.map((elevator: MapEditorElevator) => [elevator.id, elevator]));
-  const pathMap = new Map(paths.map((path: MapEditorPath) => [path.id, path]));
-  const restrictedZoneMap = new Map(restrictedZones.map((zone: MapEditorRestrictedZone) => [zone.id, zone]));
 
   const poiElements: MapElement[] = pois
     .filter((poi: MapEditorPOI) => poi.isActive && poi.coordinates && typeof poi.coordinates.x === 'number' && typeof poi.coordinates.y === 'number')
@@ -794,7 +821,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
             <Search className="w-4 h-4" />
           </Button>
           <span className="text-xs sm:text-sm text-muted-foreground">
-            Elements {elements.length + poiElements.length + entranceElements.length + elevatorElements.length + paths.length + restrictedZones.length}
+            Elements {elements.length + poiElements.length + entranceElements.length + elevatorElements.length + paths.length + restrictedZones.length + labels.length}
           </span>
         </div>
       </div>
@@ -807,7 +834,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
             ? (isDrawing ? "crosshair" : "crosshair")
             : selectedTool === "restricted"
             ? (isDrawingZone ? "crosshair" : "crosshair")
-            : selectedTool === "poi" || selectedTool === "entrance" || selectedTool === "elevator"
+            : selectedTool === "poi" || selectedTool === "entrance" || selectedTool === "elevator" || selectedTool === "label"
             ? "crosshair"
             : "default"
         }}
@@ -933,6 +960,37 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
                 dash={[5, 5]}
               />
             )}
+            {labels
+              .filter((label: MapEditorLabel) => label.isActive && label.coordinates)
+              .map((label: MapEditorLabel) => {
+                const fontSize = parseInt(label.fontSize?.replace("px", "") || "16");
+                const fontWeight = label.fontWeight === "Bold" ? "bold" : "normal";
+                return (
+                  <Group
+                    key={label.id}
+                    x={label.coordinates.x}
+                    y={label.coordinates.y}
+                    draggable={true}
+                    onDragEnd={(e) =>
+                      handleDragEnd(
+                        label.id,
+                        e.target.x(),
+                        e.target.y()
+                      )
+                    }
+                  >
+                    <Text
+                      x={0}
+                      y={0}
+                      text={label.text}
+                      fontSize={fontSize}
+                      fontFamily="Arial"
+                      fontWeight={fontWeight}
+                      fill={label.color || "#000000"}
+                    />
+                  </Group>
+                );
+              })}
           </Layer>
         </Stage>
 

@@ -32,6 +32,7 @@ export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
   const [entranceCoordinates, setEntranceCoordinates] = useState<{ x: number; y: number } | undefined>();
   const [elevatorCoordinates, setElevatorCoordinates] = useState<{ x: number; y: number } | undefined>();
   const [restrictedZoneCoordinates, setRestrictedZoneCoordinates] = useState<{ x: number; y: number; width: number; height: number } | undefined>();
+  const [labelCoordinates, setLabelCoordinates] = useState<{ x: number; y: number } | undefined>();
 
   return (
     <div className="flex h-[calc(100vh-120px)] relative gap-4">
@@ -68,7 +69,6 @@ export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
               setSelectedTool(toolId);
               if (toolId === "poi") {
               } else if (toolId === "label") {
-                setShowLabelModal(true);
               } else if (toolId === "entrance") {
               } else if (toolId === "elevator") {
               } else if (toolId === "restricted") {
@@ -103,6 +103,9 @@ export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
             } else if (selectedTool === "elevator") {
               setElevatorCoordinates(coordinates);
               setShowElevatorModal(true);
+            } else if (selectedTool === "label") {
+              setLabelCoordinates(coordinates);
+              setShowLabelModal(true);
             }
           }}
           onRestrictedZoneDraw={(coordinates) => {
@@ -118,6 +121,7 @@ export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
         onClose={() => {
           setShowPOIModal(false);
           setPoiCoordinates(undefined);
+          setSelectedTool(null);
         }}
         floorPlanId={floorPlanId}
         coordinates={poiCoordinates}
@@ -125,8 +129,13 @@ export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
       
       <AddLabelModal
         isOpen={showLabelModal}
-        onClose={() => setShowLabelModal(false)}
-        onAddLabel={(labelData) => console.log("Adding Label:", labelData)}
+        onClose={() => {
+          setShowLabelModal(false);
+          setLabelCoordinates(undefined);
+          setSelectedTool(null);
+        }}
+        floorPlanId={floorPlanId}
+        coordinates={labelCoordinates}
       />
       
       <MarkEntranceModal
