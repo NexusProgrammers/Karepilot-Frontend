@@ -33,6 +33,7 @@ export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
   const [elevatorCoordinates, setElevatorCoordinates] = useState<{ x: number; y: number } | undefined>();
   const [restrictedZoneCoordinates, setRestrictedZoneCoordinates] = useState<{ x: number; y: number; width: number; height: number } | undefined>();
   const [labelCoordinates, setLabelCoordinates] = useState<{ x: number; y: number } | undefined>();
+  const [annotationCoordinates, setAnnotationCoordinates] = useState<{ x: number; y: number } | undefined>();
 
   return (
     <div className="flex h-[calc(100vh-120px)] relative gap-4">
@@ -73,7 +74,6 @@ export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
               } else if (toolId === "elevator") {
               } else if (toolId === "restricted") {
               } else if (toolId === "annotation") {
-                setShowAnnotationModal(true);
               }
             }}
           />
@@ -106,6 +106,9 @@ export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
             } else if (selectedTool === "label") {
               setLabelCoordinates(coordinates);
               setShowLabelModal(true);
+            } else if (selectedTool === "annotation") {
+              setAnnotationCoordinates(coordinates);
+              setShowAnnotationModal(true);
             }
           }}
           onRestrictedZoneDraw={(coordinates) => {
@@ -173,8 +176,13 @@ export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
       
       <AddAnnotationModal
         isOpen={showAnnotationModal}
-        onClose={() => setShowAnnotationModal(false)}
-        onAddAnnotation={(annotationData) => console.log("Adding Annotation:", annotationData)}
+        onClose={() => {
+          setShowAnnotationModal(false);
+          setAnnotationCoordinates(undefined);
+          setSelectedTool(null);
+        }}
+        floorPlanId={floorPlanId || ""}
+        coordinates={annotationCoordinates}
       />
     </div>
   );

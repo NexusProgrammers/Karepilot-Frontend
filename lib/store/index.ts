@@ -18,6 +18,7 @@ import { mapEditorPathApi } from '../api/mapEditorPathApi';
 import { mapEditorRestrictedZoneApi } from '../api/mapEditorRestrictedZoneApi';
 import { mapEditorLabelApi } from '../api/mapEditorLabelApi';
 import { mapEditorMeasurementApi } from '../api/mapEditorMeasurementApi';
+import { mapEditorAnnotationApi } from '../api/mapEditorAnnotationApi';
 
 export const store = configureStore({
   reducer: {
@@ -40,6 +41,7 @@ export const store = configureStore({
     [mapEditorRestrictedZoneApi.reducerPath]: mapEditorRestrictedZoneApi.reducer,
     [mapEditorLabelApi.reducerPath]: mapEditorLabelApi.reducer,
     [mapEditorMeasurementApi.reducerPath]: mapEditorMeasurementApi.reducer,
+    [mapEditorAnnotationApi.reducerPath]: mapEditorAnnotationApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -64,7 +66,8 @@ export const store = configureStore({
       mapEditorPathApi.middleware,
       mapEditorRestrictedZoneApi.middleware,
       mapEditorLabelApi.middleware,
-      mapEditorMeasurementApi.middleware
+      mapEditorMeasurementApi.middleware,
+      mapEditorAnnotationApi.middleware
     ),
 });
 

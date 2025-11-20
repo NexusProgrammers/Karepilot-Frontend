@@ -38,11 +38,13 @@ import { useGetLabelsByFloorPlanQuery, useUpdateLabelMutation } from "@/lib/api/
 import { MapEditorLabel } from "@/lib/types/map-management/mapEditorLabel";
 import { useGetMeasurementsByFloorPlanQuery, useCreateMeasurementMutation, useDeleteMeasurementMutation } from "@/lib/api/mapEditorMeasurementApi";
 import { MapEditorMeasurement } from "@/lib/types/map-management/mapEditorMeasurement";
+import { useGetAnnotationsByFloorPlanQuery, useUpdateAnnotationMutation } from "@/lib/api/mapEditorAnnotationApi";
+import { MapEditorAnnotation } from "@/lib/types/map-management/mapEditorAnnotation";
 import toast from "react-hot-toast";
 
 interface MapElement {
   id: string;
-  type: "poi" | "path" | "zone" | "label" | "entrance" | "elevator";
+  type: "poi" | "path" | "zone" | "label" | "entrance" | "elevator" | "annotation";
   x?: number;
   y?: number;
   width?: number;
@@ -104,6 +106,10 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
     { floorPlanId: floorPlanId || "", isActive: true },
     { skip: !floorPlanId }
   );
+  const { data: annotations = [], isLoading: isLoadingAnnotations } = useGetAnnotationsByFloorPlanQuery(
+    { floorPlanId: floorPlanId || "", isActive: true },
+    { skip: !floorPlanId }
+  );
   const [updatePOI] = useUpdatePOIMutation();
   const [updateEntrance] = useUpdateEntranceMutation();
   const [updateElevator] = useUpdateElevatorMutation();
@@ -114,6 +120,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
   const [updateLabel] = useUpdateLabelMutation();
   const [createMeasurement] = useCreateMeasurementMutation();
   const [deleteMeasurement] = useDeleteMeasurementMutation();
+  const [updateAnnotation] = useUpdateAnnotationMutation();
 
   const [elements, setElements] = useState<MapElement[]>([]);
   const [drawingPath, setDrawingPath] = useState<{ x: number; y: number }[]>([]);
@@ -131,6 +138,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
   const pathMap = new Map(paths.map((path: MapEditorPath) => [path.id, path]));
   const restrictedZoneMap = new Map(restrictedZones.map((zone: MapEditorRestrictedZone) => [zone.id, zone]));
   const labelMap = new Map(labels.map((label: MapEditorLabel) => [label.id, label]));
+  const annotationMap = new Map(annotations.map((annotation: MapEditorAnnotation) => [annotation.id, annotation]));
 
   useEffect(() => {
     const updateSize = () => {
@@ -223,6 +231,8 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
     const entrance = entranceMap.get(id);
     const elevator = elevatorMap.get(id);
     const restrictedZone = restrictedZoneMap.get(id);
+    const label = labelMap.get(id);
+    const annotation = annotationMap.get(id);
     
     if (poi) {
       try {
@@ -290,31 +300,44 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
         console.error("Failed to update restricted zone:", error);
         toast.error(error?.data?.message || "Failed to update restricted zone");
       }
-    } else {
-      const label = labelMap.get(id);
-      if (label) {
-        try {
-          await updateLabel({
-            id: label.id,
-            data: {
-              coordinates: {
-                x: Math.round(newX),
-                y: Math.round(newY),
-              },
+    } else if (label) {
+      try {
+        await updateLabel({
+          id: label.id,
+          data: {
+            coordinates: {
+              x: Math.round(newX),
+              y: Math.round(newY),
             },
-          }).unwrap();
-          toast.success("Label position updated");
-        } catch (error: any) {
-          console.error("Failed to update label position:", error);
-          toast.error(error?.data?.message || "Failed to update label position");
-        }
-      } else {
-        const newElements = elements.map((el) =>
-          el.id === id ? { ...el, x: newX, y: newY } : el
-        );
-        setElements(newElements);
-        saveToHistory(newElements);
+          },
+        }).unwrap();
+        toast.success("Label position updated");
+      } catch (error: any) {
+        console.error("Failed to update label position:", error);
+        toast.error(error?.data?.message || "Failed to update label position");
       }
+    } else if (annotation) {
+      try {
+        await updateAnnotation({
+          id: annotation.id,
+          body: {
+            coordinates: {
+              x: Math.round(newX),
+              y: Math.round(newY),
+            },
+          },
+        }).unwrap();
+        toast.success("Annotation position updated");
+      } catch (error: any) {
+        console.error("Failed to update annotation position:", error);
+        toast.error(error?.data?.message || "Failed to update annotation position");
+      }
+    } else {
+      const newElements = elements.map((el) =>
+        el.id === id ? { ...el, x: newX, y: newY } : el
+      );
+      setElements(newElements);
+      saveToHistory(newElements);
     }
   };
 
@@ -340,15 +363,13 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
       }
     } else if (selectedTool === "measure") {
       if (!isMeasuring) {
-        // First click - set start point
         setIsMeasuring(true);
         setMeasureStart({ x: pointerPos.x, y: pointerPos.y });
         setMeasureEnd({ x: pointerPos.x, y: pointerPos.y });
       } else if (measureStart) {
-        // Second click - save measurement
         handleSaveMeasurement({ x: pointerPos.x, y: pointerPos.y });
       }
-    } else if ((selectedTool === "poi" || selectedTool === "entrance" || selectedTool === "elevator" || selectedTool === "label") && onPOIClick) {
+    } else if ((selectedTool === "poi" || selectedTool === "entrance" || selectedTool === "elevator" || selectedTool === "label" || selectedTool === "annotation") && onPOIClick) {
       onPOIClick({ x: pointerPos.x, y: pointerPos.y });
     }
   };
@@ -360,7 +381,6 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
       Math.pow(endPoint.x - measureStart.x, 2) + Math.pow(endPoint.y - measureStart.y, 2)
     );
 
-    // Don't save if distance is too small (likely accidental double-click)
     if (distance < 5) {
       toast.error("Please click further apart to measure distance");
       setIsMeasuring(false);
@@ -405,7 +425,6 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
       const pointerPos = stage.getPointerPosition();
       if (!pointerPos) return;
 
-      // Update the end point for live preview
       setMeasureEnd(pointerPos);
     }
   };
@@ -892,7 +911,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
             <Search className="w-4 h-4" />
           </Button>
           <span className="text-xs sm:text-sm text-muted-foreground">
-            Elements {elements.length + poiElements.length + entranceElements.length + elevatorElements.length + paths.length + restrictedZones.length + labels.length + measurements.length}
+            Elements {elements.length + poiElements.length + entranceElements.length + elevatorElements.length + paths.length + restrictedZones.length + labels.length + measurements.length + annotations.length}
           </span>
         </div>
       </div>
@@ -907,7 +926,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
             ? (isDrawingZone ? "crosshair" : "crosshair")
             : selectedTool === "measure"
             ? "crosshair"
-            : selectedTool === "poi" || selectedTool === "entrance" || selectedTool === "elevator" || selectedTool === "label"
+            : selectedTool === "poi" || selectedTool === "entrance" || selectedTool === "elevator" || selectedTool === "label" || selectedTool === "annotation"
             ? "crosshair"
             : "default"
         }}
@@ -1162,6 +1181,58 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
                 />
               </Group>
             )}
+            {annotations
+              .filter((annotation: MapEditorAnnotation) => annotation.isActive && annotation.coordinates)
+              .map((annotation: MapEditorAnnotation) => {
+                const annotationColor = annotation.color || "#F59E0B";
+                return (
+                  <Group
+                    key={annotation.id}
+                    x={annotation.coordinates.x}
+                    y={annotation.coordinates.y}
+                    draggable={true}
+                    onDragEnd={(e) =>
+                      handleDragEnd(
+                        annotation.id,
+                        e.target.x(),
+                        e.target.y()
+                      )
+                    }
+                  >
+                    <Circle
+                      x={0}
+                      y={0}
+                      radius={12}
+                      fill={annotationColor}
+                      stroke="#fff"
+                      strokeWidth={2}
+                    />
+                    <Text
+                      x={0}
+                      y={0}
+                      text="i"
+                      fontSize={14}
+                      fontFamily="Arial"
+                      fontWeight="bold"
+                      fill="#fff"
+                      align="center"
+                      verticalAlign="middle"
+                      offsetX={3}
+                      offsetY={7}
+                    />
+                    <Text
+                      x={20}
+                      y={-8}
+                      text={annotation.name}
+                      fontSize={12}
+                      fontFamily="Arial"
+                      fontWeight="500"
+                      fill={annotationColor}
+                      wrap="none"
+                    />
+                  </Group>
+                );
+              })}
           </Layer>
         </Stage>
 
