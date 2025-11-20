@@ -30,13 +30,13 @@ import { useGetEntrancesByFloorPlanQuery, useUpdateEntranceMutation } from "@/li
 import { MapEditorEntrance } from "@/lib/types/map-management/mapEditorEntrance";
 import { useGetElevatorsByFloorPlanQuery, useUpdateElevatorMutation } from "@/lib/api/mapEditorElevatorApi";
 import { MapEditorElevator } from "@/lib/types/map-management/mapEditorElevator";
-import { useGetPathsByFloorPlanQuery, useCreatePathMutation, useUpdatePathMutation, useDeletePathMutation } from "@/lib/api/mapEditorPathApi";
+import { useGetPathsByFloorPlanQuery, useCreatePathMutation } from "@/lib/api/mapEditorPathApi";
 import { MapEditorPath } from "@/lib/types/map-management/mapEditorPath";
 import { useGetRestrictedZonesByFloorPlanQuery, useUpdateRestrictedZoneMutation } from "@/lib/api/mapEditorRestrictedZoneApi";
 import { MapEditorRestrictedZone } from "@/lib/types/map-management/mapEditorRestrictedZone";
 import { useGetLabelsByFloorPlanQuery, useUpdateLabelMutation } from "@/lib/api/mapEditorLabelApi";
 import { MapEditorLabel } from "@/lib/types/map-management/mapEditorLabel";
-import { useGetMeasurementsByFloorPlanQuery, useCreateMeasurementMutation, useDeleteMeasurementMutation } from "@/lib/api/mapEditorMeasurementApi";
+import { useGetMeasurementsByFloorPlanQuery, useCreateMeasurementMutation } from "@/lib/api/mapEditorMeasurementApi";
 import { MapEditorMeasurement } from "@/lib/types/map-management/mapEditorMeasurement";
 import { useGetAnnotationsByFloorPlanQuery, useUpdateAnnotationMutation } from "@/lib/api/mapEditorAnnotationApi";
 import { MapEditorAnnotation } from "@/lib/types/map-management/mapEditorAnnotation";
@@ -114,12 +114,9 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
   const [updateEntrance] = useUpdateEntranceMutation();
   const [updateElevator] = useUpdateElevatorMutation();
   const [createPath] = useCreatePathMutation();
-  const [updatePath] = useUpdatePathMutation();
-  const [deletePath] = useDeletePathMutation();
   const [updateRestrictedZone] = useUpdateRestrictedZoneMutation();
   const [updateLabel] = useUpdateLabelMutation();
   const [createMeasurement] = useCreateMeasurementMutation();
-  const [deleteMeasurement] = useDeleteMeasurementMutation();
   const [updateAnnotation] = useUpdateAnnotationMutation();
 
   const [elements, setElements] = useState<MapElement[]>([]);

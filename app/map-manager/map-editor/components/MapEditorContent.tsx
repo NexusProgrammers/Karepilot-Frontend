@@ -14,10 +14,7 @@ import { AddRestrictedZoneModal } from "./AddRestrictedZoneModal";
 import { AddAnnotationModal } from "./AddAnnotationModal";
 import { Button } from "@/components/ui/button";
 import { PanelLeft, PanelLeftClose } from "lucide-react";
-
-interface MapEditorContentProps {
-  floorPlanId?: string;
-}
+import { MapEditorContentProps } from "@/lib/types/map-editor/components";
 
 export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);

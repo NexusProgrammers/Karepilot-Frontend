@@ -70,3 +70,33 @@ export interface MapCanvasProps {
   onRestrictedZoneDraw?: (coordinates: MapEditorZoneCoordinates) => void;
 }
 
+export interface Layer {
+  id: string;
+  name: string;
+  visible: boolean;
+}
+
+export interface MapEditorContentProps {
+  floorPlanId?: string;
+}
+
+export interface MapElement {
+  id: string;
+  type: "poi" | "path" | "zone" | "label" | "entrance" | "elevator" | "annotation" | "measurement";
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  radius?: number;
+  color: string;
+  label?: string;
+  points?: { x: number; y: number }[];
+  startPoint?: { x: number; y: number };
+  endPoint?: { x: number; y: number };
+  distance?: number;
+  unit?: string;
+  text?: string;
+  fontSize?: number;
+  fontWeight?: string;
+}
+
