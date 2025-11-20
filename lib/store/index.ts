@@ -14,6 +14,7 @@ import { buildingsApi } from '../api/buildingsApi';
 import { mapEditorPOIApi } from '../api/mapEditorPOIApi';
 import { mapEditorEntranceApi } from '../api/mapEditorEntranceApi';
 import { mapEditorElevatorApi } from '../api/mapEditorElevatorApi';
+import { mapEditorPathApi } from '../api/mapEditorPathApi';
 
 export const store = configureStore({
   reducer: {
@@ -32,6 +33,7 @@ export const store = configureStore({
     [mapEditorPOIApi.reducerPath]: mapEditorPOIApi.reducer,
     [mapEditorEntranceApi.reducerPath]: mapEditorEntranceApi.reducer,
     [mapEditorElevatorApi.reducerPath]: mapEditorElevatorApi.reducer,
+    [mapEditorPathApi.reducerPath]: mapEditorPathApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -52,7 +54,8 @@ export const store = configureStore({
       buildingsApi.middleware,
       mapEditorPOIApi.middleware,
       mapEditorEntranceApi.middleware,
-      mapEditorElevatorApi.middleware
+      mapEditorElevatorApi.middleware,
+      mapEditorPathApi.middleware
     ),
 });
 

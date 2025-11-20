@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Stage, Layer, Rect, Circle, Line, Text, Group } from "react-konva";
 import Konva from "konva";
 import {
@@ -13,6 +13,7 @@ import {
   Grid3x3,
   Search,
   X,
+  Check,
 } from "@/icons/Icons";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,6 +30,8 @@ import { useGetEntrancesByFloorPlanQuery, useUpdateEntranceMutation } from "@/li
 import { MapEditorEntrance } from "@/lib/types/map-management/mapEditorEntrance";
 import { useGetElevatorsByFloorPlanQuery, useUpdateElevatorMutation } from "@/lib/api/mapEditorElevatorApi";
 import { MapEditorElevator } from "@/lib/types/map-management/mapEditorElevator";
+import { useGetPathsByFloorPlanQuery, useCreatePathMutation, useUpdatePathMutation, useDeletePathMutation } from "@/lib/api/mapEditorPathApi";
+import { MapEditorPath } from "@/lib/types/map-management/mapEditorPath";
 import toast from "react-hot-toast";
 
 interface MapElement {
@@ -78,11 +81,20 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
     { floorPlanId: floorPlanId || "", isActive: true },
     { skip: !floorPlanId }
   );
+  const { data: paths = [], isLoading: isLoadingPaths } = useGetPathsByFloorPlanQuery(
+    { floorPlanId: floorPlanId || "", isActive: true },
+    { skip: !floorPlanId }
+  );
   const [updatePOI] = useUpdatePOIMutation();
   const [updateEntrance] = useUpdateEntranceMutation();
   const [updateElevator] = useUpdateElevatorMutation();
+  const [createPath] = useCreatePathMutation();
+  const [updatePath] = useUpdatePathMutation();
+  const [deletePath] = useDeletePathMutation();
 
   const [elements, setElements] = useState<MapElement[]>([]);
+  const [drawingPath, setDrawingPath] = useState<{ x: number; y: number }[]>([]);
+  const [isDrawing, setIsDrawing] = useState(false);
 
   useEffect(() => {
     const updateSize = () => {
@@ -106,6 +118,18 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
       setHistoryIndex(0);
     }
   }, [elements, elements.length, history.length]);
+
+  const cancelPathDrawing = useCallback(() => {
+    setDrawingPath([]);
+    setIsDrawing(false);
+  }, []);
+
+  useEffect(() => {
+    // Cancel path drawing if tool changes
+    if (selectedTool !== "path" && isDrawing) {
+      cancelPathDrawing();
+    }
+  }, [selectedTool, isDrawing, cancelPathDrawing]);
 
   const handleZoomIn = () => setZoom((prev) => Math.min(prev + 10, 200));
   const handleZoomOut = () => setZoom((prev) => Math.max(prev - 10, 50));
@@ -212,14 +236,45 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
   };
 
   const handleStageClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
-    if ((selectedTool === "poi" || selectedTool === "entrance" || selectedTool === "elevator") && onPOIClick) {
-      const stage = e.target.getStage();
-      if (stage) {
-        const pointerPos = stage.getPointerPosition();
-        if (pointerPos) {
-          onPOIClick({ x: pointerPos.x, y: pointerPos.y });
-        }
+    const stage = e.target.getStage();
+    if (!stage) return;
+
+    const pointerPos = stage.getPointerPosition();
+    if (!pointerPos) return;
+
+    if (selectedTool === "path") {
+      // Start or continue drawing path
+      if (!isDrawing) {
+        setIsDrawing(true);
+        setDrawingPath([{ x: pointerPos.x, y: pointerPos.y }]);
+      } else {
+        setDrawingPath((prev) => [...prev, { x: pointerPos.x, y: pointerPos.y }]);
       }
+    } else if ((selectedTool === "poi" || selectedTool === "entrance" || selectedTool === "elevator") && onPOIClick) {
+      onPOIClick({ x: pointerPos.x, y: pointerPos.y });
+    }
+  };
+
+  const handleSavePath = useCallback(async () => {
+    if (isDrawing && drawingPath.length >= 2 && floorPlanId) {
+      try {
+        await createPath({
+          floorPlanId,
+          points: drawingPath,
+          color: "#2563EB",
+          strokeWidth: 3,
+        }).unwrap();
+        toast.success("Path created successfully");
+        cancelPathDrawing();
+      } catch (error: any) {
+        toast.error(error?.data?.message || "Failed to create path");
+      }
+    }
+  }, [isDrawing, drawingPath, floorPlanId, createPath, cancelPathDrawing]);
+
+  const handleStageDoubleClick = async (e: Konva.KonvaEventObject<MouseEvent>) => {
+    if (selectedTool === "path" && isDrawing && drawingPath.length >= 2 && floorPlanId) {
+      await handleSavePath();
     }
   };
 
@@ -240,6 +295,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
   const poiMap = new Map(pois.map((poi: MapEditorPOI) => [poi.id, poi]));
   const entranceMap = new Map(entrances.map((entrance: MapEditorEntrance) => [entrance.id, entrance]));
   const elevatorMap = new Map(elevators.map((elevator: MapEditorElevator) => [elevator.id, elevator]));
+  const pathMap = new Map(paths.map((path: MapEditorPath) => [path.id, path]));
 
   const poiElements: MapElement[] = pois
     .filter((poi: MapEditorPOI) => poi.isActive && poi.coordinates && typeof poi.coordinates.x === 'number' && typeof poi.coordinates.y === 'number')
@@ -669,7 +725,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
             <Search className="w-4 h-4" />
           </Button>
           <span className="text-xs sm:text-sm text-muted-foreground">
-            Elements {elements.length + poiElements.length + entranceElements.length + elevatorElements.length}
+            Elements {elements.length + poiElements.length + entranceElements.length + elevatorElements.length + paths.length}
           </span>
         </div>
       </div>
@@ -681,6 +737,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
           height={stageSize.height}
           className="w-full h-full"
           onClick={handleStageClick}
+          onDblClick={handleStageDoubleClick}
         >
           <Layer>
             {drawGrid()}
@@ -688,15 +745,87 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
             {poiElements.map(renderElement)}
             {entranceElements.map(renderElement)}
             {elevatorElements.map(renderElement)}
+            {paths
+              .filter((path: MapEditorPath) => path.isActive && path.points && path.points.length >= 2)
+              .map((path: MapEditorPath) => {
+                const pathPoints = path.points.flatMap((point) => [point.x, point.y]);
+                return (
+                  <Line
+                    key={path.id}
+                    points={pathPoints}
+                    stroke={path.color || "#2563EB"}
+                    strokeWidth={path.strokeWidth || 3}
+                    tension={0.5}
+                    lineCap="round"
+                    lineJoin="round"
+                    draggable={false}
+                  />
+                );
+              })}
+            {isDrawing && drawingPath.length > 0 && (
+              <>
+                <Line
+                  points={drawingPath.flatMap((point) => [point.x, point.y])}
+                  stroke="#2563EB"
+                  strokeWidth={3}
+                  tension={0.5}
+                  lineCap="round"
+                  lineJoin="round"
+                  dash={[10, 5]}
+                />
+                {drawingPath.map((point, index) => (
+                  <Circle
+                    key={`drawing-${index}`}
+                    x={point.x}
+                    y={point.y}
+                    radius={4}
+                    fill="#2563EB"
+                    stroke="#fff"
+                    strokeWidth={1}
+                  />
+                ))}
+              </>
+            )}
           </Layer>
         </Stage>
 
         <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 text-xs text-muted-foreground bg-background/80 px-2 py-1 rounded">
-          <span className="hidden sm:inline">
-            Click on map to add POIs + Drag to move elements
-          </span>
-          <span className="sm:hidden">Click to add POIs</span>
+          {selectedTool === "path" && isDrawing ? (
+            <span className="hidden sm:inline">
+              Click to add points, Double-click to finish path
+            </span>
+          ) : (
+            <>
+              <span className="hidden sm:inline">
+                Click on map to add POIs + Drag to move elements
+              </span>
+              <span className="sm:hidden">Click to add POIs</span>
+            </>
+          )}
         </div>
+        {isDrawing && (
+          <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex flex-col gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={cancelPathDrawing}
+              className="bg-background/80 backdrop-blur-sm"
+            >
+              <X className="w-4 h-4 mr-2" />
+              Cancel Path
+            </Button>
+            <Button
+              variant="default"
+              size="sm"
+              onClick={handleSavePath}
+              disabled={drawingPath.length < 2}
+              className="bg-[#3D8C6C] hover:bg-[#3D8C6C]/90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Check className="w-4 h-4 mr-2" />
+              Save Path
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Clear All Confirmation Dialog */}
