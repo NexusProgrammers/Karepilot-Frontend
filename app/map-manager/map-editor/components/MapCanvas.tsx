@@ -36,6 +36,8 @@ import { useGetRestrictedZonesByFloorPlanQuery, useUpdateRestrictedZoneMutation 
 import { MapEditorRestrictedZone } from "@/lib/types/map-management/mapEditorRestrictedZone";
 import { useGetLabelsByFloorPlanQuery, useUpdateLabelMutation } from "@/lib/api/mapEditorLabelApi";
 import { MapEditorLabel } from "@/lib/types/map-management/mapEditorLabel";
+import { useGetMeasurementsByFloorPlanQuery, useCreateMeasurementMutation, useDeleteMeasurementMutation } from "@/lib/api/mapEditorMeasurementApi";
+import { MapEditorMeasurement } from "@/lib/types/map-management/mapEditorMeasurement";
 import toast from "react-hot-toast";
 
 interface MapElement {
@@ -98,6 +100,10 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
     { floorPlanId: floorPlanId || "", isActive: true },
     { skip: !floorPlanId }
   );
+  const { data: measurements = [], isLoading: isLoadingMeasurements } = useGetMeasurementsByFloorPlanQuery(
+    { floorPlanId: floorPlanId || "", isActive: true },
+    { skip: !floorPlanId }
+  );
   const [updatePOI] = useUpdatePOIMutation();
   const [updateEntrance] = useUpdateEntranceMutation();
   const [updateElevator] = useUpdateElevatorMutation();
@@ -106,6 +112,8 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
   const [deletePath] = useDeletePathMutation();
   const [updateRestrictedZone] = useUpdateRestrictedZoneMutation();
   const [updateLabel] = useUpdateLabelMutation();
+  const [createMeasurement] = useCreateMeasurementMutation();
+  const [deleteMeasurement] = useDeleteMeasurementMutation();
 
   const [elements, setElements] = useState<MapElement[]>([]);
   const [drawingPath, setDrawingPath] = useState<{ x: number; y: number }[]>([]);
@@ -113,6 +121,9 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
   const [isDrawingZone, setIsDrawingZone] = useState(false);
   const [zoneStart, setZoneStart] = useState<{ x: number; y: number } | null>(null);
   const [zoneCurrent, setZoneCurrent] = useState<{ x: number; y: number } | null>(null);
+  const [isMeasuring, setIsMeasuring] = useState(false);
+  const [measureStart, setMeasureStart] = useState<{ x: number; y: number } | null>(null);
+  const [measureEnd, setMeasureEnd] = useState<{ x: number; y: number } | null>(null);
 
   const poiMap = new Map(pois.map((poi: MapEditorPOI) => [poi.id, poi]));
   const entranceMap = new Map(entrances.map((entrance: MapEditorEntrance) => [entrance.id, entrance]));
@@ -158,7 +169,12 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
       setZoneStart(null);
       setZoneCurrent(null);
     }
-  }, [selectedTool, isDrawing, isDrawingZone, cancelPathDrawing]);
+    if (selectedTool !== "measure" && isMeasuring) {
+      setIsMeasuring(false);
+      setMeasureStart(null);
+      setMeasureEnd(null);
+    }
+  }, [selectedTool, isDrawing, isDrawingZone, isMeasuring, cancelPathDrawing]);
 
   const handleZoomIn = () => setZoom((prev) => Math.min(prev + 10, 200));
   const handleZoomOut = () => setZoom((prev) => Math.max(prev - 10, 50));
@@ -322,8 +338,54 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
         setZoneStart({ x: pointerPos.x, y: pointerPos.y });
         setZoneCurrent({ x: pointerPos.x, y: pointerPos.y });
       }
+    } else if (selectedTool === "measure") {
+      if (!isMeasuring) {
+        // First click - set start point
+        setIsMeasuring(true);
+        setMeasureStart({ x: pointerPos.x, y: pointerPos.y });
+        setMeasureEnd({ x: pointerPos.x, y: pointerPos.y });
+      } else if (measureStart) {
+        // Second click - save measurement
+        handleSaveMeasurement({ x: pointerPos.x, y: pointerPos.y });
+      }
     } else if ((selectedTool === "poi" || selectedTool === "entrance" || selectedTool === "elevator" || selectedTool === "label") && onPOIClick) {
       onPOIClick({ x: pointerPos.x, y: pointerPos.y });
+    }
+  };
+
+  const handleSaveMeasurement = async (endPoint: { x: number; y: number }) => {
+    if (!measureStart || !floorPlanId) return;
+
+    const distance = Math.sqrt(
+      Math.pow(endPoint.x - measureStart.x, 2) + Math.pow(endPoint.y - measureStart.y, 2)
+    );
+
+    // Don't save if distance is too small (likely accidental double-click)
+    if (distance < 5) {
+      toast.error("Please click further apart to measure distance");
+      setIsMeasuring(false);
+      setMeasureStart(null);
+      setMeasureEnd(null);
+      return;
+    }
+
+    try {
+      await createMeasurement({
+        floorPlanId,
+        startPoint: measureStart,
+        endPoint: endPoint,
+        distance: Math.round(distance),
+        unit: "meters",
+        color: "#2563EB",
+        strokeWidth: 2,
+      }).unwrap();
+
+      toast.success("Measurement created");
+      setIsMeasuring(false);
+      setMeasureStart(null);
+      setMeasureEnd(null);
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to create measurement");
     }
   };
 
@@ -336,6 +398,15 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
       if (!pointerPos) return;
 
       setZoneCurrent(pointerPos);
+    } else if (selectedTool === "measure" && isMeasuring && measureStart) {
+      const stage = e.target.getStage();
+      if (!stage) return;
+
+      const pointerPos = stage.getPointerPosition();
+      if (!pointerPos) return;
+
+      // Update the end point for live preview
+      setMeasureEnd(pointerPos);
     }
   };
 
@@ -821,7 +892,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
             <Search className="w-4 h-4" />
           </Button>
           <span className="text-xs sm:text-sm text-muted-foreground">
-            Elements {elements.length + poiElements.length + entranceElements.length + elevatorElements.length + paths.length + restrictedZones.length + labels.length}
+            Elements {elements.length + poiElements.length + entranceElements.length + elevatorElements.length + paths.length + restrictedZones.length + labels.length + measurements.length}
           </span>
         </div>
       </div>
@@ -834,6 +905,8 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
             ? (isDrawing ? "crosshair" : "crosshair")
             : selectedTool === "restricted"
             ? (isDrawingZone ? "crosshair" : "crosshair")
+            : selectedTool === "measure"
+            ? "crosshair"
             : selectedTool === "poi" || selectedTool === "entrance" || selectedTool === "elevator" || selectedTool === "label"
             ? "crosshair"
             : "default"
@@ -991,6 +1064,104 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
                   </Group>
                 );
               })}
+            {measurements
+              .filter((measurement: MapEditorMeasurement) => measurement.isActive)
+              .map((measurement: MapEditorMeasurement) => {
+                const midX = (measurement.startPoint.x + measurement.endPoint.x) / 2;
+                const midY = (measurement.startPoint.y + measurement.endPoint.y) / 2;
+                return (
+                  <Group key={measurement.id}>
+                    <Line
+                      points={[
+                        measurement.startPoint.x,
+                        measurement.startPoint.y,
+                        measurement.endPoint.x,
+                        measurement.endPoint.y,
+                      ]}
+                      stroke={measurement.color || "#2563EB"}
+                      strokeWidth={measurement.strokeWidth || 2}
+                      lineCap="round"
+                      lineJoin="round"
+                    />
+                    <Circle
+                      x={measurement.startPoint.x}
+                      y={measurement.startPoint.y}
+                      radius={4}
+                      fill={measurement.color || "#2563EB"}
+                      stroke="#fff"
+                      strokeWidth={1}
+                    />
+                    <Circle
+                      x={measurement.endPoint.x}
+                      y={measurement.endPoint.y}
+                      radius={4}
+                      fill={measurement.color || "#2563EB"}
+                      stroke="#fff"
+                      strokeWidth={1}
+                    />
+                    <Text
+                      x={midX}
+                      y={midY - 20}
+                      text={`${measurement.distance} ${measurement.unit}`}
+                      fontSize={12}
+                      fontFamily="Arial"
+                      fontWeight="bold"
+                      fill={measurement.color || "#2563EB"}
+                      align="center"
+                      offsetX={30}
+                    />
+                  </Group>
+                );
+              })}
+            {isMeasuring && measureStart && measureEnd && (
+              <Group>
+                <Line
+                  points={[
+                    measureStart.x,
+                    measureStart.y,
+                    measureEnd.x,
+                    measureEnd.y,
+                  ]}
+                  stroke="#2563EB"
+                  strokeWidth={2}
+                  lineCap="round"
+                  lineJoin="round"
+                  dash={[10, 5]}
+                />
+                <Circle
+                  x={measureStart.x}
+                  y={measureStart.y}
+                  radius={4}
+                  fill="#2563EB"
+                  stroke="#fff"
+                  strokeWidth={1}
+                />
+                <Circle
+                  x={measureEnd.x}
+                  y={measureEnd.y}
+                  radius={4}
+                  fill="#2563EB"
+                  stroke="#fff"
+                  strokeWidth={1}
+                />
+                <Text
+                  x={(measureStart.x + measureEnd.x) / 2}
+                  y={(measureStart.y + measureEnd.y) / 2 - 20}
+                  text={`${Math.round(
+                    Math.sqrt(
+                      Math.pow(measureEnd.x - measureStart.x, 2) +
+                      Math.pow(measureEnd.y - measureStart.y, 2)
+                    )
+                  )} meters`}
+                  fontSize={12}
+                  fontFamily="Arial"
+                  fontWeight="bold"
+                  fill="#2563EB"
+                  align="center"
+                  offsetX={30}
+                />
+              </Group>
+            )}
           </Layer>
         </Stage>
 
@@ -998,6 +1169,10 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
           {selectedTool === "path" && isDrawing ? (
             <span className="hidden sm:inline">
               Click to add points, Double-click to finish path
+            </span>
+          ) : selectedTool === "measure" ? (
+            <span className="hidden sm:inline">
+              Click two points to measure distance
             </span>
           ) : (
             <>
