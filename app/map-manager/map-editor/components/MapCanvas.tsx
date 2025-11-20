@@ -25,6 +25,8 @@ import {
 } from "@/components/ui/dialog";
 import { useGetPOIsByFloorPlanQuery, useUpdatePOIMutation } from "@/lib/api/mapEditorPOIApi";
 import { MapEditorPOI } from "@/lib/types/map-management/mapEditorPOI";
+import { useGetEntrancesByFloorPlanQuery, useUpdateEntranceMutation } from "@/lib/api/mapEditorEntranceApi";
+import { MapEditorEntrance } from "@/lib/types/map-management/mapEditorEntrance";
 import toast from "react-hot-toast";
 
 interface MapElement {
@@ -66,8 +68,12 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
     { floorPlanId: floorPlanId || "", isActive: true },
     { skip: !floorPlanId }
   );
-
+  const { data: entrances = [], isLoading: isLoadingEntrances } = useGetEntrancesByFloorPlanQuery(
+    { floorPlanId: floorPlanId || "", isActive: true },
+    { skip: !floorPlanId }
+  );
   const [updatePOI] = useUpdatePOIMutation();
+  const [updateEntrance] = useUpdateEntranceMutation();
 
   const [elements, setElements] = useState<MapElement[]>([]);
 
@@ -138,6 +144,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
 
   const handleDragEnd = async (id: string, newX: number, newY: number) => {
     const poi = poiMap.get(id);
+    const entrance = entranceMap.get(id);
     
     if (poi) {
       try {
@@ -155,6 +162,22 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
         console.error("Failed to update POI position:", error);
         toast.error(error?.data?.message || "Failed to update POI position");
       }
+    } else if (entrance) {
+      try {
+        await updateEntrance({
+          id: entrance.id,
+          data: {
+            coordinates: {
+              x: Math.round(newX),
+              y: Math.round(newY),
+            },
+          },
+        }).unwrap();
+        toast.success("Entrance position updated");
+      } catch (error: any) {
+        console.error("Failed to update entrance position:", error);
+        toast.error(error?.data?.message || "Failed to update entrance position");
+      }
     } else {
       const newElements = elements.map((el) =>
         el.id === id ? { ...el, x: newX, y: newY } : el
@@ -165,7 +188,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
   };
 
   const handleStageClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
-    if (selectedTool === "poi" && onPOIClick) {
+    if ((selectedTool === "poi" || selectedTool === "entrance") && onPOIClick) {
       const stage = e.target.getStage();
       if (stage) {
         const pointerPos = stage.getPointerPosition();
@@ -191,6 +214,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
   };
 
   const poiMap = new Map(pois.map((poi: MapEditorPOI) => [poi.id, poi]));
+  const entranceMap = new Map(entrances.map((entrance: MapEditorEntrance) => [entrance.id, entrance]));
 
   const poiElements: MapElement[] = pois
     .filter((poi: MapEditorPOI) => poi.isActive && poi.coordinates && typeof poi.coordinates.x === 'number' && typeof poi.coordinates.y === 'number')
@@ -202,6 +226,19 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
       radius: 8,
       color: poi.color || getPOIColor(poi.category),
       label: poi.name,
+      draggable: true,
+    }));
+
+  const entranceElements: MapElement[] = entrances
+    .filter((entrance: MapEditorEntrance) => entrance.isActive && entrance.coordinates && typeof entrance.coordinates.x === 'number' && typeof entrance.coordinates.y === 'number')
+    .map((entrance: MapEditorEntrance) => ({
+      id: entrance.id,
+      type: "entrance",
+      x: entrance.coordinates.x,
+      y: entrance.coordinates.y,
+      radius: 8,
+      color: entrance.color || "#F59E0B",
+      label: entrance.name,
       draggable: true,
     }));
 
@@ -307,6 +344,66 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
                 fontWeight="500"
                 fill="#374151"
                 width={roomWidth - 20}
+                align="center"
+              />
+            )}
+          </Group>
+        );
+      case "entrance":
+        const entranceColor = element.color || "#F59E0B";
+        const entranceHexToRgba = (hex: string, alpha: number) => {
+          const r = parseInt(hex.slice(1, 3), 16);
+          const g = parseInt(hex.slice(3, 5), 16);
+          const b = parseInt(hex.slice(5, 7), 16);
+          return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        };
+        const entranceLightFill = entranceHexToRgba(entranceColor, 0.15);
+        const entranceBorderColor = entranceHexToRgba(entranceColor, 0.4);
+        
+        const entranceLabelWidth = element.label ? element.label.length * 8 + 40 : 120;
+        const entranceWidth = Math.max(entranceLabelWidth, 120);
+        const entranceHeight = 60;
+        
+        return (
+          <Group
+            key={element.id}
+            x={element.x}
+            y={element.y}
+            draggable={element.draggable}
+            onDragEnd={(e) =>
+              handleDragEnd(element.id, e.target.x(), e.target.y())
+            }
+          >
+            <Rect
+              x={-entranceWidth / 2}
+              y={-entranceHeight / 2}
+              width={entranceWidth}
+              height={entranceHeight}
+              fill={entranceLightFill}
+              stroke={entranceBorderColor}
+              strokeWidth={2}
+              cornerRadius={8}
+            />
+            <Rect
+              x={-10}
+              y={-entranceHeight / 2 + 8}
+              width={20}
+              height={20}
+              fill={entranceColor}
+              stroke="#fff"
+              strokeWidth={2}
+              cornerRadius={4}
+            />
+            {element.label && (
+              <Text
+                text={element.label}
+                x={-entranceWidth / 2 + 10}
+                y={entranceHeight / 2 - 20}
+                fontSize={13}
+                fontFamily="Arial"
+                fontWeight="500"
+                fill="#374151"
+                width={entranceWidth - 20}
                 align="center"
               />
             )}
@@ -490,6 +587,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
             {drawGrid()}
             {elements.map(renderElement)}
             {poiElements.map(renderElement)}
+            {entranceElements.map(renderElement)}
           </Layer>
         </Stage>
 

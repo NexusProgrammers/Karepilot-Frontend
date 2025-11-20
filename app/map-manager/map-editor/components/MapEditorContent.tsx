@@ -29,6 +29,7 @@ export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
   const [showAnnotationModal, setShowAnnotationModal] = useState(false);
   const [selectedTool, setSelectedTool] = useState<string | null>(null);
   const [poiCoordinates, setPoiCoordinates] = useState<{ x: number; y: number } | undefined>();
+  const [entranceCoordinates, setEntranceCoordinates] = useState<{ x: number; y: number } | undefined>();
 
   return (
     <div className="flex h-[calc(100vh-120px)] relative gap-4">
@@ -67,7 +68,7 @@ export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
               } else if (toolId === "label") {
                 setShowLabelModal(true);
               } else if (toolId === "entrance") {
-                setShowEntranceModal(true);
+                // Entrance will be added when clicking on canvas
               } else if (toolId === "elevator") {
                 setShowElevatorModal(true);
               } else if (toolId === "restricted") {
@@ -94,8 +95,13 @@ export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
           floorPlanId={floorPlanId}
           selectedTool={selectedTool}
           onPOIClick={(coordinates) => {
-            setPoiCoordinates(coordinates);
-            setShowPOIModal(true);
+            if (selectedTool === "poi") {
+              setPoiCoordinates(coordinates);
+              setShowPOIModal(true);
+            } else if (selectedTool === "entrance") {
+              setEntranceCoordinates(coordinates);
+              setShowEntranceModal(true);
+            }
           }}
         />
         <ActionButtons />
@@ -119,8 +125,13 @@ export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
       
       <MarkEntranceModal
         isOpen={showEntranceModal}
-        onClose={() => setShowEntranceModal(false)}
-        onAddEntrance={(entranceData) => console.log("Adding Entrance:", entranceData)}
+        onClose={() => {
+          setShowEntranceModal(false);
+          setEntranceCoordinates(undefined);
+          setSelectedTool(null);
+        }}
+        floorPlanId={floorPlanId}
+        coordinates={entranceCoordinates}
       />
       
       <AddElevatorModal
