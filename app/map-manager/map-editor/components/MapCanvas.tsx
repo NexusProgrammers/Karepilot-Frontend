@@ -27,11 +27,13 @@ import { useGetPOIsByFloorPlanQuery, useUpdatePOIMutation } from "@/lib/api/mapE
 import { MapEditorPOI } from "@/lib/types/map-management/mapEditorPOI";
 import { useGetEntrancesByFloorPlanQuery, useUpdateEntranceMutation } from "@/lib/api/mapEditorEntranceApi";
 import { MapEditorEntrance } from "@/lib/types/map-management/mapEditorEntrance";
+import { useGetElevatorsByFloorPlanQuery, useUpdateElevatorMutation } from "@/lib/api/mapEditorElevatorApi";
+import { MapEditorElevator } from "@/lib/types/map-management/mapEditorElevator";
 import toast from "react-hot-toast";
 
 interface MapElement {
   id: string;
-  type: "poi" | "path" | "zone" | "label" | "entrance";
+  type: "poi" | "path" | "zone" | "label" | "entrance" | "elevator";
   x?: number;
   y?: number;
   width?: number;
@@ -72,8 +74,13 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
     { floorPlanId: floorPlanId || "", isActive: true },
     { skip: !floorPlanId }
   );
+  const { data: elevators = [], isLoading: isLoadingElevators } = useGetElevatorsByFloorPlanQuery(
+    { floorPlanId: floorPlanId || "", isActive: true },
+    { skip: !floorPlanId }
+  );
   const [updatePOI] = useUpdatePOIMutation();
   const [updateEntrance] = useUpdateEntranceMutation();
+  const [updateElevator] = useUpdateElevatorMutation();
 
   const [elements, setElements] = useState<MapElement[]>([]);
 
@@ -145,6 +152,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
   const handleDragEnd = async (id: string, newX: number, newY: number) => {
     const poi = poiMap.get(id);
     const entrance = entranceMap.get(id);
+    const elevator = elevatorMap.get(id);
     
     if (poi) {
       try {
@@ -178,6 +186,22 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
         console.error("Failed to update entrance position:", error);
         toast.error(error?.data?.message || "Failed to update entrance position");
       }
+    } else if (elevator) {
+      try {
+        await updateElevator({
+          id: elevator.id,
+          data: {
+            coordinates: {
+              x: Math.round(newX),
+              y: Math.round(newY),
+            },
+          },
+        }).unwrap();
+        toast.success("Elevator position updated");
+      } catch (error: any) {
+        console.error("Failed to update elevator position:", error);
+        toast.error(error?.data?.message || "Failed to update elevator position");
+      }
     } else {
       const newElements = elements.map((el) =>
         el.id === id ? { ...el, x: newX, y: newY } : el
@@ -188,7 +212,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
   };
 
   const handleStageClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
-    if ((selectedTool === "poi" || selectedTool === "entrance") && onPOIClick) {
+    if ((selectedTool === "poi" || selectedTool === "entrance" || selectedTool === "elevator") && onPOIClick) {
       const stage = e.target.getStage();
       if (stage) {
         const pointerPos = stage.getPointerPosition();
@@ -215,6 +239,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
 
   const poiMap = new Map(pois.map((poi: MapEditorPOI) => [poi.id, poi]));
   const entranceMap = new Map(entrances.map((entrance: MapEditorEntrance) => [entrance.id, entrance]));
+  const elevatorMap = new Map(elevators.map((elevator: MapEditorElevator) => [elevator.id, elevator]));
 
   const poiElements: MapElement[] = pois
     .filter((poi: MapEditorPOI) => poi.isActive && poi.coordinates && typeof poi.coordinates.x === 'number' && typeof poi.coordinates.y === 'number')
@@ -239,6 +264,19 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
       radius: 8,
       color: entrance.color || "#F59E0B",
       label: entrance.name,
+      draggable: true,
+    }));
+
+  const elevatorElements: MapElement[] = elevators
+    .filter((elevator: MapEditorElevator) => elevator.isActive && elevator.coordinates && typeof elevator.coordinates.x === 'number' && typeof elevator.coordinates.y === 'number')
+    .map((elevator: MapEditorElevator) => ({
+      id: elevator.id,
+      type: "elevator",
+      x: elevator.coordinates.x,
+      y: elevator.coordinates.y,
+      radius: 8,
+      color: elevator.color || "#7C3AED",
+      label: elevator.name,
       draggable: true,
     }));
 
@@ -409,6 +447,67 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
             )}
           </Group>
         );
+      case "elevator":
+        const elevatorColor = element.color || "#7C3AED";
+        const elevatorHexToRgba = (hex: string, alpha: number) => {
+          const r = parseInt(hex.slice(1, 3), 16);
+          const g = parseInt(hex.slice(3, 5), 16);
+          const b = parseInt(hex.slice(5, 7), 16);
+          return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        };
+        const elevatorLightFill = elevatorHexToRgba(elevatorColor, 0.15);
+        const elevatorBorderColor = elevatorHexToRgba(elevatorColor, 0.4);
+        
+        const elevatorLabelWidth = element.label ? element.label.length * 8 + 40 : 120;
+        const elevatorWidth = Math.max(elevatorLabelWidth, 120);
+        const elevatorHeight = 60;
+        
+        return (
+          <Group
+            key={element.id}
+            x={element.x}
+            y={element.y}
+            draggable={element.draggable}
+            onDragEnd={(e) =>
+              handleDragEnd(element.id, e.target.x(), e.target.y())
+            }
+          >
+            <Rect
+              x={-elevatorWidth / 2}
+              y={-elevatorHeight / 2}
+              width={elevatorWidth}
+              height={elevatorHeight}
+              fill={elevatorLightFill}
+              stroke={elevatorBorderColor}
+              strokeWidth={2}
+              cornerRadius={8}
+            />
+            {/* Elevator icon - vertical rectangle representing elevator shaft */}
+            <Rect
+              x={-8}
+              y={-elevatorHeight / 2 + 8}
+              width={16}
+              height={24}
+              fill={elevatorColor}
+              stroke="#fff"
+              strokeWidth={2}
+              cornerRadius={2}
+            />
+            {element.label && (
+              <Text
+                text={element.label}
+                x={-elevatorWidth / 2 + 10}
+                y={elevatorHeight / 2 - 20}
+                fontSize={13}
+                fontFamily="Arial"
+                fontWeight="500"
+                fill="#374151"
+                width={elevatorWidth - 20}
+                align="center"
+              />
+            )}
+          </Group>
+        );
       case "path":
         return (
           <Line
@@ -570,7 +669,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
             <Search className="w-4 h-4" />
           </Button>
           <span className="text-xs sm:text-sm text-muted-foreground">
-            Elements {elements.length + poiElements.length}
+            Elements {elements.length + poiElements.length + entranceElements.length + elevatorElements.length}
           </span>
         </div>
       </div>
@@ -588,6 +687,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
             {elements.map(renderElement)}
             {poiElements.map(renderElement)}
             {entranceElements.map(renderElement)}
+            {elevatorElements.map(renderElement)}
           </Layer>
         </Stage>
 

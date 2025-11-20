@@ -30,6 +30,7 @@ export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
   const [selectedTool, setSelectedTool] = useState<string | null>(null);
   const [poiCoordinates, setPoiCoordinates] = useState<{ x: number; y: number } | undefined>();
   const [entranceCoordinates, setEntranceCoordinates] = useState<{ x: number; y: number } | undefined>();
+  const [elevatorCoordinates, setElevatorCoordinates] = useState<{ x: number; y: number } | undefined>();
 
   return (
     <div className="flex h-[calc(100vh-120px)] relative gap-4">
@@ -65,12 +66,13 @@ export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
             onToolSelect={(toolId) => {
               setSelectedTool(toolId);
               if (toolId === "poi") {
+                // Modal opens on canvas click
               } else if (toolId === "label") {
                 setShowLabelModal(true);
               } else if (toolId === "entrance") {
-                // Entrance will be added when clicking on canvas
+                // Modal opens on canvas click
               } else if (toolId === "elevator") {
-                setShowElevatorModal(true);
+                // Modal opens on canvas click
               } else if (toolId === "restricted") {
                 setShowRestrictedZoneModal(true);
               } else if (toolId === "annotation") {
@@ -101,6 +103,9 @@ export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
             } else if (selectedTool === "entrance") {
               setEntranceCoordinates(coordinates);
               setShowEntranceModal(true);
+            } else if (selectedTool === "elevator") {
+              setElevatorCoordinates(coordinates);
+              setShowElevatorModal(true);
             }
           }}
         />
@@ -136,8 +141,13 @@ export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
       
       <AddElevatorModal
         isOpen={showElevatorModal}
-        onClose={() => setShowElevatorModal(false)}
-        onAddElevator={(elevatorData) => console.log("Adding Elevator:", elevatorData)}
+        onClose={() => {
+          setShowElevatorModal(false);
+          setElevatorCoordinates(undefined);
+          setSelectedTool(null);
+        }}
+        floorPlanId={floorPlanId}
+        coordinates={elevatorCoordinates}
       />
       
       <AddRestrictedZoneModal
