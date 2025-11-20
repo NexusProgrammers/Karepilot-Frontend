@@ -730,7 +730,17 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
         </div>
       </div>
 
-      <div ref={containerRef} className="flex-1 relative min-h-0">
+      <div 
+        ref={containerRef} 
+        className="flex-1 relative min-h-0"
+        style={{
+          cursor: selectedTool === "path" 
+            ? (isDrawing ? "crosshair" : "crosshair")
+            : selectedTool === "poi" || selectedTool === "entrance" || selectedTool === "elevator"
+            ? "crosshair"
+            : "default"
+        }}
+      >
         <Stage
           ref={stageRef}
           width={stageSize.width}
