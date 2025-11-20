@@ -31,6 +31,7 @@ export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
   const [poiCoordinates, setPoiCoordinates] = useState<{ x: number; y: number } | undefined>();
   const [entranceCoordinates, setEntranceCoordinates] = useState<{ x: number; y: number } | undefined>();
   const [elevatorCoordinates, setElevatorCoordinates] = useState<{ x: number; y: number } | undefined>();
+  const [restrictedZoneCoordinates, setRestrictedZoneCoordinates] = useState<{ x: number; y: number; width: number; height: number } | undefined>();
 
   return (
     <div className="flex h-[calc(100vh-120px)] relative gap-4">
@@ -66,15 +67,11 @@ export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
             onToolSelect={(toolId) => {
               setSelectedTool(toolId);
               if (toolId === "poi") {
-                // Modal opens on canvas click
               } else if (toolId === "label") {
                 setShowLabelModal(true);
               } else if (toolId === "entrance") {
-                // Modal opens on canvas click
               } else if (toolId === "elevator") {
-                // Modal opens on canvas click
               } else if (toolId === "restricted") {
-                setShowRestrictedZoneModal(true);
               } else if (toolId === "annotation") {
                 setShowAnnotationModal(true);
               }
@@ -107,6 +104,10 @@ export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
               setElevatorCoordinates(coordinates);
               setShowElevatorModal(true);
             }
+          }}
+          onRestrictedZoneDraw={(coordinates) => {
+            setRestrictedZoneCoordinates(coordinates);
+            setShowRestrictedZoneModal(true);
           }}
         />
         <ActionButtons />
@@ -152,8 +153,13 @@ export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
       
       <AddRestrictedZoneModal
         isOpen={showRestrictedZoneModal}
-        onClose={() => setShowRestrictedZoneModal(false)}
-        onAddRestrictedZone={(zoneData) => console.log("Adding Restricted Zone:", zoneData)}
+        onClose={() => {
+          setShowRestrictedZoneModal(false);
+          setRestrictedZoneCoordinates(undefined);
+          setSelectedTool(null);
+        }}
+        floorPlanId={floorPlanId}
+        coordinates={restrictedZoneCoordinates}
       />
       
       <AddAnnotationModal

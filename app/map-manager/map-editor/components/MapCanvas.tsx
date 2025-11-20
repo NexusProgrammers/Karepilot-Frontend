@@ -32,6 +32,8 @@ import { useGetElevatorsByFloorPlanQuery, useUpdateElevatorMutation } from "@/li
 import { MapEditorElevator } from "@/lib/types/map-management/mapEditorElevator";
 import { useGetPathsByFloorPlanQuery, useCreatePathMutation, useUpdatePathMutation, useDeletePathMutation } from "@/lib/api/mapEditorPathApi";
 import { MapEditorPath } from "@/lib/types/map-management/mapEditorPath";
+import { useGetRestrictedZonesByFloorPlanQuery, useUpdateRestrictedZoneMutation } from "@/lib/api/mapEditorRestrictedZoneApi";
+import { MapEditorRestrictedZone } from "@/lib/types/map-management/mapEditorRestrictedZone";
 import toast from "react-hot-toast";
 
 interface MapElement {
@@ -56,10 +58,11 @@ interface MapElement {
 interface MapCanvasProps {
   floorPlanId?: string;
   onPOIClick?: (coordinates: { x: number; y: number }) => void;
+  onRestrictedZoneDraw?: (coordinates: { x: number; y: number; width: number; height: number }) => void;
   selectedTool?: string | null;
 }
 
-export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasProps) {
+export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selectedTool }: MapCanvasProps) {
   const [zoom, setZoom] = useState(100);
   const [stageSize, setStageSize] = useState({ width: 0, height: 0 });
   const [showGrid, setShowGrid] = useState(true);
@@ -85,16 +88,24 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
     { floorPlanId: floorPlanId || "", isActive: true },
     { skip: !floorPlanId }
   );
+  const { data: restrictedZones = [], isLoading: isLoadingRestrictedZones } = useGetRestrictedZonesByFloorPlanQuery(
+    { floorPlanId: floorPlanId || "", isActive: true },
+    { skip: !floorPlanId }
+  );
   const [updatePOI] = useUpdatePOIMutation();
   const [updateEntrance] = useUpdateEntranceMutation();
   const [updateElevator] = useUpdateElevatorMutation();
   const [createPath] = useCreatePathMutation();
   const [updatePath] = useUpdatePathMutation();
   const [deletePath] = useDeletePathMutation();
+  const [updateRestrictedZone] = useUpdateRestrictedZoneMutation();
 
   const [elements, setElements] = useState<MapElement[]>([]);
   const [drawingPath, setDrawingPath] = useState<{ x: number; y: number }[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
+  const [isDrawingZone, setIsDrawingZone] = useState(false);
+  const [zoneStart, setZoneStart] = useState<{ x: number; y: number } | null>(null);
+  const [zoneCurrent, setZoneCurrent] = useState<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     const updateSize = () => {
@@ -125,11 +136,15 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
   }, []);
 
   useEffect(() => {
-    // Cancel path drawing if tool changes
     if (selectedTool !== "path" && isDrawing) {
       cancelPathDrawing();
     }
-  }, [selectedTool, isDrawing, cancelPathDrawing]);
+    if (selectedTool !== "restricted" && isDrawingZone) {
+      setIsDrawingZone(false);
+      setZoneStart(null);
+      setZoneCurrent(null);
+    }
+  }, [selectedTool, isDrawing, isDrawingZone, cancelPathDrawing]);
 
   const handleZoomIn = () => setZoom((prev) => Math.min(prev + 10, 200));
   const handleZoomOut = () => setZoom((prev) => Math.max(prev - 10, 50));
@@ -173,10 +188,11 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
     toast.success("All elements cleared");
   };
 
-  const handleDragEnd = async (id: string, newX: number, newY: number) => {
+  const handleDragEnd = async (id: string, newX: number, newY: number, newWidth?: number, newHeight?: number) => {
     const poi = poiMap.get(id);
     const entrance = entranceMap.get(id);
     const elevator = elevatorMap.get(id);
+    const restrictedZone = restrictedZoneMap.get(id);
     
     if (poi) {
       try {
@@ -226,6 +242,24 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
         console.error("Failed to update elevator position:", error);
         toast.error(error?.data?.message || "Failed to update elevator position");
       }
+    } else if (restrictedZone) {
+      try {
+        await updateRestrictedZone({
+          id: restrictedZone.id,
+          data: {
+            coordinates: {
+              x: Math.round(newX),
+              y: Math.round(newY),
+              width: newWidth ? Math.round(newWidth) : restrictedZone.coordinates.width,
+              height: newHeight ? Math.round(newHeight) : restrictedZone.coordinates.height,
+            },
+          },
+        }).unwrap();
+        toast.success("Restricted zone updated");
+      } catch (error: any) {
+        console.error("Failed to update restricted zone:", error);
+        toast.error(error?.data?.message || "Failed to update restricted zone");
+      }
     } else {
       const newElements = elements.map((el) =>
         el.id === id ? { ...el, x: newX, y: newY } : el
@@ -243,15 +277,49 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
     if (!pointerPos) return;
 
     if (selectedTool === "path") {
-      // Start or continue drawing path
       if (!isDrawing) {
         setIsDrawing(true);
         setDrawingPath([{ x: pointerPos.x, y: pointerPos.y }]);
       } else {
         setDrawingPath((prev) => [...prev, { x: pointerPos.x, y: pointerPos.y }]);
       }
+    } else if (selectedTool === "restricted") {
+      if (!isDrawingZone) {
+        setIsDrawingZone(true);
+        setZoneStart({ x: pointerPos.x, y: pointerPos.y });
+        setZoneCurrent({ x: pointerPos.x, y: pointerPos.y });
+      }
     } else if ((selectedTool === "poi" || selectedTool === "entrance" || selectedTool === "elevator") && onPOIClick) {
       onPOIClick({ x: pointerPos.x, y: pointerPos.y });
+    }
+  };
+
+  const handleStageMouseMove = (e: Konva.KonvaEventObject<MouseEvent>) => {
+    if (selectedTool === "restricted" && isDrawingZone && zoneStart) {
+      const stage = e.target.getStage();
+      if (!stage) return;
+
+      const pointerPos = stage.getPointerPosition();
+      if (!pointerPos) return;
+
+      setZoneCurrent(pointerPos);
+    }
+  };
+
+  const handleStageMouseUp = () => {
+    if (selectedTool === "restricted" && isDrawingZone && zoneStart && zoneCurrent && onRestrictedZoneDraw) {
+      const x = Math.min(zoneStart.x, zoneCurrent.x);
+      const y = Math.min(zoneStart.y, zoneCurrent.y);
+      const width = Math.abs(zoneCurrent.x - zoneStart.x);
+      const height = Math.abs(zoneCurrent.y - zoneStart.y);
+
+      if (width > 10 && height > 10) {
+        onRestrictedZoneDraw({ x, y, width, height });
+      }
+
+      setIsDrawingZone(false);
+      setZoneStart(null);
+      setZoneCurrent(null);
     }
   };
 
@@ -296,6 +364,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
   const entranceMap = new Map(entrances.map((entrance: MapEditorEntrance) => [entrance.id, entrance]));
   const elevatorMap = new Map(elevators.map((elevator: MapEditorElevator) => [elevator.id, elevator]));
   const pathMap = new Map(paths.map((path: MapEditorPath) => [path.id, path]));
+  const restrictedZoneMap = new Map(restrictedZones.map((zone: MapEditorRestrictedZone) => [zone.id, zone]));
 
   const poiElements: MapElement[] = pois
     .filter((poi: MapEditorPOI) => poi.isActive && poi.coordinates && typeof poi.coordinates.x === 'number' && typeof poi.coordinates.y === 'number')
@@ -725,7 +794,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
             <Search className="w-4 h-4" />
           </Button>
           <span className="text-xs sm:text-sm text-muted-foreground">
-            Elements {elements.length + poiElements.length + entranceElements.length + elevatorElements.length + paths.length}
+            Elements {elements.length + poiElements.length + entranceElements.length + elevatorElements.length + paths.length + restrictedZones.length}
           </span>
         </div>
       </div>
@@ -733,9 +802,11 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
       <div 
         ref={containerRef} 
         className="flex-1 relative min-h-0"
-        style={{
+          style={{
           cursor: selectedTool === "path" 
             ? (isDrawing ? "crosshair" : "crosshair")
+            : selectedTool === "restricted"
+            ? (isDrawingZone ? "crosshair" : "crosshair")
             : selectedTool === "poi" || selectedTool === "entrance" || selectedTool === "elevator"
             ? "crosshair"
             : "default"
@@ -748,6 +819,8 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
           className="w-full h-full"
           onClick={handleStageClick}
           onDblClick={handleStageDoubleClick}
+          onMouseMove={handleStageMouseMove}
+          onMouseUp={handleStageMouseUp}
         >
           <Layer>
             {drawGrid()}
@@ -795,6 +868,70 @@ export function MapCanvas({ floorPlanId, onPOIClick, selectedTool }: MapCanvasPr
                   />
                 ))}
               </>
+            )}
+            {restrictedZones
+              .filter((zone: MapEditorRestrictedZone) => zone.isActive && zone.coordinates)
+              .map((zone: MapEditorRestrictedZone) => {
+                const zoneColor = zone.color || "#EF4444";
+                const hexToRgba = (hex: string, alpha: number) => {
+                  const r = parseInt(hex.slice(1, 3), 16);
+                  const g = parseInt(hex.slice(3, 5), 16);
+                  const b = parseInt(hex.slice(5, 7), 16);
+                  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                };
+                return (
+                  <Group
+                    key={zone.id}
+                    x={zone.coordinates.x}
+                    y={zone.coordinates.y}
+                    draggable={true}
+                    onDragEnd={(e) =>
+                      handleDragEnd(
+                        zone.id,
+                        e.target.x(),
+                        e.target.y(),
+                        zone.coordinates.width,
+                        zone.coordinates.height
+                      )
+                    }
+                  >
+                    <Rect
+                      x={0}
+                      y={0}
+                      width={zone.coordinates.width}
+                      height={zone.coordinates.height}
+                      fill={hexToRgba(zoneColor, 0.2)}
+                      stroke={zoneColor}
+                      strokeWidth={2}
+                      cornerRadius={4}
+                      dash={[5, 5]}
+                    />
+                    {zone.name && (
+                      <Text
+                        x={5}
+                        y={5}
+                        text={zone.name}
+                        fontSize={12}
+                        fontFamily="Arial"
+                        fontWeight="500"
+                        fill={zoneColor}
+                      />
+                    )}
+                  </Group>
+                );
+              })}
+            {isDrawingZone && zoneStart && zoneCurrent && (
+              <Rect
+                x={Math.min(zoneStart.x, zoneCurrent.x)}
+                y={Math.min(zoneStart.y, zoneCurrent.y)}
+                width={Math.abs(zoneCurrent.x - zoneStart.x)}
+                height={Math.abs(zoneCurrent.y - zoneStart.y)}
+                fill="rgba(239, 68, 68, 0.2)"
+                stroke="#EF4444"
+                strokeWidth={2}
+                cornerRadius={4}
+                dash={[5, 5]}
+              />
             )}
           </Layer>
         </Stage>
