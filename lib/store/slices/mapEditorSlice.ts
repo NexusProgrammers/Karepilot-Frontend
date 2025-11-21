@@ -19,7 +19,6 @@ interface MapEditorState {
   properties: MapEditorProperties;
 }
 
-// Default state - same on server and client to avoid hydration issues
 const initialState: MapEditorState = {
   layerVisibility: {
     floorPlan: true,

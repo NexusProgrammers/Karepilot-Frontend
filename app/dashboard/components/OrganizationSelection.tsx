@@ -1,80 +1,42 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { menuOptions } from "@/lib/dashboard/data";
 import { dashboardIcon } from "@/icons/Assets";
 import { QueryErrorState } from "@/components/common/QueryErrorState";
-import { useGetOrganizationsQuery } from "@/lib/api/organizationsApi";
 import { Organization } from "@/lib/types/organization/organization";
 import { OrganizationGridSkeleton } from "./OrganizationGridSkeleton";
+import { useOrganizationSearch } from "@/lib/hooks/dashboard";
 
 export function OrganizationSelection() {
   const router = useRouter();
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [isSearchMenuOpen, setIsSearchMenuOpen] = useState(false);
-  const searchContainerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(searchTerm.trim());
-    }, 300);
-
-    return () => clearTimeout(handler);
-  }, [searchTerm]);
-
-  const queryParams = debouncedSearch ? { search: debouncedSearch } : undefined;
   const {
-    data: organizationsData,
-    isFetching: isOrganizationsFetching,
-    isLoading: isOrganizationsLoading,
-    isError: isOrganizationsError,
-    error: organizationsError,
-    refetch: refetchOrganizations,
-  } = useGetOrganizationsQuery(queryParams);
-
-  const organizationList = useMemo(
-    () => organizationsData?.data?.organizations ?? [],
-    [organizationsData]
-  );
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        searchContainerRef.current &&
-        !searchContainerRef.current.contains(event.target as Node)
-      ) {
-        setIsSearchMenuOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const filteredMenuOptions = useMemo(() => {
-    if (!searchTerm) {
-      return menuOptions;
-    }
-
-    return menuOptions.filter((option) =>
-      option.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm]);
+    searchTerm,
+    isSearchMenuOpen,
+    searchContainerRef,
+    
+    organizationList,
+    searchSuggestions,
+    isOrganizationsError,
+    organizationsError,
+    
+    isBusy,
+    hasOrganizations,
+    
+    setSearchTerm,
+    setIsSearchMenuOpen,
+    refetchOrganizations,
+    handleSearchSelect,
+  } = useOrganizationSearch();
 
   const handleOrganizationSelect = (org: Organization) => {
     if (org?.id) {
       router.push(`/dashboard/${org.id}`);
     }
   };
-
-  const isBusy = isOrganizationsLoading || isOrganizationsFetching;
-  const hasOrganizations = organizationList.length > 0;
 
   return (
     <DashboardLayout>
@@ -114,28 +76,100 @@ export function OrganizationSelection() {
               <input
                 type="text"
                 value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Search organizations"
-                onFocus={() => setIsSearchMenuOpen(true)}
-                className="w-full pl-10 pr-4 py-2 bg-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3D8C6C] placeholder:text-foreground border-0"
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                  if (event.target.value) {
+                    setIsSearchMenuOpen(true);
+                  }
+                }}
+                placeholder="Search organizations by name, city, or type..."
+                onFocus={() => {
+                  if (searchTerm) {
+                    setIsSearchMenuOpen(true);
+                  }
+                }}
+                className="w-full pl-10 pr-4 py-2 bg-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3D8C6C] placeholder:text-muted-foreground border-0"
               />
             </div>
 
-            {isSearchMenuOpen && filteredMenuOptions.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-popover rounded-lg shadow-lg border border-border p-2 z-50">
-                {filteredMenuOptions.map((option) => (
-                  <button
-                    key={option}
-                    type="button"
-                    onMouseDown={() => {
-                      setSearchTerm(option);
-                      setIsSearchMenuOpen(false);
-                    }}
-                    className="w-full text-left px-4 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground rounded cursor-pointer"
+            {isSearchMenuOpen && isBusy && searchTerm && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-popover rounded-lg shadow-lg border border-border p-4 z-50 text-center">
+                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                  <svg
+                    className="animate-spin h-4 w-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
                   >
-                    {option}
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Searching organizations...
+                </div>
+              </div>
+            )}
+            
+            {isSearchMenuOpen && !isBusy && searchSuggestions.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-popover rounded-lg shadow-lg border border-border p-2 z-50 max-h-[300px] overflow-y-auto">
+                <div className="px-3 py-2 text-xs text-muted-foreground font-medium">
+                  Recent Organizations ({searchSuggestions.length})
+                </div>
+                {searchSuggestions.map((org) => (
+                  <button
+                    key={org.id}
+                    type="button"
+                    onMouseDown={() => handleSearchSelect(org.name)}
+                    className="w-full text-left px-4 py-3 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground rounded cursor-pointer transition-colors flex items-start gap-3"
+                  >
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#3D8C6C]/10 flex items-center justify-center mt-0.5">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-[#3D8C6C]"
+                      >
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                        <polyline points="9 22 9 12 15 12 15 22" />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-foreground truncate">
+                        {org.name}
+                      </div>
+                      <div className="text-xs text-muted-foreground truncate">
+                        {[org.city, org.country].filter(Boolean).join(", ") || "No location"}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-0.5">
+                        <span className="inline-block px-1.5 py-0.5 bg-muted rounded">
+                          {org.organizationType}
+                        </span>
+                      </div>
+                    </div>
                   </button>
                 ))}
+              </div>
+            )}
+            
+            {isSearchMenuOpen && searchTerm && searchSuggestions.length === 0 && !isBusy && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-popover rounded-lg shadow-lg border border-border p-4 z-50 text-center text-sm text-muted-foreground">
+                No organizations found matching &ldquo;{searchTerm}&rdquo;
               </div>
             )}
           </div>

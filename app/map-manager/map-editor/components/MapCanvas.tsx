@@ -817,7 +817,6 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
     if (!showGrid) return [];
     const lines = [];
 
-    // Vertical grid lines
     for (let i = 0; i < stageSize.width / gridSize; i++) {
       lines.push(
         <Line
@@ -831,7 +830,6 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
       );
     }
 
-    // Horizontal grid lines
     for (let i = 0; i < stageSize.height / gridSize; i++) {
       lines.push(
         <Line
