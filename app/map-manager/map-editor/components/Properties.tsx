@@ -6,6 +6,7 @@ import { ChevronDown, Grid3x3 } from "@/icons/Icons";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/lib/store";
 import { setGridSize, setSnapToGrid, setShowGrid, resetProperties } from "@/lib/store/slices/mapEditorSlice";
+import toast from "react-hot-toast";
 
 const gridSizeOptions = [
   { value: "5", label: "5px - Very Fine" },
@@ -25,7 +26,23 @@ export function Properties() {
     const size = parseInt(value, 10);
     if (!isNaN(size)) {
       dispatch(setGridSize(size));
+      toast.success(`Grid size set to ${size}px`);
     }
+  };
+
+  const handleSnapToGridChange = (value: boolean) => {
+    dispatch(setSnapToGrid(value));
+    toast.success(value ? "Snap to grid enabled" : "Snap to grid disabled");
+  };
+
+  const handleShowGridChange = (value: boolean) => {
+    dispatch(setShowGrid(value));
+    toast.success(value ? "Grid lines visible" : "Grid lines hidden");
+  };
+
+  const handleResetProperties = () => {
+    dispatch(resetProperties());
+    toast.success("All properties reset to default");
   };
 
   return (
@@ -56,14 +73,14 @@ export function Properties() {
         <div className="space-y-4 pt-2">
           <ToggleSwitch
             checked={properties.snapToGrid}
-            onChange={(value) => dispatch(setSnapToGrid(value))}
+            onChange={handleSnapToGridChange}
             label="Snap to Grid"
             description="Automatically align elements to grid when placing or moving"
           />
           
           <ToggleSwitch
             checked={properties.showGrid}
-            onChange={(value) => dispatch(setShowGrid(value))}
+            onChange={handleShowGridChange}
             label="Show Grid"
             description="Display grid lines on canvas for better alignment"
           />
@@ -72,7 +89,7 @@ export function Properties() {
       
       <div className="mt-4 pt-4 border-t border-border">
         <button
-          onClick={() => dispatch(resetProperties())}
+          onClick={handleResetProperties}
           className="text-xs text-muted-foreground hover:text-foreground transition-colors w-full text-center"
         >
           Reset to Default

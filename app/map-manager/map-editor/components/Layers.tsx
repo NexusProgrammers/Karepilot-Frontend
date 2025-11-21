@@ -4,6 +4,7 @@ import { Eye, EyeOff } from "@/icons/Icons";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/lib/store";
 import { toggleLayer, resetLayers, LayerVisibility } from "@/lib/store/slices/mapEditorSlice";
+import toast from "react-hot-toast";
 
 interface LayerItem {
   id: keyof LayerVisibility;
@@ -23,6 +24,16 @@ export function Layers() {
   const dispatch = useDispatch();
   const layerVisibility = useSelector((state: RootState) => state.mapEditor.layerVisibility);
 
+  const handleToggleLayer = (layerId: keyof LayerVisibility, layerName: string, isVisible: boolean) => {
+    dispatch(toggleLayer(layerId));
+    toast.success(isVisible ? `${layerName} layer hidden` : `${layerName} layer visible`);
+  };
+
+  const handleResetLayers = () => {
+    dispatch(resetLayers());
+    toast.success("All layers reset to default visibility");
+  };
+
   return (
     <div className="bg-card border border-border rounded-xl p-4">
       <h3 className="text-lg font-semibold text-foreground mb-4">Layers</h3>
@@ -38,8 +49,8 @@ export function Layers() {
             >
               <div className="flex items-center gap-3 flex-1">
                 <button
-                  onClick={() => dispatch(toggleLayer(layer.id))}
-                  className="w-8 h-8 rounded-lg hover:bg-muted flex items-center justify-center transition-all hover:scale-105"
+                  onClick={() => handleToggleLayer(layer.id, layer.name, isVisible)}
+                  className="w-8 h-8 rounded-lg hover:bg-muted flex items-center justify-center transition-all hover:scale-105 cursor-pointer"
                   title={isVisible ? "Hide layer" : "Show layer"}
                   suppressHydrationWarning
                 >
@@ -69,7 +80,7 @@ export function Layers() {
       
       <div className="mt-4 pt-4 border-t border-border">
         <button
-          onClick={() => dispatch(resetLayers())}
+          onClick={handleResetLayers}
           className="text-xs text-muted-foreground hover:text-foreground transition-colors w-full text-center"
         >
           Reset to Default
