@@ -1,51 +1,82 @@
 "use client";
 
-import { useState } from "react";
 import { CustomSelect } from "@/components/common/CustomSelect";
 import { ToggleSwitch } from "@/components/common/ToggleSwitch";
-import { ChevronDown } from "@/icons/Icons";
+import { ChevronDown, Grid3x3 } from "@/icons/Icons";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/lib/store";
+import { setGridSize, setSnapToGrid, setShowGrid, resetProperties } from "@/lib/store/slices/mapEditorSlice";
+
+const gridSizeOptions = [
+  { value: "5", label: "5px - Very Fine" },
+  { value: "10", label: "10px - Fine" },
+  { value: "15", label: "15px - Medium" },
+  { value: "20", label: "20px - Coarse" },
+  { value: "25", label: "25px - Large" },
+  { value: "30", label: "30px - Very Large" },
+  { value: "50", label: "50px - Extra Large" },
+];
 
 export function Properties() {
-  const [gridSize, setGridSize] = useState("10px");
-  const [snapToGrid, setSnapToGrid] = useState(true);
-  const [showGrid, setShowGrid] = useState(false);
+  const dispatch = useDispatch();
+  const properties = useSelector((state: RootState) => state.mapEditor.properties);
 
-  const gridSizeOptions = ["5px", "10px", "15px", "20px", "25px", "30px"];
+  const handleGridSizeChange = (value: string) => {
+    const size = parseInt(value, 10);
+    if (!isNaN(size)) {
+      dispatch(setGridSize(size));
+    }
+  };
 
   return (
     <div className="bg-card border border-border rounded-xl p-4 mb-4">
-      <h3 className="text-lg font-semibold text-foreground mb-4">Properties</h3>
+      <div className="flex items-center gap-2 mb-4">
+        <Grid3x3 className="w-5 h-5 text-[#3D8C6C]" />
+        <h3 className="text-lg font-semibold text-foreground">Properties</h3>
+      </div>
       
-      <div className="space-y-4">
+      <div className="space-y-4" suppressHydrationWarning>
         <div>
           <label className="text-sm font-medium text-foreground mb-2 block">
             Grid Size
           </label>
           <CustomSelect
-            value={gridSize}
-            onChange={setGridSize}
-            options={gridSizeOptions}
+            value={properties.gridSize.toString()}
+            onChange={handleGridSizeChange}
+            options={gridSizeOptions.map(opt => opt.value)}
             placeholder="Select grid size"
             label=""
             icon={<ChevronDown className="w-4 h-4 text-muted-foreground" />}
           />
+          <p className="text-xs text-muted-foreground mt-1">
+            Current: {properties.gridSize}px
+          </p>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-4 pt-2">
           <ToggleSwitch
-            checked={snapToGrid}
-            onChange={setSnapToGrid}
+            checked={properties.snapToGrid}
+            onChange={(value) => dispatch(setSnapToGrid(value))}
             label="Snap to Grid"
-            description="Automatically align elements to grid"
+            description="Automatically align elements to grid when placing or moving"
           />
           
           <ToggleSwitch
-            checked={showGrid}
-            onChange={setShowGrid}
+            checked={properties.showGrid}
+            onChange={(value) => dispatch(setShowGrid(value))}
             label="Show Grid"
-            description="Display grid lines on canvas"
+            description="Display grid lines on canvas for better alignment"
           />
         </div>
+      </div>
+      
+      <div className="mt-4 pt-4 border-t border-border">
+        <button
+          onClick={() => dispatch(resetProperties())}
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors w-full text-center"
+        >
+          Reset to Default
+        </button>
       </div>
     </div>
   );

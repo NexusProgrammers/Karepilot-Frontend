@@ -15,8 +15,11 @@ import { AddAnnotationModal } from "./AddAnnotationModal";
 import { Button } from "@/components/ui/button";
 import { PanelLeft, PanelLeftClose } from "lucide-react";
 import { MapEditorContentProps } from "@/lib/types/map-editor/components";
+import { useMapEditorPreferences } from "@/lib/hooks/useMapEditorPreferences";
 
 export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
+  useMapEditorPreferences();
+  
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showPOIModal, setShowPOIModal] = useState(false);
   const [showLabelModal, setShowLabelModal] = useState(false);

@@ -42,6 +42,8 @@ import { MapEditorMeasurement } from "@/lib/types/map-management/mapEditorMeasur
 import { useGetAnnotationsByFloorPlanQuery, useUpdateAnnotationMutation } from "@/lib/api/mapEditorAnnotationApi";
 import { MapEditorAnnotation } from "@/lib/types/map-management/mapEditorAnnotation";
 import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store";
 
 interface MapElement {
   id: string;
@@ -70,9 +72,12 @@ interface MapCanvasProps {
 }
 
 export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selectedTool }: MapCanvasProps) {
+  const layerVisibility = useSelector((state: RootState) => state.mapEditor.layerVisibility);
+  const properties = useSelector((state: RootState) => state.mapEditor.properties);
+  const { gridSize, snapToGrid, showGrid } = properties;
+  
   const [zoom, setZoom] = useState(100);
   const [stageSize, setStageSize] = useState({ width: 0, height: 0 });
-  const [showGrid, setShowGrid] = useState(true);
   const [history, setHistory] = useState<MapElement[][]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [showClearAllDialog, setShowClearAllDialog] = useState(false);
@@ -227,21 +232,25 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
   };
 
   const handleDragEnd = async (id: string, newX: number, newY: number, newWidth?: number, newHeight?: number) => {
+    const snappedPos = snapToGridCoords(newX, newY);
+    const finalX = snappedPos.x;
+    const finalY = snappedPos.y;
+    
     const poi = poiMap.get(id);
     const entrance = entranceMap.get(id);
     const elevator = elevatorMap.get(id);
     const restrictedZone = restrictedZoneMap.get(id);
     const label = labelMap.get(id);
     const annotation = annotationMap.get(id);
-    
+
     if (poi) {
       try {
         await updatePOI({
           id: poi.id,
           data: {
             coordinates: {
-              x: Math.round(newX),
-              y: Math.round(newY),
+              x: Math.round(finalX),
+              y: Math.round(finalY),
             },
           },
         }).unwrap();
@@ -256,8 +265,8 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
           id: entrance.id,
           data: {
             coordinates: {
-              x: Math.round(newX),
-              y: Math.round(newY),
+              x: Math.round(finalX),
+              y: Math.round(finalY),
             },
           },
         }).unwrap();
@@ -272,8 +281,8 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
           id: elevator.id,
           data: {
             coordinates: {
-              x: Math.round(newX),
-              y: Math.round(newY),
+              x: Math.round(finalX),
+              y: Math.round(finalY),
             },
           },
         }).unwrap();
@@ -288,8 +297,8 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
           id: restrictedZone.id,
           data: {
             coordinates: {
-              x: Math.round(newX),
-              y: Math.round(newY),
+              x: Math.round(finalX),
+              y: Math.round(finalY),
               width: newWidth ? Math.round(newWidth) : restrictedZone.coordinates.width,
               height: newHeight ? Math.round(newHeight) : restrictedZone.coordinates.height,
             },
@@ -306,8 +315,8 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
           id: label.id,
           data: {
             coordinates: {
-              x: Math.round(newX),
-              y: Math.round(newY),
+              x: Math.round(finalX),
+              y: Math.round(finalY),
             },
           },
         }).unwrap();
@@ -322,8 +331,8 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
           id: annotation.id,
           body: {
             coordinates: {
-              x: Math.round(newX),
-              y: Math.round(newY),
+              x: Math.round(finalX),
+              y: Math.round(finalY),
             },
           },
         }).unwrap();
@@ -334,7 +343,7 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
       }
     } else {
       const newElements = elements.map((el) =>
-        el.id === id ? { ...el, x: newX, y: newY } : el
+        el.id === id ? { ...el, x: finalX, y: finalY } : el
       );
       setElements(newElements);
       saveToHistory(newElements);
@@ -348,29 +357,31 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
     const pointerPos = stage.getPointerPosition();
     if (!pointerPos) return;
 
+    const snappedPos = snapToGridCoords(pointerPos.x, pointerPos.y);
+
     if (selectedTool === "path") {
       if (!isDrawing) {
         setIsDrawing(true);
-        setDrawingPath([{ x: pointerPos.x, y: pointerPos.y }]);
+        setDrawingPath([snappedPos]);
       } else {
-        setDrawingPath((prev) => [...prev, { x: pointerPos.x, y: pointerPos.y }]);
+        setDrawingPath((prev) => [...prev, snappedPos]);
       }
     } else if (selectedTool === "restricted") {
       if (!isDrawingZone) {
         setIsDrawingZone(true);
-        setZoneStart({ x: pointerPos.x, y: pointerPos.y });
-        setZoneCurrent({ x: pointerPos.x, y: pointerPos.y });
+        setZoneStart(snappedPos);
+        setZoneCurrent(snappedPos);
       }
     } else if (selectedTool === "measure") {
       if (!isMeasuring) {
         setIsMeasuring(true);
-        setMeasureStart({ x: pointerPos.x, y: pointerPos.y });
-        setMeasureEnd({ x: pointerPos.x, y: pointerPos.y });
+        setMeasureStart(snappedPos);
+        setMeasureEnd(snappedPos);
       } else if (measureStart) {
-        handleSaveMeasurement({ x: pointerPos.x, y: pointerPos.y });
+        handleSaveMeasurement(snappedPos);
       }
     } else if ((selectedTool === "poi" || selectedTool === "entrance" || selectedTool === "elevator" || selectedTool === "label" || selectedTool === "annotation") && onPOIClick) {
-      onPOIClick({ x: pointerPos.x, y: pointerPos.y });
+      onPOIClick(snappedPos);
     }
   };
 
@@ -417,7 +428,8 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
       const pointerPos = stage.getPointerPosition();
       if (!pointerPos) return;
 
-      setZoneCurrent(pointerPos);
+      const snappedPos = snapToGridCoords(pointerPos.x, pointerPos.y);
+      setZoneCurrent(snappedPos);
     } else if (selectedTool === "measure" && isMeasuring && measureStart) {
       const stage = e.target.getStage();
       if (!stage) return;
@@ -425,7 +437,8 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
       const pointerPos = stage.getPointerPosition();
       if (!pointerPos) return;
 
-      setMeasureEnd(pointerPos);
+      const snappedPos = snapToGridCoords(pointerPos.x, pointerPos.y);
+      setMeasureEnd(snappedPos);
     }
   };
 
@@ -792,29 +805,42 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
     }
   };
 
+  const snapToGridCoords = useCallback((x: number, y: number) => {
+    if (!snapToGrid) return { x, y };
+    return {
+      x: Math.round(x / gridSize) * gridSize,
+      y: Math.round(y / gridSize) * gridSize,
+    };
+  }, [snapToGrid, gridSize]);
+
   const drawGrid = () => {
     if (!showGrid) return [];
-    const gridSize = 20;
     const lines = [];
 
+    // Vertical grid lines
     for (let i = 0; i < stageSize.width / gridSize; i++) {
       lines.push(
         <Line
           key={`v-${i}`}
           points={[i * gridSize, 0, i * gridSize, stageSize.height]}
-          stroke="#e5e7eb"
+          stroke="#d1d5db"
           strokeWidth={1}
+          opacity={0.8}
+          listening={false}
         />
       );
     }
 
+    // Horizontal grid lines
     for (let i = 0; i < stageSize.height / gridSize; i++) {
       lines.push(
         <Line
           key={`h-${i}`}
           points={[0, i * gridSize, stageSize.width, i * gridSize]}
-          stroke="#e5e7eb"
+          stroke="#d1d5db"
           strokeWidth={1}
+          opacity={0.8}
+          listening={false}
         />
       );
     }
@@ -888,16 +914,6 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
               <Trash2 className="w-4 h-4" />
               <span className="hidden sm:inline">Clear All</span>
             </Button>
-
-            <Button
-              variant={showGrid ? "default" : "outline"}
-              size="sm"
-              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
-              onClick={() => setShowGrid(!showGrid)}
-            >
-              <Grid3x3 className="w-4 h-4" />
-              <span className="hidden sm:inline">Grid</span>
-            </Button>
           </div>
         </div>
 
@@ -942,12 +958,23 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
           onMouseUp={handleStageMouseUp}
         >
           <Layer>
+            {/* Background rectangle for canvas */}
+            <Rect
+              x={0}
+              y={0}
+              width={stageSize.width}
+              height={stageSize.height}
+              fill="#ffffff"
+              listening={false}
+            />
             {drawGrid()}
             {elements.map(renderElement)}
-            {poiElements.map(renderElement)}
-            {entranceElements.map(renderElement)}
-            {elevatorElements.map(renderElement)}
-            {paths
+            {/* Render POIs, Entrances, and Elevators if POIs layer is visible */}
+            {layerVisibility.pois && poiElements.map(renderElement)}
+            {layerVisibility.pois && entranceElements.map(renderElement)}
+            {layerVisibility.pois && elevatorElements.map(renderElement)}
+            {/* Render Paths if paths layer is visible */}
+            {layerVisibility.paths && paths
               .filter((path: MapEditorPath) => path.isActive && path.points && path.points.length >= 2)
               .map((path: MapEditorPath) => {
                 const pathPoints = path.points.flatMap((point) => [point.x, point.y]);
@@ -988,7 +1015,8 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
                 ))}
               </>
             )}
-            {restrictedZones
+            {/* Render Restricted Zones if zones layer is visible */}
+            {layerVisibility.zones && restrictedZones
               .filter((zone: MapEditorRestrictedZone) => zone.isActive && zone.coordinates)
               .map((zone: MapEditorRestrictedZone) => {
                 const zoneColor = zone.color || "#EF4444";
@@ -1052,7 +1080,8 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
                 dash={[5, 5]}
               />
             )}
-            {labels
+            {/* Render Labels if labels layer is visible */}
+            {layerVisibility.labels && labels
               .filter((label: MapEditorLabel) => label.isActive && label.coordinates)
               .map((label: MapEditorLabel) => {
                 const fontSize = parseInt(label.fontSize?.replace("px", "") || "16");
@@ -1181,7 +1210,8 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
                 />
               </Group>
             )}
-            {annotations
+            {/* Render Annotations if labels layer is visible */}
+            {layerVisibility.labels && annotations
               .filter((annotation: MapEditorAnnotation) => annotation.isActive && annotation.coordinates)
               .map((annotation: MapEditorAnnotation) => {
                 const annotationColor = annotation.color || "#F59E0B";

@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
+import mapEditorReducer from './slices/mapEditorSlice';
 import { authApi } from '../api/authApi';
 import { settingsApi } from '../api/settingsApi';
 import { departmentsApi } from '../api/departmentsApi';
@@ -19,10 +20,12 @@ import { mapEditorRestrictedZoneApi } from '../api/mapEditorRestrictedZoneApi';
 import { mapEditorLabelApi } from '../api/mapEditorLabelApi';
 import { mapEditorMeasurementApi } from '../api/mapEditorMeasurementApi';
 import { mapEditorAnnotationApi } from '../api/mapEditorAnnotationApi';
+import { mapEditorPreferencesApi } from '../api/mapEditorPreferencesApi';
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    mapEditor: mapEditorReducer,
     [authApi.reducerPath]: authApi.reducer,
     [settingsApi.reducerPath]: settingsApi.reducer,
     [departmentsApi.reducerPath]: departmentsApi.reducer,
@@ -42,6 +45,7 @@ export const store = configureStore({
     [mapEditorLabelApi.reducerPath]: mapEditorLabelApi.reducer,
     [mapEditorMeasurementApi.reducerPath]: mapEditorMeasurementApi.reducer,
     [mapEditorAnnotationApi.reducerPath]: mapEditorAnnotationApi.reducer,
+    [mapEditorPreferencesApi.reducerPath]: mapEditorPreferencesApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -67,7 +71,8 @@ export const store = configureStore({
       mapEditorRestrictedZoneApi.middleware,
       mapEditorLabelApi.middleware,
       mapEditorMeasurementApi.middleware,
-      mapEditorAnnotationApi.middleware
+      mapEditorAnnotationApi.middleware,
+      mapEditorPreferencesApi.middleware
     ),
 });
 
