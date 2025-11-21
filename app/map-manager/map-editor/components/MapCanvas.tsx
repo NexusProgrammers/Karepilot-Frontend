@@ -16,6 +16,7 @@ import {
   Check,
 } from "@/icons/Icons";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -75,6 +76,8 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
   const [history, setHistory] = useState<MapElement[][]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [showClearAllDialog, setShowClearAllDialog] = useState(false);
+  const [showSearchDialog, setShowSearchDialog] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const stageRef = useRef<Konva.Stage>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -580,7 +583,6 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
               handleDragEnd(element.id, e.target.x(), e.target.y())
             }
           >
-            {/* Room/Rectangle background with rounded corners */}
             <Rect
               x={-roomWidth / 2}
               y={-roomHeight / 2}
@@ -592,7 +594,6 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
               cornerRadius={8}
             />
             
-            {/* POI Indicator - Outer ring */}
             <Circle
               x={0}
               y={-8}
@@ -600,7 +601,6 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
               fill={hexToRgba(poiColor, 0.3)}
             />
             
-            {/* POI Indicator - Inner dark circle */}
             <Circle
               x={0}
               y={-8}
@@ -610,7 +610,6 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
               strokeWidth={1.5}
             />
             
-            {/* POI Label inside the rectangle */}
             {element.label && (
               <Text
                 text={element.label}
@@ -721,7 +720,6 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
               strokeWidth={2}
               cornerRadius={8}
             />
-            {/* Elevator icon - vertical rectangle representing elevator shaft */}
             <Rect
               x={-8}
               y={-elevatorHeight / 2 + 8}
@@ -904,7 +902,12 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
         </div>
 
         <div className="flex items-center gap-2 sm:gap-4">
-          <Button variant="outline" size="sm" className="w-8 h-8 p-0">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-8 h-8 p-0"
+            onClick={() => setShowSearchDialog(true)}
+          >
             <Search className="w-4 h-4" />
           </Button>
           <span className="text-xs sm:text-sm text-muted-foreground">
@@ -1276,7 +1279,6 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
         )}
       </div>
 
-      {/* Clear All Confirmation Dialog */}
       <Dialog open={showClearAllDialog} onOpenChange={setShowClearAllDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -1304,6 +1306,94 @@ export function MapCanvas({ floorPlanId, onPOIClick, onRestrictedZoneDraw, selec
             >
               <Trash2 className="w-4 h-4" />
               Clear All
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showSearchDialog} onOpenChange={setShowSearchDialog}>
+        <DialogContent className="sm:max-w-2xl max-h-[600px]">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold text-card-foreground">
+              Search Elements
+            </DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground pt-2">
+              Search through all map elements by name, description, or category.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Input
+              type="text"
+              placeholder="Search by name, category, or description..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full"
+            />
+            <div className="max-h-[400px] overflow-y-auto space-y-2">
+              {(() => {
+                const allElements = [
+                  ...pois.map((poi: MapEditorPOI) => ({ ...poi, type: "POI" as const })),
+                  ...entrances.map((entrance: MapEditorEntrance) => ({ ...entrance, type: "Entrance" as const })),
+                  ...elevators.map((elevator: MapEditorElevator) => ({ ...elevator, type: "Elevator" as const })),
+                  ...paths.map((path: MapEditorPath) => ({ ...path, type: "Path" as const })),
+                  ...restrictedZones.map((zone: MapEditorRestrictedZone) => ({ ...zone, type: "Restricted Zone" as const })),
+                  ...labels.map((label: MapEditorLabel) => ({ ...label, type: "Label" as const, name: label.text })),
+                  ...measurements.map((measurement: MapEditorMeasurement) => ({ ...measurement, type: "Measurement" as const, name: `${measurement.distance} ${measurement.unit}` })),
+                  ...annotations.map((annotation: MapEditorAnnotation) => ({ ...annotation, type: "Annotation" as const })),
+                ];
+
+                const filteredElements = searchQuery.trim()
+                  ? allElements.filter((element: any) => {
+                      const query = searchQuery.toLowerCase();
+                      const name = (element.name || "").toLowerCase();
+                      const description = (element.description || "").toLowerCase();
+                      const category = (element.category || "").toLowerCase();
+                      const type = (element.type || "").toLowerCase();
+                      return name.includes(query) || description.includes(query) || category.includes(query) || type.includes(query);
+                    })
+                  : allElements;
+
+                if (filteredElements.length === 0) {
+                  return (
+                    <div className="text-center py-8 text-muted-foreground">
+                      {searchQuery.trim() ? "No elements found matching your search." : "No elements on the map."}
+                    </div>
+                  );
+                }
+
+                return filteredElements.map((element: any) => (
+                  <div
+                    key={`${element.type}-${element.id}`}
+                    className="p-3 border rounded-lg hover:bg-accent cursor-pointer transition-colors"
+                    onClick={() => {
+                      setShowSearchDialog(false);
+                      setSearchQuery("");
+                    }}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="font-medium text-sm">{element.name || "Unnamed"}</div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          Type: {element.type} {element.category ? `• Category: ${element.category}` : ""}
+                        </div>
+                        {element.description && (
+                          <div className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                            {element.description}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ));
+              })()}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setShowSearchDialog(false);
+              setSearchQuery("");
+            }}>
+              Close
             </Button>
           </DialogFooter>
         </DialogContent>

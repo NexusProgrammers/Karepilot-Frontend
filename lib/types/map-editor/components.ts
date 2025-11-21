@@ -100,3 +100,7 @@ export interface MapElement {
   fontWeight?: string;
 }
 
+export interface ActionButtonsProps {
+  floorPlanId?: string;
+}
+

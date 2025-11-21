@@ -113,7 +113,7 @@ export function MapEditorContent({ floorPlanId }: MapEditorContentProps) {
             setShowRestrictedZoneModal(true);
           }}
         />
-        <ActionButtons />
+        <ActionButtons floorPlanId={floorPlanId} />
       </div>
 
       <AddPOIModal

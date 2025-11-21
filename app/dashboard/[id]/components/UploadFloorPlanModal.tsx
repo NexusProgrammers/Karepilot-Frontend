@@ -527,7 +527,6 @@ export function UploadFloorPlanModal({
                       </p>
                     </div>
 
-                    {/* Show existing image in preview/edit modes */}
                     {(isPreviewMode || isEditMode) && floorPlan?.media?.fileUrl && (
                       <div>
                         <label className="block text-sm font-medium text-muted-foreground mb-2">
@@ -548,7 +547,6 @@ export function UploadFloorPlanModal({
                       </div>
                     )}
 
-                    {/* File upload section - only show in upload mode or when editing and want to replace */}
                     <div>
                       <label className="block text-sm font-medium text-muted-foreground mb-2">
                         {isPreviewMode
